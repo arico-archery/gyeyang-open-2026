@@ -332,6 +332,10 @@ export const en = {
     p5Act1: "Practice Range Open",
   },
   guideMap: {
+    pageTitle: "Venue Guide",
+    venueTitle: "Gyeyang Asiad Archery Field",
+    address: "855 Bongo-daero, Gyeyang-gu, Incheon 21072, South Korea",
+    openInMaps: "Open in Google Maps",
     asiadTitle: "Gyeyang Asiad Archery Field Guide Map",
     asiadSubtitle: "Gyeyang Asiad Archery Field \u2013 Guide Map",
     araonTitle: "Gyeyang Araon Suhyangwon Guide Map",

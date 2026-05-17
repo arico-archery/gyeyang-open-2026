@@ -332,6 +332,10 @@ export const ko = {
     p5Act1: "연습장 개방",
   },
   guideMap: {
+    pageTitle: "경기장 안내",
+    venueTitle: "인천계양아시아드양궁장",
+    address: "인천광역시 계양구 봉오대로 855 (우 21072)",
+    openInMaps: "Google Maps에서 열기",
     asiadTitle: "계양아시아드양궁장 안내도",
     asiadSubtitle: "Gyeyang Asiad Archery Field – Guide Map",
     araonTitle: "계양아라온 수향원 안내도",

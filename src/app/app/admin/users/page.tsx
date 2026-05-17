@@ -208,6 +208,20 @@ export default function AdminUsersPage() {
         </div>
       </div>
 
+      <div className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 mb-4">
+        <p className="text-xs font-semibold text-gray-700 mb-1.5">{t("스태프 초대 코드", "Staff Invite Codes")}</p>
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-gray-500">{t("심판", "Judge")}</span>
+            <code className="text-xs font-mono bg-white border border-gray-200 px-2 py-0.5 rounded text-purple-700">GYEYANG-JUDGE-2026</code>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-gray-500">{t("관리자", "Admin")}</span>
+            <code className="text-xs font-mono bg-white border border-gray-200 px-2 py-0.5 rounded text-red-700">GYEYANG-ADMIN-2026</code>
+          </div>
+        </div>
+      </div>
+
       <div className="mb-4">
         <input
           value={searchQuery}

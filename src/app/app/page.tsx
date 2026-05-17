@@ -157,12 +157,12 @@ export default function AppHome() {
             <span>{t("2026.05.13(수) ~ 05.18(월)", "2026.05.13(Wed) ~ 05.18(Mon)")}</span>
           </div>
           <div className="flex gap-2">
-            <span className="text-gray-400 w-14 shrink-0">{t("장소", "Venue")}</span>
-            <span>{t("계양구 아라궁도장 및 특설사로", "Gyeyang-gu Ara Archery Range & Special Field")}</span>
+            <span className="text-gray-400 w-14 shrink-0">{t("예선", "Qual")}</span>
+            <span>{t("계양아시아드양궁장", "Gyeyang Asiad Archery Range")}</span>
           </div>
           <div className="flex gap-2">
-            <span className="text-gray-400 w-14 shrink-0">{t("주소", "Addr")}</span>
-            <span>{t("인천광역시 계양구 계양대로 223", "223 Gyeyang-daero, Gyeyang-gu, Incheon")}</span>
+            <span className="text-gray-400 w-14 shrink-0">{t("결승", "Finals")}</span>
+            <span>{t("계양아라온 수향원", "Gyeyang Araon Suhyangwon")}</span>
           </div>
           <div className="flex gap-2">
             <span className="text-gray-400 w-14 shrink-0">{t("종목", "Events")}</span>

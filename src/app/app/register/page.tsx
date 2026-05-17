@@ -17,7 +17,6 @@ const COUNTRIES = [
 const ROLES: { value: UserRole; ko: string; en: string }[] = [
   { value: "athlete", ko: "선수", en: "Athlete" },
   { value: "coach", ko: "코치", en: "Coach" },
-  { value: "judge", ko: "심판", en: "Judge" },
 ];
 
 const CATEGORIES = [
@@ -71,7 +70,6 @@ export default function RegisterPage() {
       return;
     }
 
-    // Get the newly created user
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       const qrToken = crypto.randomUUID();
@@ -151,7 +149,7 @@ export default function RegisterPage() {
             <form onSubmit={handleStep2} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">{t("역할", "Role")}</label>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   {ROLES.map((r) => (
                     <button
                       key={r.value} type="button"
@@ -248,6 +246,13 @@ export default function RegisterPage() {
           {t("이미 계정이 있으신가요?", "Already have an account?")}{" "}
           <Link href="/app/login" className="text-blue-600 font-medium hover:underline">
             {t("로그인", "Sign In")}
+          </Link>
+        </p>
+
+        <p className="text-center text-sm text-gray-400 mt-3">
+          {t("심판/관리자이신가요?", "Are you a judge or staff?")}{" "}
+          <Link href="/app/register/staff" className="text-purple-600 font-medium hover:underline">
+            {t("스태프 가입", "Staff Registration")}
           </Link>
         </p>
       </div>

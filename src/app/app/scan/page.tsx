@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useI18n } from "@/lib/i18n/context";
 import { useAuth } from "@/lib/supabase/auth-context";
 import { supabase } from "@/lib/supabase/client";
 import type { Profile } from "@/lib/supabase/types";
+import jsQR from "jsqr";
 
 interface ScannedData {
   profile: Profile;
@@ -30,74 +31,25 @@ export default function ScanPage() {
   const [scannedData, setScannedData] = useState<ScannedData | null>(null);
   const [scanning, setScanning] = useState(false);
   const [error, setError] = useState("");
+  const [cameraError, setCameraError] = useState("");
   const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const animFrameRef = useRef<number | null>(null);
 
   const t = (ko: string, en: string) => (locale === "ko" ? ko : en);
 
   const isAuthorized = myProfile?.role === "judge" || myProfile?.role === "admin";
 
-  const startScanning = async () => {
-    try {
-      setError("");
-      setScannedData(null);
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" },
-      });
-      streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.play();
-      }
-      setScanning(true);
-    } catch {
-      setError(t("카메라 접근 권한이 필요합니다", "Camera permission required"));
+  const stopScanning = useCallback(() => {
+    if (animFrameRef.current) {
+      cancelAnimationFrame(animFrameRef.current);
+      animFrameRef.current = null;
     }
-  };
-
-  const stopScanning = () => {
     streamRef.current?.getTracks().forEach((tr) => tr.stop());
     streamRef.current = null;
     setScanning(false);
-  };
-
-  useEffect(() => {
-    return () => {
-      streamRef.current?.getTracks().forEach((tr) => tr.stop());
-    };
   }, []);
-
-  useEffect(() => {
-    if (!scanning) return;
-    let active = true;
-
-    const detect = async () => {
-      if (!active || !videoRef.current || !("BarcodeDetector" in window)) return;
-
-      try {
-        // @ts-expect-error BarcodeDetector is not yet in TS types
-        const detector = new BarcodeDetector({ formats: ["qr_code"] });
-        const barcodes = await detector.detect(videoRef.current);
-
-        if (barcodes.length > 0) {
-          const url = barcodes[0].rawValue as string;
-          const tokenMatch = url.match(/\/athlete\/([a-f0-9-]+)/);
-          if (tokenMatch) {
-            stopScanning();
-            await lookupAthlete(tokenMatch[1]);
-            return;
-          }
-        }
-      } catch {
-        // BarcodeDetector not supported
-      }
-
-      if (active) setTimeout(detect, 500);
-    };
-
-    detect();
-    return () => { active = false; };
-  }, [scanning]);
 
   const lookupAthlete = async (token: string) => {
     let profileData: Profile | null = null;
@@ -144,6 +96,106 @@ export default function ScanPage() {
     });
   };
 
+  const startScanning = async () => {
+    try {
+      setError("");
+      setCameraError("");
+      setScannedData(null);
+
+      const constraints: MediaStreamConstraints = {
+        video: {
+          facingMode: "environment",
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+        },
+      };
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      streamRef.current = stream;
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.setAttribute("playsinline", "true");
+        videoRef.current.setAttribute("autoplay", "true");
+        await videoRef.current.play();
+      }
+      setScanning(true);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      if (message.includes("NotAllowedError") || message.includes("Permission")) {
+        setCameraError(t(
+          "카메라 권한이 거부되었습니다. 브라우저 설정에서 카메라 권한을 허용해주세요.",
+          "Camera permission denied. Please allow camera access in browser settings."
+        ));
+      } else if (message.includes("NotFoundError") || message.includes("DevicesNotFound")) {
+        setCameraError(t(
+          "카메라를 찾을 수 없습니다.",
+          "No camera found on this device."
+        ));
+      } else {
+        setCameraError(t(
+          "카메라를 시작할 수 없습니다: " + message,
+          "Cannot start camera: " + message
+        ));
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (!scanning) return;
+
+    const scanFrame = () => {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      if (!video || !canvas || video.readyState !== video.HAVE_ENOUGH_DATA) {
+        animFrameRef.current = requestAnimationFrame(scanFrame);
+        return;
+      }
+
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      if (!ctx) {
+        animFrameRef.current = requestAnimationFrame(scanFrame);
+        return;
+      }
+
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const code = jsQR(imageData.data, imageData.width, imageData.height, {
+        inversionAttempts: "dontInvert",
+      });
+
+      if (code && code.data) {
+        const tokenMatch = code.data.match(/\/athlete\/([a-f0-9-]+)/);
+        if (tokenMatch) {
+          stopScanning();
+          lookupAthlete(tokenMatch[1]);
+          return;
+        }
+      }
+
+      animFrameRef.current = requestAnimationFrame(scanFrame);
+    };
+
+    animFrameRef.current = requestAnimationFrame(scanFrame);
+
+    return () => {
+      if (animFrameRef.current) {
+        cancelAnimationFrame(animFrameRef.current);
+        animFrameRef.current = null;
+      }
+    };
+  }, [scanning, stopScanning]);
+
+  useEffect(() => {
+    return () => {
+      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+      streamRef.current?.getTracks().forEach((tr) => tr.stop());
+    };
+  }, []);
+
   if (!isAuthorized) {
     return (
       <div className="max-w-lg mx-auto px-4 pt-6">
@@ -161,20 +213,44 @@ export default function ScanPage() {
     <div className="max-w-lg mx-auto px-4 pt-6 pb-24">
       <h1 className="text-xl font-bold text-gray-900 mb-4">{t("QR 스캔", "QR Scan")}</h1>
 
+      {cameraError && (
+        <div className="bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-xl px-4 py-3 mb-4">
+          <p className="font-medium mb-1">{t("카메라 오류", "Camera Error")}</p>
+          <p>{cameraError}</p>
+          <p className="mt-2 text-xs text-amber-600">
+            {t(
+              "iOS: 설정 > Safari > 카메라 및 마이크 액세스 > 허용\nAndroid: 브라우저 주소창 왼쪽 자물쇠 > 권한 > 카메라 허용",
+              "iOS: Settings > Safari > Camera & Microphone Access > Allow\nAndroid: Tap lock icon in address bar > Permissions > Allow Camera"
+            )}
+          </p>
+        </div>
+      )}
+
       {!scannedData && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-4">
           {scanning ? (
             <div className="relative">
-              <video ref={videoRef} className="w-full aspect-square object-cover" playsInline muted />
+              <video ref={videoRef} className="w-full aspect-square object-cover" playsInline muted autoPlay />
+              <canvas ref={canvasRef} className="hidden" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-48 h-48 border-2 border-white rounded-xl opacity-50" />
+                <div className="relative w-48 h-48">
+                  <div className="absolute top-0 left-0 w-6 h-6 border-t-4 border-l-4 border-green-400 rounded-tl-lg" />
+                  <div className="absolute top-0 right-0 w-6 h-6 border-t-4 border-r-4 border-green-400 rounded-tr-lg" />
+                  <div className="absolute bottom-0 left-0 w-6 h-6 border-b-4 border-l-4 border-green-400 rounded-bl-lg" />
+                  <div className="absolute bottom-0 right-0 w-6 h-6 border-b-4 border-r-4 border-green-400 rounded-br-lg" />
+                </div>
               </div>
-              <button
-                onClick={stopScanning}
-                className="absolute bottom-4 left-1/2 -translate-x-1/2 px-6 py-2 bg-red-500 text-white text-sm font-medium rounded-full"
-              >
-                {t("중지", "Stop")}
-              </button>
+              <div className="absolute bottom-4 left-0 right-0 flex justify-center">
+                <button
+                  onClick={stopScanning}
+                  className="px-6 py-2.5 bg-red-500 text-white text-sm font-medium rounded-full shadow-lg"
+                >
+                  {t("중지", "Stop")}
+                </button>
+              </div>
+              <p className="absolute top-4 left-0 right-0 text-center text-white text-xs font-medium drop-shadow-lg">
+                {t("QR 코드를 사각형 안에 맞춰주세요", "Align QR code within the frame")}
+              </p>
             </div>
           ) : (
             <div className="p-8 text-center">
@@ -215,7 +291,7 @@ export default function ScanPage() {
                     <p className="text-blue-100 text-sm">{scannedData.profile.full_name_en}</p>
                   )}
                   <p className="text-blue-200 text-xs mt-0.5">
-                    {scannedData.profile.nationality} \u00b7 {scannedData.profile.team || "-"}
+                    {scannedData.profile.nationality} · {scannedData.profile.team || "-"}
                   </p>
                 </div>
               </div>

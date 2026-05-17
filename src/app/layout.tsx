@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import { I18nProvider } from "@/lib/i18n/context";
+import LayoutShell from "@/components/LayoutShell";
 
 export const metadata: Metadata = {
   title: {
@@ -10,7 +9,7 @@ export const metadata: Metadata = {
     template: "%s | GYEYANG OPEN",
   },
   description:
-    "Official website of the 2026 Gyeyang District Mayor Cup International Archery Tournament (GYEYANG OPEN), held at Gyeyang Asiad Archery Field in Incheon, South Korea. May 19-23, 2026.",
+    "Official website of the 2026 Gyeyang District Mayor Cup International Archery Tournament (GYEYANG OPEN), held at Gyeyang Asiad Archery Field in Incheon, South Korea.",
   keywords: [
     "Gyeyang Open",
     "archery tournament",
@@ -18,10 +17,6 @@ export const metadata: Metadata = {
     "Incheon",
     "South Korea",
     "World Archery",
-    "계양오픈",
-    "국제양궁대회",
-    "계양구청장배",
-    "양궁",
   ],
   authors: [{ name: "Gyeyang District Office" }],
   openGraph: {
@@ -32,7 +27,7 @@ export const metadata: Metadata = {
     siteName: "GYEYANG OPEN",
     title: "2026 GYEYANG OPEN - International Archery Tournament",
     description:
-      "Official website of the 2026 Gyeyang District Mayor Cup International Archery Tournament. May 19-23, 2026, Incheon, South Korea.",
+      "Official website of the 2026 Gyeyang District Mayor Cup International Archery Tournament.",
     images: [
       {
         url: "/images/poster.png",
@@ -46,7 +41,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "2026 GYEYANG OPEN - International Archery Tournament",
     description:
-      "Official website of the 2026 Gyeyang District Mayor Cup International Archery Tournament. May 19-23, 2026.",
+      "Official website of the 2026 Gyeyang District Mayor Cup International Archery Tournament.",
     images: ["/images/poster.png"],
   },
   robots: {
@@ -66,6 +61,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="antialiased">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#2563eb" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+      </head>
       <body className="min-h-screen flex flex-col">
         <script
           type="application/ld+json"
@@ -77,8 +78,8 @@ export default function RootLayout({
               name: "2026 GYEYANG OPEN - International Archery Tournament",
               description:
                 "Gyeyang District Mayor Cup International Archery Tournament",
-              startDate: "2026-05-19",
-              endDate: "2026-05-23",
+              startDate: "2026-07-10",
+              endDate: "2026-07-12",
               eventStatus: "https://schema.org/EventScheduled",
               eventAttendanceMode:
                 "https://schema.org/OfflineEventAttendanceMode",
@@ -87,6 +88,7 @@ export default function RootLayout({
                 name: "Gyeyang Asiad Archery Field",
                 address: {
                   "@type": "PostalAddress",
+                  streetAddress: "106-21 Jakjeonseoun-dong",
                   addressLocality: "Incheon",
                   addressRegion: "Gyeyang-gu",
                   addressCountry: "KR",
@@ -104,9 +106,7 @@ export default function RootLayout({
           }}
         />
         <I18nProvider>
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
+          <LayoutShell>{children}</LayoutShell>
         </I18nProvider>
       </body>
     </html>

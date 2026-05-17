@@ -1,43 +1,48 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n/context";
 import { useAuth } from "@/lib/supabase/auth-context";
-import type { Announcement } from "@/lib/supabase/types";
 import { supabase } from "@/lib/supabase/client";
+import { isSuperAdmin } from "@/lib/super-admin";
 
-const EVENT_DATE = new Date("2026-07-10T00:00:00+09:00");
+const EVENT_DATE = new Date("2026-05-13T00:00:00+09:00");
 
-function getDDay() {
-  const now = new Date();
-  const diff = EVENT_DATE.getTime() - now.getTime();
-  return Math.ceil(diff / (1000 * 60 * 60 * 24));
+interface Announcement {
+  id: string;
+  title: string;
+  title_en: string | null;
+  created_at: string;
+  is_important: boolean;
 }
 
-const QUICK_MENU = [
-  { key: "schedule", href: "/app/schedule", icon: "\ud83d\udcc5", ko: "\uc77c\uc815", en: "Schedule" },
-  { key: "scores", href: "/app/scores", icon: "\ud83c\udfaf", ko: "\uc810\uc218", en: "Scores" },
-  { key: "qr", href: "/app/profile", icon: "\ud83d\udcf7", ko: "QR \ucf54\ub4dc", en: "QR Code" },
-  { key: "map", href: "/app/nearby", icon: "\ud83d\uddfa\ufe0f", ko: "\uc8fc\ubcc0 \uc9c0\ub3c4", en: "Nearby" },
-];
-
-export default function AppHomePage() {
+export default function AppHome() {
   const { locale } = useI18n();
-  const { user, profile, loading } = useAuth();
-  const [dDay, setDDay] = useState(getDDay());
+  const { user, profile } = useAuth();
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [dDay, setDDay] = useState("");
+
+  const t = (ko: string, en: string) => (locale === "ko" ? ko : en);
 
   useEffect(() => {
-    const timer = setInterval(() => setDDay(getDDay()), 60000);
-    return () => clearInterval(timer);
+    const now = new Date();
+    const diff = Math.ceil(
+      (EVENT_DATE.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    if (diff > 0) {
+      setDDay("D-" + diff);
+    } else if (diff === 0) {
+      setDDay("D-DAY");
+    } else {
+      setDDay("D+" + Math.abs(diff));
+    }
   }, []);
 
   useEffect(() => {
     supabase
       .from("announcements")
-      .select("*")
+      .select("id, title, title_en, created_at, is_important")
       .order("created_at", { ascending: false })
       .limit(3)
       .then(({ data }) => {
@@ -45,137 +50,165 @@ export default function AppHomePage() {
       });
   }, []);
 
-  const t = (ko: string, en: string) => (locale === "ko" ? ko : en);
+  const showAdmin = profile?.role === "admin" || isSuperAdmin(user?.email);
 
   return (
-    <div className="max-w-lg mx-auto px-4 pt-6 pb-24">
+    <div className="max-w-lg mx-auto px-4 pt-4 pb-24">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <Image src="/images/logo.png" alt="Logo" width={40} height={44} />
-          <div>
-            <h1 className="text-lg font-bold text-gray-900">2026 GYEYANG OPEN</h1>
-            <p className="text-xs text-gray-500">{t("\uad6d\uc81c\uc591\uad81\ub300\ud68c", "Int'l Archery Competition")}</p>
-          </div>
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h1 className="text-lg font-bold text-gray-900">
+            {t("2026 계양 오픈", "2026 GYEYANG OPEN")}
+          </h1>
+          <p className="text-xs text-gray-500">
+            {t("국제 양궁 대회", "International Archery Tournament")}
+          </p>
         </div>
-        {!loading && !user && (
-          <Link
-            href="/app/login"
-            className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            {t("\ub85c\uadf8\uc778", "Login")}
+        {user && profile && (
+          <Link href="/app/profile" className="flex items-center gap-2">
+            <div className="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center text-sm font-bold text-blue-600">
+              {profile.full_name.charAt(0)}
+            </div>
           </Link>
-        )}
-        {profile && (
-          <div className="text-right">
-            <p className="text-sm font-medium text-gray-900">{profile.full_name}</p>
-            <p className="text-xs text-gray-500">{profile.nationality}</p>
-          </div>
         )}
       </div>
 
       {/* D-Day Card */}
-      <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl p-6 text-white mb-6 shadow-lg">
-        <div className="text-center">
-          <p className="text-5xl font-black mb-2">
-            {dDay > 0 ? `D - ${dDay}` : dDay === 0 ? "D-DAY!" : `D + ${Math.abs(dDay)}`}
-          </p>
-          <p className="text-blue-100 text-sm">2026.07.10 ~ 07.12</p>
-          <p className="text-blue-200 text-xs mt-1">
-            {t("\uc778\ucc9c\uacc4\uc591\uc544\uc2dc\uc544\ub4dc\uc591\uad81\uc7a5", "Gyeyang Asiad Archery Field")}
-          </p>
+      <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl p-5 mb-4 text-white">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-blue-200 text-xs font-medium mb-1">
+              {t("2026 계양구청장배 국제양궁대회", "2026 GYEYANG OPEN")}
+            </p>
+            <p className="text-3xl font-black">{dDay}</p>
+            <p className="text-blue-200 text-sm mt-1">2026.05.13 ~ 05.18</p>
+          </div>
+          <div className="text-5xl opacity-30">🏹</div>
         </div>
       </div>
 
       {/* Quick Menu */}
-      <div className="grid grid-cols-4 gap-3 mb-6">
-        {QUICK_MENU.map((item) => (
-          <Link
-            key={item.key}
-            href={item.href}
-            className="flex flex-col items-center gap-1.5 p-3 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
-          >
-            <span className="text-2xl">{item.icon}</span>
-            <span className="text-xs font-medium text-gray-700">
-              {locale === "ko" ? item.ko : item.en}
-            </span>
-          </Link>
-        ))}
+      <div className="grid grid-cols-4 gap-3 mb-4">
+        <Link href="/app/schedule" className="flex flex-col items-center gap-1.5 bg-white rounded-xl border border-gray-100 py-3 shadow-sm hover:shadow transition-shadow">
+          <span className="text-2xl">📅</span>
+          <span className="text-[11px] font-medium text-gray-700">{t("일정", "Schedule")}</span>
+        </Link>
+        <Link href="/app/scores" className="flex flex-col items-center gap-1.5 bg-white rounded-xl border border-gray-100 py-3 shadow-sm hover:shadow transition-shadow">
+          <span className="text-2xl">🏆</span>
+          <span className="text-[11px] font-medium text-gray-700">{t("점수", "Scores")}</span>
+        </Link>
+        <Link href="/app/nearby" className="flex flex-col items-center gap-1.5 bg-white rounded-xl border border-gray-100 py-3 shadow-sm hover:shadow transition-shadow">
+          <span className="text-2xl">📍</span>
+          <span className="text-[11px] font-medium text-gray-700">{t("주변", "Nearby")}</span>
+        </Link>
+        <Link href="/app/registration" className="flex flex-col items-center gap-1.5 bg-white rounded-xl border border-gray-100 py-3 shadow-sm hover:shadow transition-shadow">
+          <span className="text-2xl">📝</span>
+          <span className="text-[11px] font-medium text-gray-700">{t("참가신청", "Register")}</span>
+        </Link>
       </div>
 
       {/* Announcements */}
-      <div className="mb-6">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-4">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-base font-bold text-gray-900">
-            {t("\uacf5\uc9c0\uc0ac\ud56d", "Announcements")}
-          </h2>
+          <h2 className="text-sm font-bold text-gray-900">{t("공지사항", "Announcements")}</h2>
           <Link href="/app/announcements" className="text-xs text-blue-600 font-medium">
-            {t("\uc804\uccb4\ubcf4\uae30", "View All")}
+            {t("전체보기", "View All")}
           </Link>
         </div>
-        {announcements.length > 0 ? (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 divide-y divide-gray-50">
-            {announcements.map((a) => (
-              <div key={a.id} className="px-4 py-3 flex items-start gap-3">
-                <span className={`shrink-0 mt-0.5 w-2 h-2 rounded-full ${
-                  a.priority === "urgent" ? "bg-red-500" :
-                  a.priority === "important" ? "bg-amber-500" : "bg-blue-400"
-                }`} />
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">
-                    {locale === "ko" ? a.title : (a.title_en || a.title)}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-0.5">
-                    {new Date(a.created_at).toLocaleDateString(locale === "ko" ? "ko-KR" : "en-US")}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+        {announcements.length === 0 ? (
+          <p className="text-sm text-gray-400 text-center py-4">
+            {t("아직 공지사항이 없습니다", "No announcements yet")}
+          </p>
         ) : (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 text-center">
-            <p className="text-sm text-gray-400">{t("\uc544\uc9c1 \uacf5\uc9c0\uc0ac\ud56d\uc774 \uc5c6\uc2b5\ub2c8\ub2e4", "No announcements yet")}</p>
+          <div className="space-y-2">
+            {announcements.map((a) => (
+              <Link
+                key={a.id}
+                href={"/app/announcements/" + a.id}
+                className="flex items-start gap-2 py-1.5"
+              >
+                {a.is_important && (
+                  <span className="shrink-0 px-1.5 py-0.5 bg-red-100 text-red-600 text-[10px] font-bold rounded">
+                    {t("중요", "IMP")}
+                  </span>
+                )}
+                <span className="text-sm text-gray-700 line-clamp-1 flex-1">
+                  {locale === "ko" ? a.title : a.title_en || a.title}
+                </span>
+                <span className="text-[10px] text-gray-400 shrink-0">
+                  {new Date(a.created_at).toLocaleDateString(locale === "ko" ? "ko-KR" : "en-US", { month: "short", day: "numeric" })}
+                </span>
+              </Link>
+            ))}
           </div>
         )}
       </div>
 
       {/* Tournament Info */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
-        <h2 className="text-base font-bold text-gray-900 mb-3">
-          {t("\ub300\ud68c \uc815\ubcf4", "Tournament Info")}
-        </h2>
-        <div className="space-y-2 text-sm text-gray-600">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-4">
+        <h2 className="text-sm font-bold text-gray-900 mb-3">{t("대회 정보", "Tournament Info")}</h2>
+        <div className="space-y-2.5 text-sm text-gray-600">
           <div className="flex gap-2">
-            <span className="text-gray-400 w-16 shrink-0">{t("\uae30\uac04", "Date")}</span>
-            <span>2026.07.10(Fri) ~ 07.12(Sun)</span>
+            <span className="text-gray-400 w-14 shrink-0">{t("대회명", "Name")}</span>
+            <span className="text-gray-800 font-medium">{t("2026 계양구청장배 국제양궁대회", "2026 GYEYANG OPEN International Archery Tournament")}</span>
           </div>
           <div className="flex gap-2">
-            <span className="text-gray-400 w-16 shrink-0">{t("\uc7a5\uc18c", "Venue")}</span>
-            <span>{t("\uc778\ucc9c\uacc4\uc591\uc544\uc2dc\uc544\ub4dc\uc591\uad81\uc7a5", "Gyeyang Asiad Archery Field")}</span>
+            <span className="text-gray-400 w-14 shrink-0">{t("기간", "Date")}</span>
+            <span>{t("2026.05.13(수) ~ 05.18(월)", "2026.05.13(Wed) ~ 05.18(Mon)")}</span>
           </div>
           <div className="flex gap-2">
-            <span className="text-gray-400 w-16 shrink-0">{t("\uc885\ubcc4", "Events")}</span>
-            <span>{t("\ub9ac\ucee4\ube0c \ub0a8/\uc5ec \uac1c\uc778\u00b7\ub2e8\uccb4", "Recurve M/W Individual & Team")}</span>
+            <span className="text-gray-400 w-14 shrink-0">{t("장소", "Venue")}</span>
+            <span>{t("계양구 아라궁도장 및 특설사로", "Gyeyang-gu Ara Archery Range & Special Field")}</span>
           </div>
           <div className="flex gap-2">
-            <span className="text-gray-400 w-16 shrink-0">{t("\uc8fc\ucd5c", "Host")}</span>
-            <span>{t("\uacc4\uc591\uad6c\uccad / \uc778\ucc9c\uad11\uc5ed\uc2dc\uc591\uad81\ud611\ud68c", "Gyeyang District / Incheon Archery Association")}</span>
+            <span className="text-gray-400 w-14 shrink-0">{t("주소", "Addr")}</span>
+            <span>{t("인천광역시 계양구 계양대로 223", "223 Gyeyang-daero, Gyeyang-gu, Incheon")}</span>
+          </div>
+          <div className="flex gap-2">
+            <span className="text-gray-400 w-14 shrink-0">{t("종별", "Events")}</span>
+            <span>{t("남자 리커브, 여자 리커브", "Recurve Men, Recurve Women")}</span>
+          </div>
+          <div className="flex gap-2">
+            <span className="text-gray-400 w-14 shrink-0">{t("주최", "Host")}</span>
+            <span>{t("계양구", "Gyeyang-gu")}</span>
+          </div>
+          <div className="flex gap-2">
+            <span className="text-gray-400 w-14 shrink-0">{t("주관", "Org")}</span>
+            <span>{t("계양구체육회", "Gyeyang-gu Sports Council")}</span>
+          </div>
+          <div className="flex gap-2">
+            <span className="text-gray-400 w-14 shrink-0">{t("후원", "Sponsor")}</span>
+            <span>{t("대한양궁협회", "Korea Archery Association")}</span>
           </div>
         </div>
       </div>
 
       {/* Website Link */}
-      <Link
-        href="/"
-        className="flex items-center justify-center gap-2 mb-6 py-3 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors"
+      <a
+        href="https://gyeyang-open.vercel.app"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block bg-gray-50 rounded-xl border border-gray-200 p-4 text-center hover:bg-gray-100 transition-colors mb-4"
       >
-        <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-        </svg>
-        <span className="text-sm font-medium text-gray-700">
-          {t("\ub300\ud68c \uacf5\uc2dd \ud648\ud398\uc774\uc9c0 \ubcf4\uae30", "Visit Official Website")}
-        </span>
-      </Link>
+        <p className="text-sm font-medium text-gray-700">{t("공식 웹사이트 방문", "Visit Official Website")}</p>
+        <p className="text-xs text-gray-400 mt-1">gyeyang-open.vercel.app</p>
+      </a>
+
+      {/* Admin Link */}
+      {showAdmin && (
+        <Link
+          href="/app/admin"
+          className="flex items-center justify-between px-4 py-3.5 bg-amber-50 border border-amber-200 rounded-xl hover:bg-amber-100 transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-lg">⚙️</span>
+            <span className="text-sm font-medium text-amber-900">{t("관리자 대시보드", "Admin Dashboard")}</span>
+          </div>
+          <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </Link>
+      )}
     </div>
   );
 }

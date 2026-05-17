@@ -1,0 +1,432 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-primary: #2563eb;
+  --color-primary-dark: #1d4ed8;
+  --color-navy: #0c4a6e;
+  --color-gray-bg: #f1f5f9;
+  --color-pink-bg: #fce7f3;
+  --color-blue-bg: #eff6ff;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "Cabinet Grotesk", ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #ffffff;
+  color: #0a0a0a;
+  font-family: var(--font-sans);
+  line-height: 1.7;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-heading);
+}
+
+/* ========== SECTION NAVIGATION ========== */
+.section-nav {
+  position: sticky;
+  top: 64px;
+  z-index: 40;
+  border-bottom: 1px solid #e2e8f0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.section-nav-inner {
+  display: grid;
+  grid-auto-columns: minmax(0, 15rem);
+  grid-auto-flow: column;
+  max-width: 1440px;
+  width: 100%;
+  margin-bottom: -2px;
+}
+
+.section-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-bottom: 2px solid transparent;
+  text-decoration: none;
+  color: #0f172a;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.section-nav-item:hover {
+  color: #2563eb;
+  background-color: #eff6ff;
+}
+
+.section-nav-item.active {
+  color: #2563eb;
+  border-bottom-color: #2563eb;
+  background-color: #eff6ff;
+}
+
+.section-nav-item .num {
+  font-size: 14px;
+  font-weight: 400;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
+.section-nav-item.active .num {
+  color: #2563eb;
+}
+
+.section-nav-item .name {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* ========== SECTION TAG ========== */
+.section-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border: 1.5px solid #2563eb;
+  border-radius: 9999px;
+  color: #2563eb;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.section-tag .tag-num {
+  font-weight: 700;
+}
+
+/* ========== BUTTONS ========== */
+.btn-download {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 48px;
+  background: #2563eb;
+  color: white;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 20px;
+  transition: background 0.2s;
+  text-decoration: none;
+}
+
+.btn-download:hover {
+  background: #1d4ed8;
+}
+
+.btn-download-dark {
+  background: #0c4a6e;
+  border-radius: 9999px;
+}
+
+.btn-download-dark:hover {
+  background: #083344;
+}
+
+.btn-download-sm {
+  padding: 12px 28px;
+  font-size: 15px;
+  border-radius: 8px;
+}
+
+/* ========== INFO CARD ========== */
+.info-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 24px;
+}
+
+/* ========== DATA TABLE ========== */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th {
+  background: #f8fafc;
+  padding: 14px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+  color: #374151;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.data-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 14px;
+  color: #374151;
+}
+
+.data-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+/* ========== SCHEDULE ========== */
+.schedule-date {
+  color: #b45309;
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+  margin-top: 48px;
+  margin-bottom: 8px;
+}
+
+.schedule-title {
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+  color: #1f2937;
+  margin-bottom: 24px;
+}
+
+.schedule-subtitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #374151;
+  padding: 10px 16px;
+  background: #fef3c7;
+  border-left: 4px solid #b45309;
+  margin: 8px 0;
+}
+
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+  max-width: 700px;
+  margin: 0 auto 8px;
+}
+
+.schedule-table th {
+  background: #fffbeb;
+  padding: 10px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+  color: #92400e;
+  border-bottom: 2px solid #fde68a;
+}
+
+.schedule-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 15px;
+  color: #1f2937;
+  vertical-align: top;
+}
+
+.schedule-table td:first-child {
+  width: 130px;
+  font-weight: 500;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+/* ========== INVITATION ========== */
+.invitation-section {
+  background: #f8f9fa;
+  padding: 80px 0;
+}
+
+.invitation-title {
+  font-size: 36px;
+  font-weight: 400;
+  font-style: italic;
+  color: #1f2937;
+  text-align: center;
+  margin-bottom: 48px;
+  line-height: 1.3;
+}
+
+@media (min-width: 1024px) {
+  .invitation-title {
+    font-size: 42px;
+  }
+}
+
+.invitation-body p {
+  color: #6b7280;
+  font-size: 16px;
+  line-height: 1.8;
+  margin-bottom: 20px;
+}
+
+.invitation-signature {
+  text-align: right;
+  margin-top: 48px;
+}
+
+.invitation-signature .title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.invitation-signature .name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-top: 8px;
+}
+
+/* ========== VISA ========== */
+.visa-section {
+  background: #fdf2f8;
+  border-radius: 24px;
+  padding: 48px;
+}
+
+/* ========== CONTACT ========== */
+.contact-card {
+  background: #2563eb;
+  border-radius: 24px;
+  padding: 48px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ========== SCHEDULE POSTER ANIMATION ========== */
+.schedule-poster-img {
+  opacity: 0;
+  transform: translateY(60px) scale(0.95);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.08));
+}
+
+.schedule-poster-img.animate-in {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.schedule-poster-img:hover {
+  filter: drop-shadow(0 12px 32px rgba(0, 0, 0, 0.12));
+  transform: translateY(-4px) scale(1.01);
+  transition: all 0.4s ease;
+}
+
+/* ========== HERO ========== */
+.hero-date {
+  font-size: 48px;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+@media (min-width: 1024px) {
+  .hero-date {
+    font-size: 56px;
+  }
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+  .section-nav {
+    top: 56px;
+    height: 80px;
+  }
+
+  .section-nav-item .name {
+    font-size: 12px;
+  }
+
+  .section-nav-item .num {
+    font-size: 10px;
+    margin-bottom: 4px;
+  }
+
+  .schedule-table td:first-child {
+    width: 100px;
+    font-size: 13px;
+  }
+
+  .schedule-table td {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  .schedule-date {
+    font-size: 20px;
+    margin-top: 32px;
+  }
+
+  .hero-date {
+    font-size: 36px;
+  }
+
+  .info-card {
+    padding: 20px;
+  }
+
+  .btn-download {
+    padding: 14px 32px;
+    font-size: 16px;
+  }
+
+  .invitation-section {
+    padding: 48px 0;
+  }
+
+  .visa-section {
+    padding: 24px;
+    border-radius: 16px;
+  }
+
+  .contact-card {
+    padding: 32px;
+    border-radius: 16px;
+  }
+}
+
+/* ===== Responsive Fixes ===== */
+
+/* Mobile scrollbar hide for nav */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Schedule table responsive wrapper */
+.schedule-day { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+/* Data table responsive */
+@media (max-width: 768px) {
+  .data-table th,
+  .data-table td {
+    padding: 8px 6px;
+    font-size: 11px;
+  }
+  .schedule-table th,
+  .schedule-table td {
+    padding: 8px 6px;
+    font-size: 12px;
+  }
+}
+
+/* PDF embed responsive */
+@media (max-width: 640px) {
+  object[type="application/pdf"] {
+    height: 400px !important;
+  }
+}
+
+/* Footer sponsors responsive */
+@media (max-width: 640px) {
+  footer .flex-wrap img {
+    height: 28px !important;
+  }
+}

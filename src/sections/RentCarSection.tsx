@@ -1,0 +1,119 @@
+"use client";
+
+import { useI18n } from "@/lib/i18n/context";
+
+import Image from "next/image";
+
+function getRentalCompanies(t: (key: string) => string) {
+  return [
+    { name: t("rentcar.woori"), address: t("rentcar.wooriAddr"), contact: "+82-32-426-9500" },
+    { name: t("rentcar.geumgang"), address: t("rentcar.geumgangAddr"), contact: "+82-32-547-8777" },
+    { name: t("rentcar.amazon"), address: t("rentcar.amazonAddr"), contact: "+82-32-554-8820" },
+    { name: t("rentcar.lotte"), address: t("rentcar.lotteAddr"), contact: "+82-32-679-8000" },
+    { name: t("rentcar.redcap"), address: t("rentcar.redcapAddr"), contact: "+82-32-523-3771" },
+  ];
+}
+
+export default function RentCarSection() {
+  const { t } = useI18n();
+  const RENTAL_COMPANIES = getRentalCompanies(t);
+  return (
+    <section id="rent-car" className="py-16 lg:py-24 bg-white">
+      <div className="max-w-4xl mx-auto px-4">
+        <div className="section-tag mb-8">
+          <span className="tag-num">05</span>
+          <span>{t("rentcar.sectionTag")}</span>
+        </div>
+
+        <h3 className="text-2xl font-bold text-center text-gray-900 mb-12">
+          {t("rentcar.heading")}
+        </h3>
+
+        {/* Rental Car Table */}
+        <div className="info-card">
+          <h4 className="text-lg font-bold text-gray-900 mb-4">
+            {t("rentcar.rentalInfo")}
+          </h4>
+          <p className="text-gray-600 mb-6">
+            {t("rentcar.rentalDesc")}
+          </p>
+
+          <div className="overflow-x-auto">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>{t("rentcar.companyName")}</th>
+                  <th>{t("rentcar.address")}</th>
+                  <th>{t("rentcar.contactCol")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {RENTAL_COMPANIES.map((company, i) => (
+                  <tr key={i}>
+                    <td className="font-medium">{company.name}</td>
+                    <td className="text-gray-600">{company.address}</td>
+                    <td className="whitespace-nowrap">{company.contact}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="mt-6 space-y-2 text-gray-600 text-sm">
+            <p>{t("rentcar.inquiry")} <a href="mailto:gyeyangopen@gmail.com" className="text-primary underline">gyeyangopen@gmail.com</a></p>
+            <p>{t("rentcar.referWebsite")} <a href="https://www.gyeyangopen.kr" target="_blank" rel="noopener noreferrer" className="text-primary underline">www.gyeyangopen.kr</a></p>
+            <p>{t("rentcar.privateVehicle")}</p>
+          </div>
+        </div>
+
+        {/* TABA App */}
+        <div className="info-card">
+          <h4 className="text-lg font-bold text-gray-900 mb-4">
+            {t("rentcar.tabaTitle")}
+          </h4>
+          <p className="text-gray-600 mb-4">
+            {t("rentcar.tabaDesc")}
+          </p>
+          <div className="grid grid-cols-2 gap-4 my-6">
+            <Image src="/images/taba1.png" alt="TABA App Screenshot 1" width={511} height={256} className="rounded-lg w-full h-auto" />
+            <Image src="/images/taba2.png" alt="TABA App Screenshot 2" width={511} height={256} className="rounded-lg w-full h-auto" />
+          </div>
+          <a
+            href="https://taba.taxi"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-download"
+          >
+            {t("rentcar.downloadTaba")}
+          </a>
+        </div>
+
+        {/* International Taxi */}
+        <div className="info-card">
+          <h4 className="text-lg font-bold text-gray-900 mb-4">
+            {t("rentcar.intlTaxiTitle")}
+          </h4>
+          <p className="text-gray-600 mb-4">
+            {t("rentcar.intlTaxiDesc")}
+          </p>
+          <div className="space-y-2 text-gray-600 text-sm mb-6">
+            <p>{t("rentcar.intlTaxiNote1")}</p>
+            <p>{t("rentcar.intlTaxiNote2")}</p>
+            <p>
+              {t("rentcar.bookingSite")}{" "}
+              <a
+                href="https://ktaxi.net"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary underline"
+              >
+                https://ktaxi.net
+              </a>
+            </p>
+          </div>
+          <Image src="/images/taxi.png" alt="International Taxi Photo" width={1039} height={256} className="rounded-lg w-full h-auto" />
+        </div>
+      </div>
+    </section>
+  );
+}

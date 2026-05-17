@@ -31,7 +31,7 @@ interface ResultsData {
   };
 }
 
-type Tab = "qualification" | "finals";
+type Tab = "qualification" | "finals" | "foreign";
 type Gender = "men" | "women";
 
 function Medal({ pos }: { pos: string }) {
@@ -82,17 +82,28 @@ export default function ScoresPage() {
     <div className="max-w-lg mx-auto px-4 pt-6">
       <h1 className="text-xl font-bold text-gray-900 mb-4">{t("실시간 점수", "Live Scores")}</h1>
 
-      {/* Tab: Qualification / Finals */}
+      {/* ianseo live link */}
+      <a
+        href="https://www.ianseo.net/TourData/2026/28161/index.php"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-2 mb-4 px-4 py-2.5 bg-white rounded-xl border border-gray-200 hover:border-blue-300 transition-colors"
+      >
+        <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+        <span className="text-sm font-medium text-gray-700">{t("ianseo 라이브 결과 보기", "View Live Results on ianseo")}</span>
+      </a>
+
+      {/* Tab: Qualification / Finals / Foreign */}
       <div className="flex gap-2 mb-4">
-        {(["qualification", "finals"] as Tab[]).map((v) => (
+        {(["qualification", "finals", "foreign"] as Tab[]).map((v) => (
           <button
             key={v}
             onClick={() => setTab(v)}
-            className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+            className={`flex-1 py-2.5 rounded-xl text-xs font-medium transition-colors ${
               tab === v ? "bg-blue-600 text-white" : "bg-white text-gray-600 border border-gray-200"
             }`}
           >
-            {v === "qualification" ? t("예선", "Qualification") : t("본선", "Finals")}
+            {v === "qualification" ? t("예선", "Qual.") : v === "finals" ? t("본선", "Finals") : t("외국인부", "Foreign")}
           </button>
         ))}
       </div>
@@ -187,6 +198,34 @@ export default function ScoresPage() {
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {tab === "foreign" && (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
+            <h2 className="text-sm font-bold text-gray-700">{t("외국인부 순위", "Foreign Division Ranking")}</h2>
+          </div>
+          {(gender === "men" ? data?.qualification.foreignMen : data?.qualification.foreignWomen)?.length ? (
+            <div className="divide-y divide-gray-50">
+              {(gender === "men" ? data?.qualification.foreignMen : data?.qualification.foreignWomen)?.map((a, i) => (
+                <div key={i} className="px-4 py-3 flex items-center gap-3">
+                  <Medal pos={a.pos} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate">{a.name}</p>
+                    <p className="text-xs text-gray-400">{a.country}</p>
+                  </div>
+                  {a.score && (
+                    <span className="text-sm font-bold text-blue-600">{a.score}</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-6 text-center text-sm text-gray-400">
+              {t("데이터가 없습니다", "No data available")}
+            </div>
+          )}
         </div>
       )}
 

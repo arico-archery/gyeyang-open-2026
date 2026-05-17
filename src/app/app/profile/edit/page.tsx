@@ -15,7 +15,6 @@ const COUNTRIES = [
 const ROLES: { value: UserRole; ko: string; en: string }[] = [
   { value: "athlete", ko: "선수", en: "Athlete" },
   { value: "coach", ko: "코치", en: "Coach" },
-  { value: "judge", ko: "심판", en: "Judge" },
 ];
 
 const CATEGORIES = [
@@ -70,14 +69,17 @@ export default function ProfileEditPage() {
     setSuccess(false);
     setSaving(true);
 
+    const isRoleLocked = profile.role === "judge" || profile.role === "admin";
+    const effectiveRole = isRoleLocked ? profile.role : role;
+
     const { error: updateError } = await supabase
       .from("profiles")
       .update({
         full_name: fullName,
         full_name_en: fullNameEn || null,
         nationality,
-        role,
-        category: role === "athlete" ? category : null,
+        role: effectiveRole,
+        category: effectiveRole === "athlete" ? category : null,
         team: team || null,
       })
       .eq("id", user.id);
@@ -92,9 +94,11 @@ export default function ProfileEditPage() {
     setSaving(false);
   };
 
+  const roleLabel = profile.role === "judge" ? t("심판", "Judge") : t("관리자", "Admin");
+  const roleLocked = profile.role === "judge" || profile.role === "admin";
+
   return (
     <div className="max-w-lg mx-auto px-4 pt-6 pb-24">
-      {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <button onClick={() => router.back()} className="p-2 -ml-2 hover:bg-gray-100 rounded-lg">
           <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -117,21 +121,30 @@ export default function ProfileEditPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">{t("역할", "Role")}</label>
-            <div className="grid grid-cols-3 gap-2">
-              {ROLES.map((r) => (
-                <button
-                  key={r.value} type="button"
-                  onClick={() => setRole(r.value)}
-                  className={`py-2.5 rounded-xl text-sm font-medium border transition-colors ${
-                    role === r.value
-                      ? "bg-blue-600 text-white border-blue-600"
-                      : "bg-white text-gray-700 border-gray-200 hover:border-blue-300"
-                  }`}
-                >
-                  {locale === "ko" ? r.ko : r.en}
-                </button>
-              ))}
-            </div>
+            {roleLocked ? (
+              <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-600">
+                {roleLabel}
+                <span className="text-xs text-gray-400 ml-2">
+                  {t("(관리자에 의해 설정됨)", "(Set by admin)")}
+                </span>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-2">
+                {ROLES.map((r) => (
+                  <button
+                    key={r.value} type="button"
+                    onClick={() => setRole(r.value)}
+                    className={"py-2.5 rounded-xl text-sm font-medium border transition-colors " + (
+                      role === r.value
+                        ? "bg-blue-600 text-white border-blue-600"
+                        : "bg-white text-gray-700 border-gray-200 hover:border-blue-300"
+                    )}
+                  >
+                    {locale === "ko" ? r.ko : r.en}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <div>
@@ -171,11 +184,11 @@ export default function ProfileEditPage() {
                   <button
                     key={c.value} type="button"
                     onClick={() => setCategory(c.value)}
-                    className={`py-2.5 rounded-xl text-sm font-medium border transition-colors ${
+                    className={"py-2.5 rounded-xl text-sm font-medium border transition-colors " + (
                       category === c.value
                         ? "bg-blue-600 text-white border-blue-600"
                         : "bg-white text-gray-700 border-gray-200 hover:border-blue-300"
-                    }`}
+                    )}
                   >
                     {locale === "ko" ? c.ko : c.en}
                   </button>

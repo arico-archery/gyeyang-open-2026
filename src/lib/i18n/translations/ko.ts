@@ -373,6 +373,12 @@ export const ko = {
     allScore: "실시간 결과 보기",
     downloadPdf: "PDF 다운로드",
     pdfFallback: "PDF 뷰어를 사용할 수 없습니다. 아래 버튼을 클릭하여 다운로드하세요.",
+    finalResults: "결선 결과",
+    qualResults: "예선 라운드",
+    detailedResults: "상세 결과 (PDF)",
+    teamMen: "리커브 남자 단체",
+    teamWomen: "리커브 여자 단체",
+    dataUpdated: "데이터 업데이트",
   },
   footer: {
     copyright: "© 2026 GYEYANG OPEN. All rights reserved.",

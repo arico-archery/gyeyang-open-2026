@@ -373,6 +373,12 @@ export const en = {
     allScore: "View Live Results",
     downloadPdf: "Download PDF",
     pdfFallback: "PDF viewer is not available. Click below to download.",
+    finalResults: "Final Results",
+    qualResults: "Qualification Round",
+    detailedResults: "Detailed Results (PDF)",
+    teamMen: "Recurve Men Team",
+    teamWomen: "Recurve Women Team",
+    dataUpdated: "Data updated",
   },
   footer: {
     copyright: "\u00a9 2026 GYEYANG OPEN. All rights reserved.",

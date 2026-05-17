@@ -17,10 +17,10 @@ function getDDay() {
 }
 
 const QUICK_MENU = [
-  { key: "schedule", href: "/app/schedule", icon: "📅", ko: "일정", en: "Schedule" },
-  { key: "scores", href: "/app/scores", icon: "🎯", ko: "점수", en: "Scores" },
-  { key: "qr", href: "/app/profile", icon: "📷", ko: "QR 코드", en: "QR Code" },
-  { key: "map", href: "/app/nearby", icon: "🗺️", ko: "주변 지도", en: "Nearby" },
+  { key: "schedule", href: "/app/schedule", icon: "\ud83d\udcc5", ko: "\uc77c\uc815", en: "Schedule" },
+  { key: "scores", href: "/app/scores", icon: "\ud83c\udfaf", ko: "\uc810\uc218", en: "Scores" },
+  { key: "qr", href: "/app/profile", icon: "\ud83d\udcf7", ko: "QR \ucf54\ub4dc", en: "QR Code" },
+  { key: "map", href: "/app/nearby", icon: "\ud83d\uddfa\ufe0f", ko: "\uc8fc\ubcc0 \uc9c0\ub3c4", en: "Nearby" },
 ];
 
 export default function AppHomePage() {
@@ -48,14 +48,14 @@ export default function AppHomePage() {
   const t = (ko: string, en: string) => (locale === "ko" ? ko : en);
 
   return (
-    <div className="max-w-lg mx-auto px-4 pt-6">
+    <div className="max-w-lg mx-auto px-4 pt-6 pb-24">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <Image src="/images/logo.png" alt="Logo" width={40} height={44} />
           <div>
             <h1 className="text-lg font-bold text-gray-900">2026 GYEYANG OPEN</h1>
-            <p className="text-xs text-gray-500">{t("국제양궁대회", "Int'l Archery Competition")}</p>
+            <p className="text-xs text-gray-500">{t("\uad6d\uc81c\uc591\uad81\ub300\ud68c", "Int'l Archery Competition")}</p>
           </div>
         </div>
         {!loading && !user && (
@@ -63,7 +63,7 @@ export default function AppHomePage() {
             href="/app/login"
             className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
           >
-            {t("로그인", "Login")}
+            {t("\ub85c\uadf8\uc778", "Login")}
           </Link>
         )}
         {profile && (
@@ -82,7 +82,7 @@ export default function AppHomePage() {
           </p>
           <p className="text-blue-100 text-sm">2026.07.10 ~ 07.12</p>
           <p className="text-blue-200 text-xs mt-1">
-            {t("인천계양아시아드양궁장", "Gyeyang Asiad Archery Field")}
+            {t("\uc778\ucc9c\uacc4\uc591\uc544\uc2dc\uc544\ub4dc\uc591\uad81\uc7a5", "Gyeyang Asiad Archery Field")}
           </p>
         </div>
       </div>
@@ -107,8 +107,11 @@ export default function AppHomePage() {
       <div className="mb-6">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-base font-bold text-gray-900">
-            {t("공지사항", "Announcements")}
+            {t("\uacf5\uc9c0\uc0ac\ud56d", "Announcements")}
           </h2>
+          <Link href="/app/announcements" className="text-xs text-blue-600 font-medium">
+            {t("\uc804\uccb4\ubcf4\uae30", "View All")}
+          </Link>
         </div>
         {announcements.length > 0 ? (
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 divide-y divide-gray-50">
@@ -131,7 +134,7 @@ export default function AppHomePage() {
           </div>
         ) : (
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 text-center">
-            <p className="text-sm text-gray-400">{t("아직 공지사항이 없습니다", "No announcements yet")}</p>
+            <p className="text-sm text-gray-400">{t("\uc544\uc9c1 \uacf5\uc9c0\uc0ac\ud56d\uc774 \uc5c6\uc2b5\ub2c8\ub2e4", "No announcements yet")}</p>
           </div>
         )}
       </div>
@@ -139,27 +142,40 @@ export default function AppHomePage() {
       {/* Tournament Info */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
         <h2 className="text-base font-bold text-gray-900 mb-3">
-          {t("대회 정보", "Tournament Info")}
+          {t("\ub300\ud68c \uc815\ubcf4", "Tournament Info")}
         </h2>
         <div className="space-y-2 text-sm text-gray-600">
           <div className="flex gap-2">
-            <span className="text-gray-400 w-16 shrink-0">{t("기간", "Date")}</span>
+            <span className="text-gray-400 w-16 shrink-0">{t("\uae30\uac04", "Date")}</span>
             <span>2026.07.10(Fri) ~ 07.12(Sun)</span>
           </div>
           <div className="flex gap-2">
-            <span className="text-gray-400 w-16 shrink-0">{t("장소", "Venue")}</span>
-            <span>{t("인천계양아시아드양궁장", "Gyeyang Asiad Archery Field")}</span>
+            <span className="text-gray-400 w-16 shrink-0">{t("\uc7a5\uc18c", "Venue")}</span>
+            <span>{t("\uc778\ucc9c\uacc4\uc591\uc544\uc2dc\uc544\ub4dc\uc591\uad81\uc7a5", "Gyeyang Asiad Archery Field")}</span>
           </div>
           <div className="flex gap-2">
-            <span className="text-gray-400 w-16 shrink-0">{t("종별", "Events")}</span>
-            <span>{t("리커브 남/여 개인·단체", "Recurve M/W Individual & Team")}</span>
+            <span className="text-gray-400 w-16 shrink-0">{t("\uc885\ubcc4", "Events")}</span>
+            <span>{t("\ub9ac\ucee4\ube0c \ub0a8/\uc5ec \uac1c\uc778\u00b7\ub2e8\uccb4", "Recurve M/W Individual & Team")}</span>
           </div>
           <div className="flex gap-2">
-            <span className="text-gray-400 w-16 shrink-0">{t("주최", "Host")}</span>
-            <span>{t("계양구청 / 인천광역시양궁협회", "Gyeyang District / Incheon Archery Association")}</span>
+            <span className="text-gray-400 w-16 shrink-0">{t("\uc8fc\ucd5c", "Host")}</span>
+            <span>{t("\uacc4\uc591\uad6c\uccad / \uc778\ucc9c\uad11\uc5ed\uc2dc\uc591\uad81\ud611\ud68c", "Gyeyang District / Incheon Archery Association")}</span>
           </div>
         </div>
       </div>
+
+      {/* Website Link */}
+      <Link
+        href="/"
+        className="flex items-center justify-center gap-2 mb-6 py-3 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors"
+      >
+        <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+        </svg>
+        <span className="text-sm font-medium text-gray-700">
+          {t("\ub300\ud68c \uacf5\uc2dd \ud648\ud398\uc774\uc9c0 \ubcf4\uae30", "Visit Official Website")}
+        </span>
+      </Link>
     </div>
   );
 }

@@ -21,6 +21,8 @@ export default function Header() {
     { label: t("nav.archive2025"), href: "/archive/2025" },
   ];
 
+  const appLabel = locale === "ko" ? "\ucc38\uac00\uc790 \uc571" : "Athlete App";
+
   return (
     <header className="site-header sticky top-0 z-50 bg-white border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -44,10 +46,15 @@ export default function Header() {
                 {item.label}
               </Link>
             ))}
+            <Link
+              href="/app"
+              className="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              {appLabel}
+            </Link>
           </nav>
 
           <div className="flex items-center gap-3">
-            {/* Language Dropdown */}
             <div className="relative">
               <button
                 onClick={() => setLangOpen(!langOpen)}
@@ -56,7 +63,7 @@ export default function Header() {
               >
                 <Image
                   src={locale === "en" ? "/images/flag_us.png" : "/images/flag_kr.png"}
-                  alt={locale === "en" ? "English" : "한국어"}
+                  alt={locale === "en" ? "English" : "\ud55c\uad6d\uc5b4"}
                   width={28}
                   height={20}
                   className="object-cover"
@@ -79,7 +86,7 @@ export default function Header() {
                       className={`w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[#2a2a2a] transition-colors ${locale === "ko" ? "bg-[#2a2a2a]" : ""}`}
                     >
                       <Image src="/images/flag_kr.png" alt="KR" width={28} height={20} className="shrink-0 rounded-sm" />
-                      <span className="text-white text-sm font-medium">한국어</span>
+                      <span className="text-white text-sm font-medium">\ud55c\uad6d\uc5b4</span>
                     </button>
                   </div>
                 </>
@@ -102,7 +109,6 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Mobile Menu */}
         {mobileOpen && (
           <nav className="lg:hidden border-t border-gray-100 py-4">
             <div className="flex flex-col gap-2">
@@ -116,6 +122,13 @@ export default function Header() {
                   {item.label}
                 </Link>
               ))}
+              <Link
+                href="/app"
+                className="mx-4 mt-2 py-2.5 bg-blue-600 text-white text-base font-semibold rounded-lg text-center hover:bg-blue-700 transition-colors"
+                onClick={() => setMobileOpen(false)}
+              >
+                {appLabel}
+              </Link>
             </div>
           </nav>
         )}

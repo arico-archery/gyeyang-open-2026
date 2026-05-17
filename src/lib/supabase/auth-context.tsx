@@ -34,24 +34,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const fetchProfile = async (userId: string) => {
-    const { data } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", userId)
-      .single();
-    setProfile(data);
+    try {
+      const { data } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", userId)
+        .single();
+      setProfile(data);
+    } catch (err) {
+      console.error("Failed to fetch profile:", err);
+      setProfile(null);
+    }
   };
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session: s } }) => {
+    let mounted = true;
+
+    supabase.auth.getSession().then(async ({ data: { session: s } }) => {
+      if (!mounted) return;
       setSession(s);
       setUser(s?.user ?? null);
-      if (s?.user) fetchProfile(s.user.id);
+      if (s?.user) {
+        await fetchProfile(s.user.id);
+      }
       setLoading(false);
+    }).catch(() => {
+      if (mounted) setLoading(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, s) => {
+        if (!mounted) return;
         setSession(s);
         setUser(s?.user ?? null);
         if (s?.user) {
@@ -63,7 +76,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     );
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signIn = async (email: string, password: string) => {

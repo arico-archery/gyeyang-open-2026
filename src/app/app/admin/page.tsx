@@ -12,28 +12,35 @@ interface Stats {
   pendingRegistrations: number;
   totalAnnouncements: number;
   pendingInquiries: number;
+  todayAttendance: number;
+  totalAthletes: number;
 }
 
 export default function AdminPage() {
   const { locale } = useI18n();
   const { user, profile, loading } = useAuth();
-  const [stats, setStats] = useState<Stats>({ totalRegistrations: 0, pendingRegistrations: 0, totalAnnouncements: 0, pendingInquiries: 0 });
+  const [stats, setStats] = useState<Stats>({ totalRegistrations: 0, pendingRegistrations: 0, totalAnnouncements: 0, pendingInquiries: 0, todayAttendance: 0, totalAthletes: 0 });
 
   const t = (ko: string, en: string) => (locale === "ko" ? ko : en);
 
   useEffect(() => {
     async function fetchStats() {
-      const [regAll, regPending, annCount, inqPending] = await Promise.all([
+      const today = new Date().toISOString().split("T")[0];
+      const [regAll, regPending, annCount, inqPending, attToday, athletes] = await Promise.all([
         supabase.from("registrations").select("id", { count: "exact", head: true }),
         supabase.from("registrations").select("id", { count: "exact", head: true }).eq("status", "submitted"),
         supabase.from("announcements").select("id", { count: "exact", head: true }),
         supabase.from("inquiries").select("id", { count: "exact", head: true }).eq("status", "pending"),
+        supabase.from("attendance").select("id", { count: "exact", head: true }).eq("check_date", today),
+        supabase.from("profiles").select("id", { count: "exact", head: true }).eq("role", "athlete"),
       ]);
       setStats({
         totalRegistrations: regAll.count ?? 0,
         pendingRegistrations: regPending.count ?? 0,
         totalAnnouncements: annCount.count ?? 0,
         pendingInquiries: inqPending.count ?? 0,
+        todayAttendance: attToday.count ?? 0,
+        totalAthletes: athletes.count ?? 0,
       });
     }
     const isAdmin = profile?.role === "admin" || isSuperAdmin(user?.email);
@@ -65,6 +72,7 @@ export default function AdminPage() {
   const MENU = [
     { href: "/app/admin/announcements", icon: "\ud83d\udce2", label: t("\uacf5\uc9c0\uc0ac\ud56d \uad00\ub9ac", "Announcements"), count: stats.totalAnnouncements },
     { href: "/app/admin/registrations", icon: "\ud83d\udccb", label: t("\ucc38\uac00\uc2e0\uccad \uad00\ub9ac", "Registrations"), count: stats.pendingRegistrations, badge: true },
+    { href: "/app/admin/attendance", icon: "\u2705", label: t("\ucd9c\uc11d \uad00\ub9ac", "Attendance"), count: stats.todayAttendance, badge: false },
     { href: "/app/admin/targets", icon: "\ud83c\udfaf", label: t("\ud0c0\uac9f \ubc30\uc815", "Target Assignment"), count: null },
     { href: "/app/admin/inquiries", icon: "\ud83d\udcac", label: t("\ubb38\uc758 \ub2f5\ubcc0", "Inquiries"), count: stats.pendingInquiries, badge: true },
     ...(superAdmin ? [{ href: "/app/admin/users", icon: "\ud83d\udd11", label: t("\uc0ac\uc6a9\uc790 \uad8c\ud55c \uad00\ub9ac", "User Roles"), count: null }] : []),
@@ -93,6 +101,34 @@ export default function AdminPage() {
           <p className="text-xs text-purple-600 mt-1">{t("\ubbf8\ub2f5\ubcc0 \ubb38\uc758", "Unanswered")}</p>
         </div>
       </div>
+
+      {/* Attendance Summary */}
+      <Link href="/app/admin/attendance" className="block bg-white rounded-xl border border-gray-100 shadow-sm p-4 mb-6 hover:shadow-md transition-shadow">
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="text-sm font-bold text-gray-900">{t("\uc624\ub298 \ucd9c\uc11d \ud604\ud669", "Today's Attendance")}</h2>
+          <span className="text-xs text-blue-600 font-medium">{t("\uc0c1\uc138\ubcf4\uae30", "Details")}</span>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="flex-1">
+            <div className="flex items-end gap-1">
+              <span className="text-3xl font-bold text-green-600">{stats.todayAttendance}</span>
+              <span className="text-sm text-gray-400 pb-1">/ {stats.totalAthletes}</span>
+            </div>
+            <p className="text-xs text-gray-500 mt-1">{t("\ucd9c\uc11d / \uc804\uccb4 \uc120\uc218", "Checked in / Total athletes")}</p>
+          </div>
+          <div className="w-16 h-16 relative">
+            <svg className="w-16 h-16 transform -rotate-90" viewBox="0 0 36 36">
+              <path className="text-gray-100" stroke="currentColor" strokeWidth="3.5" fill="none" d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831" />
+              <path className="text-green-500" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round"
+                strokeDasharray={`${stats.totalAthletes > 0 ? (stats.todayAttendance / stats.totalAthletes) * 100 : 0}, 100`}
+                d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831" />
+            </svg>
+            <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-700">
+              {stats.totalAthletes > 0 ? Math.round((stats.todayAttendance / stats.totalAthletes) * 100) : 0}%
+            </span>
+          </div>
+        </div>
+      </Link>
 
       {/* Menu */}
       <div className="space-y-3">

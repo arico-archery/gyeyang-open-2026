@@ -1,4 +1,4 @@
-const CACHE_NAME = "gyeyang-open-v1";
+const CACHE_NAME = "gyeyang-open-v2";
 const STATIC_ASSETS = [
   "/app",
   "/images/logo.png",
@@ -7,10 +7,16 @@ const STATIC_ASSETS = [
   "/manifest.json",
 ];
 
-// Install - cache static assets
+// Install - cache static assets individually (don't fail if one asset 404s)
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
+    caches.open(CACHE_NAME).then((cache) =>
+      Promise.allSettled(
+        STATIC_ASSETS.map((url) =>
+          cache.add(url).catch((err) => console.warn("SW cache skip:", url, err))
+        )
+      )
+    )
   );
   self.skipWaiting();
 });

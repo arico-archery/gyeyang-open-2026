@@ -9,6 +9,14 @@ export const ko = {
     scoreTarget: "점수 & 타겟",
     archive2025: "2025 아카이브",
   },
+  sectionNav: {
+    schedule: "일정",
+    registration: "참가 신청",
+    visa: "비자",
+    hotel: "숙소",
+    rentcar: "렌터카",
+    contact: "문의",
+  },
   hero: {
     date: "2026년 5월 13일 (수)",
     subtitle: "2026 계양오픈 - 양궁 대회",

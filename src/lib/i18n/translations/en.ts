@@ -9,6 +9,14 @@ export const en = {
     scoreTarget: "Score & Target",
     archive2025: "2025 Archive",
   },
+  sectionNav: {
+    schedule: "Schedule",
+    registration: "Registration",
+    visa: "Visa",
+    hotel: "Hotel",
+    rentcar: "Rent Car",
+    contact: "Contact",
+  },
   hero: {
     date: "May 13, 2026 (Wed)",
     subtitle: "2026 GYEYANG OPEN - Archery Tournament",

@@ -36,6 +36,8 @@ export default function AdminUsersPage() {
   const [roleFilter, setRoleFilter] = useState<"all" | UserRole>("all");
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [toast, setToast] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState<UserProfile | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const t = (ko: string, en: string) => (locale === "ko" ? ko : en);
 
@@ -81,6 +83,26 @@ export default function AdminUsersPage() {
     setUpdatingId(null);
   }
 
+  async function handleDelete() {
+    if (!deleteTarget || !superAdmin) return;
+    setDeleting(true);
+
+    const { error } = await supabase.rpc("delete_user_by_admin", {
+      target_user_id: deleteTarget.id,
+    });
+
+    if (!error) {
+      setUsers((prev) => prev.filter((u) => u.id !== deleteTarget.id));
+      setToast(deleteTarget.full_name + (locale === "ko" ? " \uc0ad\uc81c \uc644\ub8cc" : " deleted"));
+      setTimeout(() => setToast(""), 2500);
+    } else {
+      setToast(t("\uc0ad\uc81c \uc2e4\ud328: ", "Delete failed: ") + (error.message || ""));
+      setTimeout(() => setToast(""), 3000);
+    }
+    setDeleting(false);
+    setDeleteTarget(null);
+  }
+
   const filtered = users.filter((u) => {
     const matchesSearch =
       !searchQuery ||
@@ -122,6 +144,48 @@ export default function AdminUsersPage() {
       {toast && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-gray-900 text-white text-sm px-4 py-2.5 rounded-xl shadow-lg">
           {toast}
+        </div>
+      )}
+
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6">
+            <div className="text-center mb-4">
+              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 mb-1">
+                {t("\uc0ac\uc6a9\uc790 \uc0ad\uc81c", "Delete User")}
+              </h3>
+              <p className="text-sm text-gray-600">
+                <span className="font-semibold text-red-600">{deleteTarget.full_name}</span>
+                {deleteTarget.email && (
+                  <span className="text-gray-400"> ({deleteTarget.email})</span>
+                )}
+              </p>
+              <p className="text-xs text-gray-500 mt-2">
+                {t("\uc774 \uc0ac\uc6a9\uc790\uc758 \ubaa8\ub4e0 \ub370\uc774\ud130(\ud504\ub85c\ud544, \ucc38\uac00\uc2e0\uccad, \ubb38\uc758 \ub4f1)\uac00 \uc601\uad6c\uc801\uc73c\ub85c \uc0ad\uc81c\ub429\ub2c8\ub2e4.", "All data (profile, registrations, inquiries) will be permanently deleted.")}
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setDeleteTarget(null)}
+                disabled={deleting}
+                className="flex-1 py-2.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-xl hover:bg-gray-200 transition-colors"
+              >
+                {t("\ucde8\uc18c", "Cancel")}
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                className="flex-1 py-2.5 bg-red-600 text-white text-sm font-medium rounded-xl hover:bg-red-700 transition-colors disabled:opacity-50"
+              >
+                {deleting ? t("\uc0ad\uc81c \uc911...", "Deleting...") : t("\uc0ad\uc81c", "Delete")}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -196,9 +260,22 @@ export default function AdminUsersPage() {
                     <p className="text-xs text-blue-500 mt-0.5">{u.email}</p>
                   )}
                 </div>
-                <span className={"px-2 py-0.5 rounded-full text-xs font-medium " + roleColors[u.role]}>
-                  {ROLE_OPTIONS.find((r) => r.value === u.role)?.[locale === "ko" ? "ko" : "en"]}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className={"px-2 py-0.5 rounded-full text-xs font-medium " + roleColors[u.role]}>
+                    {ROLE_OPTIONS.find((r) => r.value === u.role)?.[locale === "ko" ? "ko" : "en"]}
+                  </span>
+                  {u.id !== user?.id && (
+                    <button
+                      onClick={() => setDeleteTarget(u)}
+                      className="p-1 text-gray-300 hover:text-red-500 transition-colors"
+                      title={t("\uc0ad\uc81c", "Delete")}
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
               </div>
 
               <div className="flex gap-1.5 flex-wrap pt-3 border-t border-gray-50">

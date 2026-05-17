@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n/context";
 
 function getScheduleData(t: (key: string) => string) {
@@ -85,6 +86,7 @@ function getScheduleData(t: (key: string) => string) {
 
 export default function SchedulePage() {
   const { t, locale } = useI18n();
+  const router = useRouter();
   const SCHEDULE_DATA = getScheduleData(t);
   const [selectedDay, setSelectedDay] = useState(0);
 
@@ -111,7 +113,14 @@ export default function SchedulePage() {
 
   return (
     <div className="max-w-lg mx-auto px-4 pt-6 pb-24">
-      <h1 className="text-xl font-bold text-gray-900 mb-4">{tl("대회 일정", "Schedule")}</h1>
+      <div className="flex items-center gap-3 mb-4">
+        <button onClick={() => router.back()} className="p-2 -ml-2 hover:bg-gray-100 rounded-lg">
+          <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <h1 className="text-xl font-bold text-gray-900">{tl("대회 일정", "Schedule")}</h1>
+      </div>
 
       {/* Day selector - scrollable chips */}
       <div className="flex gap-2 overflow-x-auto pb-2 mb-4 -mx-1 px-1 scrollbar-hide">

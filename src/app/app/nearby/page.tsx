@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n/context";
 import { supabase } from "@/lib/supabase/client";
 import type { NearbyPlace, PlaceCategory } from "@/lib/supabase/types";
@@ -52,6 +53,7 @@ const STATIC_PLACES: NearbyPlace[] = [
 
 export default function NearbyPage() {
   const { locale } = useI18n();
+  const router = useRouter();
   const [places, setPlaces] = useState<NearbyPlace[]>(STATIC_PLACES);
   const [selectedCategory, setSelectedCategory] = useState<PlaceCategory | "all">("all");
 
@@ -73,7 +75,14 @@ export default function NearbyPage() {
 
   return (
     <div className="max-w-lg mx-auto px-4 pt-6">
-      <h1 className="text-xl font-bold text-gray-900 mb-4">{t("주변 정보", "Nearby")}</h1>
+      <div className="flex items-center gap-3 mb-4">
+        <button onClick={() => router.back()} className="p-2 -ml-2 hover:bg-gray-100 rounded-lg">
+          <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <h1 className="text-xl font-bold text-gray-900">{t("주변 정보", "Nearby")}</h1>
+      </div>
 
       {/* Map embed */}
       <div className="w-full aspect-[16/9] rounded-xl overflow-hidden mb-4 border border-gray-200">

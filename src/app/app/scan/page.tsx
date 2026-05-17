@@ -112,13 +112,6 @@ export default function ScanPage() {
 
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
       streamRef.current = stream;
-
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.setAttribute("playsinline", "true");
-        videoRef.current.setAttribute("autoplay", "true");
-        await videoRef.current.play();
-      }
       setScanning(true);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
@@ -141,6 +134,26 @@ export default function ScanPage() {
     }
   };
 
+  // Attach stream to video element after it renders in DOM
+  useEffect(() => {
+    if (!scanning || !streamRef.current) return;
+
+    const attachStream = async () => {
+      await new Promise((r) => setTimeout(r, 50));
+      if (videoRef.current && streamRef.current) {
+        videoRef.current.srcObject = streamRef.current;
+        try {
+          await videoRef.current.play();
+        } catch (e) {
+          console.error("Video play failed:", e);
+        }
+      }
+    };
+
+    attachStream();
+  }, [scanning]);
+
+  // QR detection loop using jsQR
   useEffect(() => {
     if (!scanning) return;
 
@@ -209,6 +222,12 @@ export default function ScanPage() {
     );
   }
 
+  const statusBadge = (status: string) => {
+    if (status === "approved") return { cls: "bg-green-100 text-green-700", label: t("승인됨", "Approved") };
+    if (status === "pending") return { cls: "bg-yellow-100 text-yellow-700", label: t("심사중", "Pending") };
+    return { cls: "bg-red-100 text-red-700", label: t("반려됨", "Rejected") };
+  };
+
   return (
     <div className="max-w-lg mx-auto px-4 pt-6 pb-24">
       <h1 className="text-xl font-bold text-gray-900 mb-4">{t("QR 스캔", "QR Scan")}</h1>
@@ -217,12 +236,6 @@ export default function ScanPage() {
         <div className="bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-xl px-4 py-3 mb-4">
           <p className="font-medium mb-1">{t("카메라 오류", "Camera Error")}</p>
           <p>{cameraError}</p>
-          <p className="mt-2 text-xs text-amber-600">
-            {t(
-              "iOS: 설정 > Safari > 카메라 및 마이크 액세스 > 허용\nAndroid: 브라우저 주소창 왼쪽 자물쇠 > 권한 > 카메라 허용",
-              "iOS: Settings > Safari > Camera & Microphone Access > Allow\nAndroid: Tap lock icon in address bar > Permissions > Allow Camera"
-            )}
-          </p>
         </div>
       )}
 
@@ -241,10 +254,7 @@ export default function ScanPage() {
                 </div>
               </div>
               <div className="absolute bottom-4 left-0 right-0 flex justify-center">
-                <button
-                  onClick={stopScanning}
-                  className="px-6 py-2.5 bg-red-500 text-white text-sm font-medium rounded-full shadow-lg"
-                >
+                <button onClick={stopScanning} className="px-6 py-2.5 bg-red-500 text-white text-sm font-medium rounded-full shadow-lg">
                   {t("중지", "Stop")}
                 </button>
               </div>
@@ -262,10 +272,7 @@ export default function ScanPage() {
               <p className="text-sm text-gray-500 mb-4">
                 {t("선수의 QR 코드를 스캔하세요", "Scan an athlete's QR code")}
               </p>
-              <button
-                onClick={startScanning}
-                className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors"
-              >
+              <button onClick={startScanning} className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors">
                 {t("스캔 시작", "Start Scanning")}
               </button>
             </div>
@@ -291,12 +298,11 @@ export default function ScanPage() {
                     <p className="text-blue-100 text-sm">{scannedData.profile.full_name_en}</p>
                   )}
                   <p className="text-blue-200 text-xs mt-0.5">
-                    {scannedData.profile.nationality} · {scannedData.profile.team || "-"}
+                    {scannedData.profile.nationality} {"·"} {scannedData.profile.team || "-"}
                   </p>
                 </div>
               </div>
             </div>
-
             <div className="p-5 space-y-3">
               <div className="flex gap-2 text-sm">
                 <span className="text-gray-400 w-16 shrink-0">{t("역할", "Role")}</span>
@@ -319,18 +325,8 @@ export default function ScanPage() {
             <h3 className="text-sm font-bold text-gray-700 mb-3">{t("참가 등록", "Registration")}</h3>
             {scannedData.registration ? (
               <div className="flex items-center gap-3">
-                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                  scannedData.registration.status === "approved"
-                    ? "bg-green-100 text-green-700"
-                    : scannedData.registration.status === "pending"
-                    ? "bg-yellow-100 text-yellow-700"
-                    : "bg-red-100 text-red-700"
-                }`}>
-                  {scannedData.registration.status === "approved"
-                    ? t("승인됨", "Approved")
-                    : scannedData.registration.status === "pending"
-                    ? t("심사중", "Pending")
-                    : t("반려됨", "Rejected")}
+                <span className={"px-3 py-1 rounded-full text-xs font-semibold " + statusBadge(scannedData.registration.status).cls}>
+                  {statusBadge(scannedData.registration.status).label}
                 </span>
                 <span className="text-sm text-gray-500">
                   {CATEGORY_LABELS[scannedData.registration.category]?.[locale] || scannedData.registration.category}

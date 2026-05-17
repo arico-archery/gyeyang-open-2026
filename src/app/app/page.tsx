@@ -165,8 +165,8 @@ export default function AppHome() {
             <span>{t("인천광역시 계양구 계양대로 223", "223 Gyeyang-daero, Gyeyang-gu, Incheon")}</span>
           </div>
           <div className="flex gap-2">
-            <span className="text-gray-400 w-14 shrink-0">{t("종별", "Events")}</span>
-            <span>{t("남자 리커브, 여자 리커브", "Recurve Men, Recurve Women")}</span>
+            <span className="text-gray-400 w-14 shrink-0">{t("종목", "Events")}</span>
+            <span>{t("리커브(남/여), 컴파운드(남/여)", "Recurve (M/W), Compound (M/W)")}</span>
           </div>
           <div className="flex gap-2">
             <span className="text-gray-400 w-14 shrink-0">{t("주최", "Host")}</span>

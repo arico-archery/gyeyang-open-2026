@@ -23,6 +23,8 @@ const ROLE_LABELS: Record<string, Record<string, string>> = {
 const CATEGORY_LABELS: Record<string, Record<string, string>> = {
   recurve_men: { ko: "남자 리커브", en: "Recurve Men" },
   recurve_women: { ko: "여자 리커브", en: "Recurve Women" },
+  compound_men: { ko: "남자 컴파운드", en: "Compound Men" },
+  compound_women: { ko: "여자 컴파운드", en: "Compound Women" },
 };
 
 export default function ScanPage() {
@@ -312,7 +314,7 @@ export default function ScanPage() {
               </div>
               {scannedData.profile.category && (
                 <div className="flex gap-2 text-sm">
-                  <span className="text-gray-400 w-16 shrink-0">{t("종별", "Event")}</span>
+                  <span className="text-gray-400 w-16 shrink-0">{t("종목", "Event")}</span>
                   <span className="font-medium text-gray-900">
                     {CATEGORY_LABELS[scannedData.profile.category]?.[locale] || scannedData.profile.category}
                   </span>

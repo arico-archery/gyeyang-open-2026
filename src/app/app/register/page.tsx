@@ -10,8 +10,34 @@ import { supabase } from "@/lib/supabase/client";
 import type { UserRole } from "@/lib/supabase/types";
 
 const COUNTRIES = [
-  "KOR", "USA", "JPN", "CHN", "TPE", "IND", "MAS", "THA", "GBR", "FRA",
-  "GER", "ITA", "ESP", "NED", "TUR", "MEX", "COL", "BRA", "AUS", "CAN",
+  { code: "KOR", flag: "🇰🇷", ko: "대한민국", en: "Korea" },
+  { code: "USA", flag: "🇺🇸", ko: "미국", en: "United States" },
+  { code: "JPN", flag: "🇯🇵", ko: "일본", en: "Japan" },
+  { code: "CHN", flag: "🇨🇳", ko: "중국", en: "China" },
+  { code: "TPE", flag: "🇹🇼", ko: "대만", en: "Chinese Taipei" },
+  { code: "IND", flag: "🇮🇳", ko: "인도", en: "India" },
+  { code: "MAS", flag: "🇲🇾", ko: "말레이시아", en: "Malaysia" },
+  { code: "THA", flag: "🇹🇭", ko: "태국", en: "Thailand" },
+  { code: "GBR", flag: "🇬🇧", ko: "영국", en: "United Kingdom" },
+  { code: "FRA", flag: "🇫🇷", ko: "프랑스", en: "France" },
+  { code: "GER", flag: "🇩🇪", ko: "독일", en: "Germany" },
+  { code: "ITA", flag: "🇮🇹", ko: "이탈리아", en: "Italy" },
+  { code: "ESP", flag: "🇪🇸", ko: "스페인", en: "Spain" },
+  { code: "NED", flag: "🇳🇱", ko: "네덜란드", en: "Netherlands" },
+  { code: "TUR", flag: "🇹🇷", ko: "튀르키예", en: "Turkey" },
+  { code: "MEX", flag: "🇲🇽", ko: "멕시코", en: "Mexico" },
+  { code: "COL", flag: "🇨🇴", ko: "콜롬비아", en: "Colombia" },
+  { code: "BRA", flag: "🇧🇷", ko: "브라질", en: "Brazil" },
+  { code: "AUS", flag: "🇦🇺", ko: "호주", en: "Australia" },
+  { code: "CAN", flag: "🇨🇦", ko: "캐나다", en: "Canada" },
+  { code: "PHI", flag: "🇵🇭", ko: "필리핀", en: "Philippines" },
+  { code: "INA", flag: "🇮🇩", ko: "인도네시아", en: "Indonesia" },
+  { code: "VIE", flag: "🇻🇳", ko: "베트남", en: "Vietnam" },
+  { code: "SIN", flag: "🇸🇬", ko: "싱가포르", en: "Singapore" },
+  { code: "KAZ", flag: "🇰🇿", ko: "카자흐스탄", en: "Kazakhstan" },
+  { code: "UZB", flag: "🇺🇿", ko: "우즈베키스탄", en: "Uzbekistan" },
+  { code: "MGL", flag: "🇲🇳", ko: "몽골", en: "Mongolia" },
+  { code: "IRI", flag: "🇮🇷", ko: "이란", en: "Iran" },
 ];
 
 const ROLES: { value: UserRole; ko: string; en: string }[] = [
@@ -22,6 +48,8 @@ const ROLES: { value: UserRole; ko: string; en: string }[] = [
 const CATEGORIES = [
   { value: "recurve_men", ko: "남자 리커브", en: "Recurve Men" },
   { value: "recurve_women", ko: "여자 리커브", en: "Recurve Women" },
+  { value: "compound_men", ko: "남자 컴파운드", en: "Compound Men" },
+  { value: "compound_women", ko: "여자 컴파운드", en: "Compound Women" },
 ];
 
 export default function RegisterPage() {
@@ -191,14 +219,16 @@ export default function RegisterPage() {
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                 >
                   {COUNTRIES.map((c) => (
-                    <option key={c} value={c}>{c}</option>
+                    <option key={c.code} value={c.code}>
+                      {c.flag + " " + (locale === "ko" ? c.ko : c.en) + " (" + c.code + ")"}
+                    </option>
                   ))}
                 </select>
               </div>
 
               {role === "athlete" && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("종별", "Category")}</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("종목", "Event")}</label>
                   <div className="grid grid-cols-2 gap-2">
                     {CATEGORIES.map((c) => (
                       <button

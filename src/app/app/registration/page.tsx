@@ -25,6 +25,8 @@ const STATUS_CONFIG: Record<string, { ko: string; en: string; color: string }> =
 const CATEGORIES = [
   { value: "recurve_men", ko: "남자 리커브", en: "Recurve Men" },
   { value: "recurve_women", ko: "여자 리커브", en: "Recurve Women" },
+  { value: "compound_men", ko: "남자 컴파운드", en: "Compound Men" },
+  { value: "compound_women", ko: "여자 컴파운드", en: "Compound Women" },
 ];
 
 export default function RegistrationPage() {
@@ -127,7 +129,7 @@ export default function RegistrationPage() {
 
           <div className="space-y-3 text-sm">
             <div className="flex justify-between">
-              <span className="text-gray-500">{t("종별", "Category")}</span>
+              <span className="text-gray-500">{t("종목", "Event")}</span>
               <span className="text-gray-900 font-medium">
                 {CATEGORIES.find((c) => c.value === registration.category)?.[locale === "ko" ? "ko" : "en"] || registration.category}
               </span>
@@ -203,7 +205,7 @@ export default function RegistrationPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("종별", "Category")}</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("종목", "Event")}</label>
               <div className="grid grid-cols-2 gap-2">
                 {CATEGORIES.map((c) => (
                   <button

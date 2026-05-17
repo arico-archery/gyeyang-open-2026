@@ -20,6 +20,8 @@ const ROLES: { value: UserRole; ko: string; en: string }[] = [
 const CATEGORIES = [
   { value: "recurve_men", ko: "남자 리커브", en: "Recurve Men" },
   { value: "recurve_women", ko: "여자 리커브", en: "Recurve Women" },
+  { value: "compound_men", ko: "남자 컴파운드", en: "Compound Men" },
+  { value: "compound_women", ko: "여자 컴파운드", en: "Compound Women" },
 ];
 
 export default function ProfileEditPage() {
@@ -178,7 +180,7 @@ export default function ProfileEditPage() {
 
           {role === "athlete" && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("종별", "Category")}</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("종목", "Event")}</label>
               <div className="grid grid-cols-2 gap-2">
                 {CATEGORIES.map((c) => (
                   <button

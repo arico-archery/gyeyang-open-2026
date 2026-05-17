@@ -11,6 +11,8 @@ import { useState } from "react";
 const CATEGORY_LABELS: Record<string, Record<string, string>> = {
   recurve_men: { ko: "남자 리커브", en: "Recurve Men" },
   recurve_women: { ko: "여자 리커브", en: "Recurve Women" },
+  compound_men: { ko: "남자 컴파운드", en: "Compound Men" },
+  compound_women: { ko: "여자 컴파운드", en: "Compound Women" },
 };
 
 const ROLE_LABELS: Record<string, Record<string, string>> = {
@@ -108,7 +110,7 @@ export default function ProfilePage() {
           )}
           {profile.category && (
             <div className="flex gap-2">
-              <span className="text-gray-400 w-14 shrink-0">{t("종별", "Event")}</span>
+              <span className="text-gray-400 w-14 shrink-0">{t("종목", "Event")}</span>
               <span className="text-gray-700">
                 {CATEGORY_LABELS[profile.category]?.[locale] || profile.category}
               </span>

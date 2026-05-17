@@ -19,6 +19,17 @@ async function fetchHTML(url: string): Promise<string> {
   return res.text();
 }
 
+function cleanText(s: string): string {
+  return s
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .trim();
+}
+
 function parseQualification(html: string): Athlete[] {
   const results: Athlete[] = [];
   const rowRegex = /<tr[^>]*>([\s\S]*?)<\/tr>/gi;
@@ -29,7 +40,7 @@ function parseQualification(html: string): Athlete[] {
     const cellRegex = /<td[^>]*>([\s\S]*?)<\/td>/gi;
     let cellMatch;
     while ((cellMatch = cellRegex.exec(row)) !== null) {
-      cells.push(cellMatch[1].replace(/<[^>]*>/g, "").trim());
+      cells.push(cleanText(cellMatch[1]));
     }
     if (cells.length >= 6 && /^\d+$/.test(cells[0])) {
       results.push({
@@ -54,7 +65,7 @@ function parseFinalRanking(html: string): Athlete[] {
     const cellRegex = /<td[^>]*>([\s\S]*?)<\/td>/gi;
     let cellMatch;
     while ((cellMatch = cellRegex.exec(row)) !== null) {
-      cells.push(cellMatch[1].replace(/<[^>]*>/g, "").trim());
+      cells.push(cleanText(cellMatch[1]));
     }
     if (cells.length >= 3 && /^\d+$/.test(cells[0])) {
       const country = cells[3] || cells[2];
@@ -79,7 +90,7 @@ function parseTeamRanking(html: string): TeamResult[] {
     const cellRegex = /<td[^>]*>([\s\S]*?)<\/td>/gi;
     let cellMatch;
     while ((cellMatch = cellRegex.exec(row)) !== null) {
-      cells.push(cellMatch[1].replace(/<[^>]*>/g, "").trim());
+      cells.push(cleanText(cellMatch[1]));
     }
     if (cells.length >= 2 && /^\d+$/.test(cells[0])) {
       results.push({

@@ -20,10 +20,10 @@ interface UserProfile {
 }
 
 const ROLE_OPTIONS: { value: UserRole; ko: string; en: string }[] = [
-  { value: "athlete", ko: "\uc120\uc218", en: "Athlete" },
-  { value: "coach", ko: "\ucf54\uce58", en: "Coach" },
-  { value: "judge", ko: "\uc2ec\ud310", en: "Judge" },
-  { value: "admin", ko: "\uad00\ub9ac\uc790", en: "Admin" },
+  { value: "athlete", ko: "선수", en: "Athlete" },
+  { value: "coach", ko: "코치", en: "Coach" },
+  { value: "judge", ko: "심판", en: "Judge" },
+  { value: "admin", ko: "관리자", en: "Admin" },
 ];
 
 export default function AdminUsersPage() {
@@ -74,10 +74,10 @@ export default function AdminUsersPage() {
       );
       const userName = users.find((u) => u.id === userId)?.full_name || "";
       const roleName = ROLE_OPTIONS.find((r) => r.value === newRole)?.[locale === "ko" ? "ko" : "en"] || newRole;
-      setToast(userName + " \u2192 " + roleName + (locale === "ko" ? " \uc800\uc7a5 \uc644\ub8cc" : " saved"));
+      setToast(userName + " → " + roleName + (locale === "ko" ? " 저장 완료" : " saved"));
       setTimeout(() => setToast(""), 2500);
     } else {
-      setToast(t("\uc800\uc7a5 \uc2e4\ud328", "Save failed"));
+      setToast(t("저장 실패", "Save failed"));
       setTimeout(() => setToast(""), 2500);
     }
     setUpdatingId(null);
@@ -93,10 +93,10 @@ export default function AdminUsersPage() {
 
     if (!error) {
       setUsers((prev) => prev.filter((u) => u.id !== deleteTarget.id));
-      setToast(deleteTarget.full_name + (locale === "ko" ? " \uc0ad\uc81c \uc644\ub8cc" : " deleted"));
+      setToast(deleteTarget.full_name + (locale === "ko" ? " 삭제 완료" : " deleted"));
       setTimeout(() => setToast(""), 2500);
     } else {
-      setToast(t("\uc0ad\uc81c \uc2e4\ud328: ", "Delete failed: ") + (error.message || ""));
+      setToast(t("삭제 실패: ", "Delete failed: ") + (error.message || ""));
       setTimeout(() => setToast(""), 3000);
     }
     setDeleting(false);
@@ -134,7 +134,7 @@ export default function AdminUsersPage() {
   if (!superAdmin) {
     return (
       <div className="max-w-lg mx-auto px-4 pt-6 text-center">
-        <p className="text-red-500 font-medium">{t("\uc288\ud37c\uc5b4\ub4dc\ubbfc \uad8c\ud55c\uc774 \ud544\uc694\ud569\ub2c8\ub2e4", "Super admin access required")}</p>
+        <p className="text-red-500 font-medium">{t("슈퍼어드민 권한이 필요합니다", "Super admin access required")}</p>
       </div>
     );
   }
@@ -157,7 +157,7 @@ export default function AdminUsersPage() {
                 </svg>
               </div>
               <h3 className="text-lg font-bold text-gray-900 mb-1">
-                {t("\uc0ac\uc6a9\uc790 \uc0ad\uc81c", "Delete User")}
+                {t("사용자 삭제", "Delete User")}
               </h3>
               <p className="text-sm text-gray-600">
                 <span className="font-semibold text-red-600">{deleteTarget.full_name}</span>
@@ -166,7 +166,7 @@ export default function AdminUsersPage() {
                 )}
               </p>
               <p className="text-xs text-gray-500 mt-2">
-                {t("\uc774 \uc0ac\uc6a9\uc790\uc758 \ubaa8\ub4e0 \ub370\uc774\ud130(\ud504\ub85c\ud544, \ucc38\uac00\uc2e0\uccad, \ubb38\uc758 \ub4f1)\uac00 \uc601\uad6c\uc801\uc73c\ub85c \uc0ad\uc81c\ub429\ub2c8\ub2e4.", "All data (profile, registrations, inquiries) will be permanently deleted.")}
+                {t("이 사용자의 모든 데이터(프로필, 참가신청, 문의 등)가 영구적으로 삭제됩니다.", "All data (profile, registrations, inquiries) will be permanently deleted.")}
               </p>
             </div>
             <div className="flex gap-2">
@@ -175,14 +175,14 @@ export default function AdminUsersPage() {
                 disabled={deleting}
                 className="flex-1 py-2.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-xl hover:bg-gray-200 transition-colors"
               >
-                {t("\ucde8\uc18c", "Cancel")}
+                {t("취소", "Cancel")}
               </button>
               <button
                 onClick={handleDelete}
                 disabled={deleting}
                 className="flex-1 py-2.5 bg-red-600 text-white text-sm font-medium rounded-xl hover:bg-red-700 transition-colors disabled:opacity-50"
               >
-                {deleting ? t("\uc0ad\uc81c \uc911...", "Deleting...") : t("\uc0ad\uc81c", "Delete")}
+                {deleting ? t("삭제 중...", "Deleting...") : t("삭제", "Delete")}
               </button>
             </div>
           </div>
@@ -195,14 +195,14 @@ export default function AdminUsersPage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <h1 className="text-xl font-bold text-gray-900">{t("\uc0ac\uc6a9\uc790 \uad8c\ud55c \uad00\ub9ac", "User Role Management")}</h1>
+        <h1 className="text-xl font-bold text-gray-900">{t("사용자 권한 관리", "User Role Management")}</h1>
       </div>
 
       <div className="bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-xl px-4 py-3 mb-4">
         <div className="flex items-center gap-2">
-          <span className="text-lg">\ud83d\udd11</span>
+          <span className="text-lg">🔑</span>
           <div>
-            <p className="text-sm font-bold text-red-800">{t("\uc288\ud37c\uc5b4\ub4dc\ubbfc \ubaa8\ub4dc", "Super Admin Mode")}</p>
+            <p className="text-sm font-bold text-red-800">{t("슈퍼어드민 모드", "Super Admin Mode")}</p>
             <p className="text-xs text-red-600">{user?.email}</p>
           </div>
         </div>
@@ -212,7 +212,7 @@ export default function AdminUsersPage() {
         <input
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder={t("\uc774\ub984, \uad6d\uac00, \uc774\uba54\uc77c\ub85c \uac80\uc0c9...", "Search by name, country, email...")}
+          placeholder={t("이름, 국가, 이메일로 검색...", "Search by name, country, email...")}
           className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm"
         />
       </div>
@@ -224,7 +224,7 @@ export default function AdminUsersPage() {
             roleFilter === "all" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-600"
           )}
         >
-          {t("\uc804\uccb4", "All")} ({users.length})
+          {t("전체", "All")} ({users.length})
         </button>
         {ROLE_OPTIONS.map((r) => (
           <button
@@ -241,7 +241,7 @@ export default function AdminUsersPage() {
 
       {filtered.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-100 p-8 text-center">
-          <p className="text-sm text-gray-400">{t("\uc0ac\uc6a9\uc790\uac00 \uc5c6\uc2b5\ub2c8\ub2e4", "No users found")}</p>
+          <p className="text-sm text-gray-400">{t("사용자가 없습니다", "No users found")}</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -254,7 +254,7 @@ export default function AdminUsersPage() {
                     <p className="text-xs text-gray-500">{u.full_name_en}</p>
                   )}
                   <p className="text-xs text-gray-400 mt-0.5">
-                    {u.nationality}{u.team ? " \u00b7 " + u.team : ""}
+                    {u.nationality}{u.team ? " · " + u.team : ""}
                   </p>
                   {u.email && (
                     <p className="text-xs text-blue-500 mt-0.5">{u.email}</p>
@@ -268,7 +268,7 @@ export default function AdminUsersPage() {
                     <button
                       onClick={() => setDeleteTarget(u)}
                       className="p-1 text-gray-300 hover:text-red-500 transition-colors"
-                      title={t("\uc0ad\uc81c", "Delete")}
+                      title={t("삭제", "Delete")}
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />

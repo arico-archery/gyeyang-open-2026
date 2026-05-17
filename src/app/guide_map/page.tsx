@@ -3,8 +3,7 @@
 import Image from "next/image";
 import { useI18n } from "@/lib/i18n/context";
 
-const GOOGLE_MAPS_URL =
-  "https://www.google.com/maps/place/%EC%9D%B8%EC%B2%9C%EA%B3%84%EC%96%91%EC%95%84%EC%8B%9C%EC%95%84%EB%93%9C%EC%96%91%EA%B6%81%EC%9E%A5/@37.5452,126.7231,16z";
+const GOOGLE_MAPS_URL = "https://maps.app.goo.gl/fnbmLEedNAFDXC1n6";
 
 export default function GuideMapPage() {
   const { t } = useI18n();

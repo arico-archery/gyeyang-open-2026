@@ -71,7 +71,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"
+              placeholder="••••••••"
               required
             />
           </div>
@@ -86,7 +86,7 @@ export default function LoginPage() {
         </form>
 
         <p className="text-center text-sm text-gray-500 mt-4">
-          {t("계정이 없으신가요?", "Don\u0027t have an account?")}{" "}
+          {t("계정이 없으신가요?", "Don't have an account?")}{" "}
           <Link href="/app/register" className="text-blue-600 font-medium hover:underline">
             {t("회원가입", "Sign Up")}
           </Link>
@@ -94,7 +94,7 @@ export default function LoginPage() {
 
         <div className="text-center mt-4">
           <Link href="/" className="text-xs text-gray-400 hover:text-gray-600">
-            {t("\u2190 웹사이트로 돌아가기", "\u2190 Back to website")}
+            {t("← 웹사이트로 돌아가기", "← Back to website")}
           </Link>
         </div>
       </div>

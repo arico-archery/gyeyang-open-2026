@@ -1,11 +1,177 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useI18n } from "@/lib/i18n/context";
 
+/* ── Result types ── */
+interface Athlete { pos: string; name: string; country: string; score?: string; }
+interface TeamResult { pos: string; team: string; }
+interface ResultsData {
+  timestamp: string;
+  finalRanking: { men: Athlete[]; women: Athlete[]; teamMen: TeamResult[]; teamWomen: TeamResult[]; };
+  qualification: { men: Athlete[]; women: Athlete[]; foreignMen: Athlete[]; foreignWomen: Athlete[]; };
+}
+
+function Medal({ pos }: { pos: string }) {
+  if (pos === "1") return <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-yellow-400 text-white text-xs font-bold shadow-sm">1</span>;
+  if (pos === "2") return <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-300 text-white text-xs font-bold shadow-sm">2</span>;
+  if (pos === "3") return <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-600 text-white text-xs font-bold shadow-sm">3</span>;
+  return <span className="inline-flex items-center justify-center w-6 h-6 text-xs font-medium text-gray-400">{pos}</span>;
+}
+
+function shortCountry(c: string) {
+  if (!c) return "";
+  const dash = c.indexOf(" - ");
+  return dash > 0 ? c.substring(dash + 3) : c;
+}
+
+function ResultsSummary2025({ data, t }: { data: ResultsData; t: (k: string) => string }) {
+  const [tab, setTab] = useState<"final" | "qual">("final");
+
+  return (
+    <div className="mb-8">
+      <div className="flex gap-2 mb-4">
+        <button
+          onClick={() => setTab("final")}
+          className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+            tab === "final" ? "bg-amber-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+          }`}
+        >
+          {t("scoreboard.finalResults")}
+        </button>
+        <button
+          onClick={() => setTab("qual")}
+          className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+            tab === "qual" ? "bg-amber-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+          }`}
+        >
+          {t("scoreboard.qualResults")}
+        </button>
+      </div>
+
+      {tab === "final" ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+            <div className="bg-blue-600 px-4 py-2.5 text-white font-semibold text-sm">{t("scoreboard.recurveMen")}</div>
+            <div className="divide-y divide-gray-100">
+              {data.finalRanking.men.map((a, i) => (
+                <div key={i} className="flex items-center gap-3 px-4 py-2.5">
+                  <Medal pos={a.pos} />
+                  <span className="font-medium text-sm text-gray-900 flex-1">{a.name}</span>
+                  <span className="text-xs text-gray-500 truncate max-w-[140px]">{shortCountry(a.country)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+            <div className="bg-pink-600 px-4 py-2.5 text-white font-semibold text-sm">{t("scoreboard.recurveWomen")}</div>
+            <div className="divide-y divide-gray-100">
+              {data.finalRanking.women.map((a, i) => (
+                <div key={i} className="flex items-center gap-3 px-4 py-2.5">
+                  <Medal pos={a.pos} />
+                  <span className="font-medium text-sm text-gray-900 flex-1">{a.name}</span>
+                  <span className="text-xs text-gray-500 truncate max-w-[140px]">{shortCountry(a.country)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+            <div className="bg-blue-800 px-4 py-2.5 text-white font-semibold text-sm">{t("scoreboard.teamMen")}</div>
+            <div className="divide-y divide-gray-100">
+              {data.finalRanking.teamMen.map((tm, i) => (
+                <div key={i} className="flex items-center gap-3 px-4 py-2.5">
+                  <Medal pos={tm.pos} />
+                  <span className="font-medium text-sm text-gray-900 flex-1">{shortCountry(tm.team)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+            <div className="bg-pink-800 px-4 py-2.5 text-white font-semibold text-sm">{t("scoreboard.teamWomen")}</div>
+            <div className="divide-y divide-gray-100">
+              {data.finalRanking.teamWomen.map((tm, i) => (
+                <div key={i} className="flex items-center gap-3 px-4 py-2.5">
+                  <Medal pos={tm.pos} />
+                  <span className="font-medium text-sm text-gray-900 flex-1">{shortCountry(tm.team)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+            <div className="bg-blue-600 px-4 py-2.5 text-white font-semibold text-sm">{t("scoreboard.recurveMen")} - 72 Arrows</div>
+            <div className="divide-y divide-gray-100">
+              {data.qualification.men.map((a, i) => (
+                <div key={i} className="flex items-center gap-3 px-4 py-2.5">
+                  <span className="w-6 text-center text-xs font-medium text-gray-400">{a.pos}</span>
+                  <span className="font-medium text-sm text-gray-900 flex-1">{a.name}</span>
+                  <span className="text-xs text-gray-500 truncate max-w-[120px]">{shortCountry(a.country)}</span>
+                  <span className="font-mono font-bold text-sm text-blue-600 w-10 text-right">{a.score}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+            <div className="bg-pink-600 px-4 py-2.5 text-white font-semibold text-sm">{t("scoreboard.recurveWomen")} - 72 Arrows</div>
+            <div className="divide-y divide-gray-100">
+              {data.qualification.women.map((a, i) => (
+                <div key={i} className="flex items-center gap-3 px-4 py-2.5">
+                  <span className="w-6 text-center text-xs font-medium text-gray-400">{a.pos}</span>
+                  <span className="font-medium text-sm text-gray-900 flex-1">{a.name}</span>
+                  <span className="text-xs text-gray-500 truncate max-w-[120px]">{shortCountry(a.country)}</span>
+                  <span className="font-mono font-bold text-sm text-pink-600 w-10 text-right">{a.score}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+            <div className="bg-green-600 px-4 py-2.5 text-white font-semibold text-sm">{t("scoreboard.foreignMen")} - 72 Arrows</div>
+            <div className="divide-y divide-gray-100">
+              {data.qualification.foreignMen.map((a, i) => (
+                <div key={i} className="flex items-center gap-3 px-4 py-2.5">
+                  <span className="w-6 text-center text-xs font-medium text-gray-400">{a.pos}</span>
+                  <span className="font-medium text-sm text-gray-900 flex-1">{a.name}</span>
+                  <span className="text-xs text-gray-500 truncate max-w-[120px]">{shortCountry(a.country)}</span>
+                  <span className="font-mono font-bold text-sm text-green-600 w-10 text-right">{a.score}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+            <div className="bg-purple-600 px-4 py-2.5 text-white font-semibold text-sm">{t("scoreboard.foreignWomen")} - 72 Arrows</div>
+            <div className="divide-y divide-gray-100">
+              {data.qualification.foreignWomen.map((a, i) => (
+                <div key={i} className="flex items-center gap-3 px-4 py-2.5">
+                  <span className="w-6 text-center text-xs font-medium text-gray-400">{a.pos}</span>
+                  <span className="font-medium text-sm text-gray-900 flex-1">{a.name}</span>
+                  <span className="text-xs text-gray-500 truncate max-w-[120px]">{shortCountry(a.country)}</span>
+                  <span className="font-mono font-bold text-sm text-purple-600 w-10 text-right">{a.score}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Archive2025Page() {
   const { t } = useI18n();
+  const [results, setResults] = useState<ResultsData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/results-2025")
+      .then((r) => r.json())
+      .then((d) => { if (!d.error) setResults(d); })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
@@ -108,32 +274,41 @@ export default function Archive2025Page() {
           </div>
         </section>
 
-        {/* Scoreboard Link */}
+        {/* Scoreboard / Results */}
         <section className="mb-16">
-          <div className="relative overflow-hidden bg-gradient-to-br from-amber-500 to-amber-600 rounded-3xl p-8 sm:p-10 text-center">
-            <div className="absolute inset-0 opacity-10">
-              <div className="absolute top-4 right-4 w-32 h-32 rounded-full border-4 border-white" />
-              <div className="absolute bottom-4 left-4 w-24 h-24 rounded-full border-4 border-white" />
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
+              <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
             </div>
-            <div className="relative">
-              <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
-                {t("archive2025.scoreboardTitle")}
-              </h2>
-              <p className="text-amber-100 text-lg mb-6 max-w-md mx-auto">
-                {t("archive2025.participants")}
-              </p>
-              <a
-                href={t("archive2025.ianseoUrl")}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-amber-700 font-semibold px-7 py-3.5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-              >
-                {t("archive2025.scoreboardLink")}
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </a>
+            <h2 className="text-2xl font-bold text-gray-900">
+              {t("archive2025.scoreboardTitle")}
+            </h2>
+          </div>
+
+          {/* Results Summary */}
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin w-8 h-8 border-4 border-amber-200 border-t-amber-600 rounded-full" />
             </div>
+          ) : results ? (
+            <ResultsSummary2025 data={results} t={t} />
+          ) : null}
+
+          {/* ianseo Link */}
+          <div className="text-center">
+            <a
+              href={t("archive2025.ianseoUrl")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-2.5 bg-amber-600 text-white rounded-lg text-sm font-medium hover:bg-amber-700 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+              {t("archive2025.scoreboardLink")}
+            </a>
           </div>
         </section>
 

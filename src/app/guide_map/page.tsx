@@ -20,7 +20,7 @@ export default function GuideMapPage() {
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
             <div className="w-full aspect-[16/9] md:aspect-[21/9]">
               <iframe
-                src="https://www.google.com/maps?q=%EC%9D%B8%EC%B2%9C%EA%B4%91%EC%97%AD%EC%8B%9C+%EA%B3%84%EC%96%91%EA%B5%AC+%EB%B4%89%EC%98%A4%EB%8C%80%EB%A1%9C+855&output=embed"
+                src="https://www.google.com/maps?q=%EC%9D%B8%EC%B2%9C%EA%B3%84%EC%96%91%EC%95%84%EC%8B%9C%EC%95%84%EB%93%9C%EC%96%91%EA%B6%81%EC%9E%A5&output=embed"
                 className="w-full h-full border-0"
                 allowFullScreen
                 loading="lazy"

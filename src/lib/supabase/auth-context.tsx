@@ -35,11 +35,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchProfile = async (userId: string) => {
     try {
-      const { data } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", userId)
-        .single();
+      const { data } = await Promise.race([
+        supabase.from("profiles").select("*").eq("id", userId).single(),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error("Profile fetch timeout")), 4000)
+        ),
+      ]);
       setProfile(data);
     } catch (err) {
       console.error("Failed to fetch profile:", err);
@@ -49,6 +50,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let mounted = true;
+
+    const timeout = setTimeout(() => {
+      if (mounted && loading) {
+        console.warn("Auth loading timeout - forcing loading=false");
+        setLoading(false);
+      }
+    }, 5000);
 
     supabase.auth.getSession().then(async ({ data: { session: s } }) => {
       if (!mounted) return;
@@ -78,6 +86,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => {
       mounted = false;
+      clearTimeout(timeout);
       subscription.unsubscribe();
     };
   }, []);

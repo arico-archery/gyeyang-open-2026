@@ -185,13 +185,13 @@ export default function AppHome() {
 
       {/* Website Link */}
       <a
-        href="https://gyeyang-open.vercel.app"
+        href="https://gyeyang-open-2026.vercel.app/"
         target="_blank"
         rel="noopener noreferrer"
         className="block bg-gray-50 rounded-xl border border-gray-200 p-4 text-center hover:bg-gray-100 transition-colors mb-4"
       >
         <p className="text-sm font-medium text-gray-700">{t("공식 웹사이트 방문", "Visit Official Website")}</p>
-        <p className="text-xs text-gray-400 mt-1">gyeyang-open.vercel.app</p>
+        <p className="text-xs text-gray-400 mt-1">gyeyang-open-2026.vercel.app</p>
       </a>
 
       {/* Admin Link */}

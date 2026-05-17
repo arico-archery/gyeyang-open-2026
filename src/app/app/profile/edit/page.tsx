@@ -6,11 +6,7 @@ import { useI18n } from "@/lib/i18n/context";
 import { useAuth } from "@/lib/supabase/auth-context";
 import { supabase } from "@/lib/supabase/client";
 import type { UserRole } from "@/lib/supabase/types";
-
-const COUNTRIES = [
-  "KOR", "USA", "JPN", "CHN", "TPE", "IND", "MAS", "THA", "GBR", "FRA",
-  "GER", "ITA", "ESP", "NED", "TUR", "MEX", "COL", "BRA", "AUS", "CAN",
-];
+import { COUNTRIES } from "@/lib/countries";
 
 const ROLES: { value: UserRole; ko: string; en: string }[] = [
   { value: "athlete", ko: "선수", en: "Athlete" },
@@ -173,7 +169,9 @@ export default function ProfileEditPage() {
               className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             >
               {COUNTRIES.map((c) => (
-                <option key={c} value={c}>{c}</option>
+                <option key={c.code} value={c.code}>
+                  {c.flag + " " + (locale === "ko" ? c.ko : c.en) + " (" + c.code + ")"}
+                </option>
               ))}
             </select>
           </div>

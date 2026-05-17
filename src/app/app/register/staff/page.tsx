@@ -9,11 +9,7 @@ import { useAuth } from "@/lib/supabase/auth-context";
 import { supabase } from "@/lib/supabase/client";
 import { validateInviteCode } from "@/lib/invite-codes";
 import type { UserRole } from "@/lib/supabase/types";
-
-const COUNTRIES = [
-  "KOR", "USA", "JPN", "CHN", "TPE", "IND", "MAS", "THA", "GBR", "FRA",
-  "GER", "ITA", "ESP", "NED", "TUR", "MEX", "COL", "BRA", "AUS", "CAN",
-];
+import { COUNTRIES } from "@/lib/countries";
 
 export default function StaffRegisterPage() {
   const { locale } = useI18n();
@@ -230,7 +226,9 @@ export default function StaffRegisterPage() {
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white"
                 >
                   {COUNTRIES.map((c) => (
-                    <option key={c} value={c}>{c}</option>
+                    <option key={c.code} value={c.code}>
+                      {c.flag + " " + (locale === "ko" ? c.ko : c.en) + " (" + c.code + ")"}
+                    </option>
                   ))}
                 </select>
               </div>

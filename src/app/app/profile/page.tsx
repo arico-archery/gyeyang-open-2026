@@ -5,6 +5,7 @@ import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
 import { useI18n } from "@/lib/i18n/context";
 import { useAuth } from "@/lib/supabase/auth-context";
+import { isSuperAdmin } from "@/lib/super-admin";
 import { useState } from "react";
 
 const CATEGORY_LABELS: Record<string, Record<string, string>> = {
@@ -168,7 +169,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Admin menu */}
-      {profile.role === "admin" && (
+      {(profile.role === "admin" || isSuperAdmin(user?.email)) && (
         <Link
           href="/app/admin"
           className="flex items-center justify-between px-4 py-3.5 bg-amber-50 border border-amber-200 rounded-xl mb-4 hover:bg-amber-100 transition-colors"

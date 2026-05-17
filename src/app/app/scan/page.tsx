@@ -7,10 +7,28 @@ import { supabase } from "@/lib/supabase/client";
 import type { Profile } from "@/lib/supabase/types";
 import jsQR from "jsqr";
 
+interface ScoreSession {
+  id: string;
+  discipline: string;
+  distance: number;
+  ends_count: number;
+  arrows_per_end: number;
+  completed: boolean;
+  datetime: string;
+  totalScore: number;
+}
+
+interface AttendanceInfo {
+  checkedIn: boolean;
+  checkedInAt: string | null;
+}
+
 interface ScannedData {
   profile: Profile;
   registration: { status: string; category: string } | null;
-  targetAssignment: { target_number: string; session_time: string; distance: string } | null;
+  targetAssignment: { target_number: number; target_position: string | null; session: number | null } | null;
+  scores: ScoreSession[];
+  attendance: AttendanceInfo;
 }
 
 const ROLE_LABELS: Record<string, Record<string, string>> = {
@@ -34,6 +52,7 @@ export default function ScanPage() {
   const [scanning, setScanning] = useState(false);
   const [error, setError] = useState("");
   const [cameraError, setCameraError] = useState("");
+  const [attendanceLoading, setAttendanceLoading] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -42,6 +61,8 @@ export default function ScanPage() {
   const t = (ko: string, en: string) => (locale === "ko" ? ko : en);
 
   const isAuthorized = myProfile?.role === "judge" || myProfile?.role === "admin";
+  const isAdmin = myProfile?.role === "admin";
+  const isJudge = myProfile?.role === "judge";
 
   const stopScanning = useCallback(() => {
     if (animFrameRef.current) {
@@ -68,26 +89,77 @@ export default function ScanPage() {
       return;
     }
 
+    // Registration info
     const { data: regData } = await supabase
       .from("registrations")
       .select("status, category")
-      .eq("user_id", profileData.id)
+      .eq("athlete_id", profileData.id)
       .order("created_at", { ascending: false })
       .limit(1)
       .single();
 
+    // Target assignment
     const { data: targetData } = await supabase
       .from("target_assignments")
-      .select("target_number, session_time, distance")
-      .eq("user_id", profileData.id)
+      .select("target_number, target_position, session")
+      .eq("athlete_id", profileData.id)
       .limit(1)
       .single();
 
+    // Scores - fetch sessions with ends
+    const scoreSessions: ScoreSession[] = [];
+    const { data: sessionsData } = await supabase
+      .from("sessions")
+      .select("id, discipline, distance, ends_count, arrows_per_end, completed, datetime")
+      .eq("user_id", profileData.id)
+      .order("datetime", { ascending: false })
+      .limit(5);
+
+    if (sessionsData && sessionsData.length > 0) {
+      for (const sess of sessionsData) {
+        const { data: endsData } = await supabase
+          .from("ends")
+          .select("scores")
+          .eq("session_id", sess.id);
+
+        let totalScore = 0;
+        if (endsData) {
+          for (const end of endsData) {
+            const scores = end.scores as number[];
+            if (Array.isArray(scores)) {
+              totalScore += scores.reduce((sum: number, s: number) => sum + (typeof s === "number" ? s : 0), 0);
+            }
+          }
+        }
+
+        scoreSessions.push({
+          id: sess.id,
+          discipline: sess.discipline,
+          distance: sess.distance,
+          ends_count: sess.ends_count,
+          arrows_per_end: sess.arrows_per_end,
+          completed: sess.completed,
+          datetime: sess.datetime,
+          totalScore,
+        });
+      }
+    }
+
+    // Attendance - check today
+    const today = new Date().toISOString().split("T")[0];
+    const { data: attendanceData } = await supabase
+      .from("attendance")
+      .select("checked_in_at")
+      .eq("athlete_id", profileData.id)
+      .eq("check_date", today)
+      .single();
+
+    // Log the scan
     if (user) {
       await supabase.from("qr_scan_logs").insert({
-        scanned_by: user.id,
-        scanned_user_id: profileData.id,
-        scan_type: "checkin",
+        scanner_id: user.id,
+        athlete_id: profileData.id,
+        scan_purpose: isAdmin ? "attendance" : "checkin",
       });
     }
 
@@ -95,7 +167,37 @@ export default function ScanPage() {
       profile: profileData,
       registration: regData || null,
       targetAssignment: targetData || null,
+      scores: scoreSessions,
+      attendance: {
+        checkedIn: !!attendanceData,
+        checkedInAt: attendanceData?.checked_in_at || null,
+      },
     });
+  };
+
+  const handleAttendanceCheck = async () => {
+    if (!scannedData || !user) return;
+    setAttendanceLoading(true);
+
+    const today = new Date().toISOString().split("T")[0];
+
+    const { error: insertError } = await supabase.from("attendance").upsert({
+      athlete_id: scannedData.profile.id,
+      check_date: today,
+      checked_by: user.id,
+    }, { onConflict: "athlete_id,check_date" });
+
+    if (!insertError) {
+      setScannedData({
+        ...scannedData,
+        attendance: {
+          checkedIn: true,
+          checkedInAt: new Date().toISOString(),
+        },
+      });
+    }
+
+    setAttendanceLoading(false);
   };
 
   const startScanning = async () => {
@@ -136,7 +238,6 @@ export default function ScanPage() {
     }
   };
 
-  // Attach stream to video element after it renders in DOM
   useEffect(() => {
     if (!scanning || !streamRef.current) return;
 
@@ -155,7 +256,6 @@ export default function ScanPage() {
     attachStream();
   }, [scanning]);
 
-  // QR detection loop using jsQR
   useEffect(() => {
     if (!scanning) return;
 
@@ -225,9 +325,19 @@ export default function ScanPage() {
   }
 
   const statusBadge = (status: string) => {
-    if (status === "approved") return { cls: "bg-green-100 text-green-700", label: t("승인됨", "Approved") };
-    if (status === "pending") return { cls: "bg-yellow-100 text-yellow-700", label: t("심사중", "Pending") };
+    if (status === "approved" || status === "confirmed") return { cls: "bg-green-100 text-green-700", label: t("승인됨", "Approved") };
+    if (status === "submitted" || status === "reviewing") return { cls: "bg-yellow-100 text-yellow-700", label: t("심사중", "Pending") };
     return { cls: "bg-red-100 text-red-700", label: t("반려됨", "Rejected") };
+  };
+
+  const formatTime = (isoStr: string) => {
+    const d = new Date(isoStr);
+    return d.toLocaleTimeString(locale === "ko" ? "ko-KR" : "en-US", { hour: "2-digit", minute: "2-digit" });
+  };
+
+  const formatDate = (isoStr: string) => {
+    const d = new Date(isoStr);
+    return d.toLocaleDateString(locale === "ko" ? "ko-KR" : "en-US", { month: "short", day: "numeric" });
   };
 
   return (
@@ -288,11 +398,12 @@ export default function ScanPage() {
 
       {scannedData && (
         <div className="space-y-4">
+          {/* Profile Header */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="bg-blue-600 px-5 py-4 text-white">
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center text-xl font-bold">
-                  {scannedData.profile.full_name.charAt(0)}
+                  {scannedData.profile.full_name?.charAt(0) || "?"}
                 </div>
                 <div>
                   <h2 className="text-lg font-bold">{scannedData.profile.full_name}</h2>
@@ -323,6 +434,7 @@ export default function ScanPage() {
             </div>
           </div>
 
+          {/* Registration */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <h3 className="text-sm font-bold text-gray-700 mb-3">{t("참가 등록", "Registration")}</h3>
             {scannedData.registration ? (
@@ -339,27 +451,128 @@ export default function ScanPage() {
             )}
           </div>
 
+          {/* Target Assignment */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <h3 className="text-sm font-bold text-gray-700 mb-3">{t("타겟 배정", "Target Assignment")}</h3>
             {scannedData.targetAssignment ? (
               <div className="grid grid-cols-3 gap-3 text-center">
                 <div className="bg-blue-50 rounded-lg p-3">
                   <p className="text-xs text-blue-500 mb-1">{t("타겟", "Target")}</p>
-                  <p className="text-lg font-bold text-blue-700">{scannedData.targetAssignment.target_number}</p>
+                  <p className="text-lg font-bold text-blue-700">
+                    {scannedData.targetAssignment.target_number}
+                    {scannedData.targetAssignment.target_position || ""}
+                  </p>
                 </div>
                 <div className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-xs text-gray-500 mb-1">{t("시간", "Time")}</p>
-                  <p className="text-sm font-bold text-gray-700">{scannedData.targetAssignment.session_time}</p>
+                  <p className="text-xs text-gray-500 mb-1">{t("포지션", "Position")}</p>
+                  <p className="text-sm font-bold text-gray-700">{scannedData.targetAssignment.target_position || "-"}</p>
                 </div>
                 <div className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-xs text-gray-500 mb-1">{t("거리", "Distance")}</p>
-                  <p className="text-sm font-bold text-gray-700">{scannedData.targetAssignment.distance}</p>
+                  <p className="text-xs text-gray-500 mb-1">{t("세션", "Session")}</p>
+                  <p className="text-sm font-bold text-gray-700">{scannedData.targetAssignment.session || "-"}</p>
                 </div>
               </div>
             ) : (
               <p className="text-sm text-gray-400">{t("배정되지 않음", "Not assigned yet")}</p>
             )}
           </div>
+
+          {/* Scores Section - visible to judges and admins */}
+          {(isJudge || isAdmin) && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+              <h3 className="text-sm font-bold text-gray-700 mb-3">
+                {t("경기 점수", "Competition Scores")}
+              </h3>
+              {scannedData.scores.length > 0 ? (
+                <div className="space-y-3">
+                  {scannedData.scores.map((sess) => (
+                    <div key={sess.id} className="border border-gray-100 rounded-lg p-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className={
+                            "w-2 h-2 rounded-full " +
+                            (sess.completed ? "bg-green-500" : "bg-yellow-500")
+                          } />
+                          <span className="text-xs text-gray-500">
+                            {formatDate(sess.datetime)}
+                          </span>
+                          <span className={
+                            "text-xs px-1.5 py-0.5 rounded " +
+                            (sess.completed
+                              ? "bg-green-50 text-green-600"
+                              : "bg-yellow-50 text-yellow-600")
+                          }>
+                            {sess.completed ? t("완료", "Done") : t("진행중", "In Progress")}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 text-center">
+                        <div className="bg-blue-50 rounded-lg py-2">
+                          <p className="text-[10px] text-blue-500">{t("점수", "Score")}</p>
+                          <p className="text-lg font-bold text-blue-700">{sess.totalScore}</p>
+                        </div>
+                        <div className="bg-gray-50 rounded-lg py-2">
+                          <p className="text-[10px] text-gray-500">{t("거리", "Dist")}</p>
+                          <p className="text-sm font-bold text-gray-700">{sess.distance}m</p>
+                        </div>
+                        <div className="bg-gray-50 rounded-lg py-2">
+                          <p className="text-[10px] text-gray-500">{t("엔드", "Ends")}</p>
+                          <p className="text-sm font-bold text-gray-700">
+                            {sess.ends_count} x {sess.arrows_per_end}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-400">{t("기록된 점수가 없습니다", "No scores recorded")}</p>
+              )}
+            </div>
+          )}
+
+          {/* Attendance Section - visible to admins */}
+          {isAdmin && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+              <h3 className="text-sm font-bold text-gray-700 mb-3">
+                {t("당일 출석", "Daily Attendance")}
+              </h3>
+              {scannedData.attendance.checkedIn ? (
+                <div className="flex items-center gap-3 bg-green-50 rounded-xl px-4 py-3">
+                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                    <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-green-800">
+                      {t("출석 확인 완료", "Attendance Confirmed")}
+                    </p>
+                    {scannedData.attendance.checkedInAt && (
+                      <p className="text-xs text-green-600">
+                        {formatTime(scannedData.attendance.checkedInAt)}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <p className="text-sm text-gray-500 mb-3">
+                    {t("오늘 출석이 아직 확인되지 않았습니다.", "Attendance has not been confirmed today.")}
+                  </p>
+                  <button
+                    onClick={handleAttendanceCheck}
+                    disabled={attendanceLoading}
+                    className="w-full py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors disabled:opacity-50"
+                  >
+                    {attendanceLoading
+                      ? t("처리 중...", "Processing...")
+                      : t("출석 체크", "Check Attendance")}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
 
           <button
             onClick={() => { setScannedData(null); setError(""); }}

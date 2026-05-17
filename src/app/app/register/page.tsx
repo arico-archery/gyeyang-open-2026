@@ -190,7 +190,7 @@ export default function RegisterPage() {
                 >
                   {COUNTRIES.map((c) => (
                     <option key={c.code} value={c.code}>
-                      {c.flag + " " + (locale === "ko" ? c.ko : c.en) + " (" + c.code + ")"}
+                      {locale === "ko" ? c.ko + " (" + c.en + ")" : c.en + " (" + c.ko + ")"}
                     </option>
                   ))}
                 </select>

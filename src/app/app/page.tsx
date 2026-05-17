@@ -18,7 +18,7 @@ interface Announcement {
 }
 
 export default function AppHome() {
-  const { locale } = useI18n();
+  const { locale, setLocale } = useI18n();
   const { user, profile } = useAuth();
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [dDay, setDDay] = useState("");
@@ -64,13 +64,21 @@ export default function AppHome() {
             {t("국제 양궁 대회", "International Archery Tournament")}
           </p>
         </div>
-        {user && profile && (
-          <Link href="/app/profile" className="flex items-center gap-2">
-            <div className="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center text-sm font-bold text-blue-600">
-              {profile.full_name.charAt(0)}
-            </div>
-          </Link>
-        )}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setLocale(locale === "ko" ? "en" : "ko")}
+            className="px-2.5 py-1.5 bg-gray-100 rounded-lg text-xs font-semibold text-gray-600 hover:bg-gray-200 transition-colors"
+          >
+            {locale === "ko" ? "EN" : "KO"}
+          </button>
+          {user && profile && (
+            <Link href="/app/profile">
+              <div className="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center text-sm font-bold text-blue-600">
+                {profile.full_name.charAt(0)}
+              </div>
+            </Link>
+          )}
+        </div>
       </div>
 
       {/* D-Day Card */}

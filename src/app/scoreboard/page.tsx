@@ -32,6 +32,22 @@ const CATEGORIES: Category[] = [
     ],
   },
   {
+    id: "foreignMen", labelKey: "scoreboard.foreignMen",
+    sections: [
+      { labelKey: "scoreboard.indQual", url: `${BASE}/IQFRM.pdf` },
+      { labelKey: "scoreboard.indBrackets", url: `${BASE}/IBFRM.pdf` },
+      { labelKey: "scoreboard.indRankings", url: `${BASE}/IFFRM.pdf` },
+    ],
+  },
+  {
+    id: "foreignWomen", labelKey: "scoreboard.foreignWomen",
+    sections: [
+      { labelKey: "scoreboard.indQual", url: `${BASE}/IQFRW.pdf` },
+      { labelKey: "scoreboard.indBrackets", url: `${BASE}/IBFRW.pdf` },
+      { labelKey: "scoreboard.indRankings", url: `${BASE}/IFFRW.pdf` },
+    ],
+  },
+  {
     id: "participants", labelKey: "scoreboard.participants",
     sections: [
       { labelKey: "scoreboard.byTarget", url: `${BASE}/ENS.pdf` },
@@ -128,7 +144,7 @@ export default function ScoreboardPage() {
 
         <div className="mt-6 text-center">
           <a
-            href="https://info.ianseo.net/25IGYO/"
+            href="https://info.ianseo.net/26IGYO/"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"

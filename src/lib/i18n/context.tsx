@@ -16,13 +16,13 @@ interface I18nContextType {
 }
 
 const I18nContext = createContext<I18nContextType>({
-  locale: "en",
+  locale: "ko",
   setLocale: () => {},
   t: (key) => key,
 });
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocale] = useState<Locale>("en");
+  const [locale, setLocale] = useState<Locale>("ko");
 
   const t = useCallback(
     (key: string): string => {

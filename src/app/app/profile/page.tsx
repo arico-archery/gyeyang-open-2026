@@ -61,7 +61,6 @@ export default function ProfilePage() {
 
   const qrUrl = `https://gyeyang-open.vercel.app/app/athlete/${profile.qr_token || profile.id}`;
 
-  // Full-screen QR overlay
   if (qrFullScreen) {
     return (
       <div
@@ -70,17 +69,16 @@ export default function ProfilePage() {
       >
         <QRCodeSVG value={qrUrl} size={280} level="H" />
         <p className="mt-4 text-lg font-bold text-gray-900">{profile.full_name}</p>
-        <p className="text-sm text-gray-500">{profile.nationality} · {ROLE_LABELS[profile.role]?.[locale]}</p>
+        <p className="text-sm text-gray-500">{profile.nationality} \u00b7 {ROLE_LABELS[profile.role]?.[locale]}</p>
         <p className="mt-6 text-xs text-gray-400">{t("화면을 탭하면 닫힙니다", "Tap to close")}</p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-lg mx-auto px-4 pt-6">
+    <div className="max-w-lg mx-auto px-4 pt-6 pb-24">
       <h1 className="text-xl font-bold text-gray-900 mb-4">{t("프로필", "Profile")}</h1>
 
-      {/* Profile Card */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 mb-4">
         <div className="flex items-center gap-4 mb-4">
           <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-2xl font-bold text-blue-600">
@@ -118,7 +116,6 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* QR Code Card */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 mb-4">
         <h3 className="text-sm font-bold text-gray-700 mb-3">{t("내 QR 코드", "My QR Code")}</h3>
         <div className="flex flex-col items-center">
@@ -137,29 +134,33 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Menu Items */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-4">
-        <Link href="/app/profile" className="flex items-center justify-between px-4 py-3.5 border-b border-gray-50 hover:bg-gray-50 transition-colors">
+        <Link href="/app/profile/edit" className="flex items-center justify-between px-4 py-3.5 border-b border-gray-50 hover:bg-gray-50 transition-colors">
+          <span className="text-sm text-gray-700">{t("프로필 수정", "Edit Profile")}</span>
+          <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </Link>
+        <Link href="/app/registration" className="flex items-center justify-between px-4 py-3.5 border-b border-gray-50 hover:bg-gray-50 transition-colors">
           <span className="text-sm text-gray-700">{t("참가 신청 현황", "Registration Status")}</span>
           <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </Link>
-        <Link href="/app/profile" className="flex items-center justify-between px-4 py-3.5 border-b border-gray-50 hover:bg-gray-50 transition-colors">
+        <Link href="/app/inquiries" className="flex items-center justify-between px-4 py-3.5 border-b border-gray-50 hover:bg-gray-50 transition-colors">
           <span className="text-sm text-gray-700">{t("문의 내역", "My Inquiries")}</span>
           <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </Link>
-        <Link href="/app/profile" className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 transition-colors">
-          <span className="text-sm text-gray-700">{t("설정", "Settings")}</span>
+        <Link href="/app/announcements" className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 transition-colors">
+          <span className="text-sm text-gray-700">{t("공지사항", "Announcements")}</span>
           <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </Link>
       </div>
 
-      {/* Sign Out */}
       <button
         onClick={async () => { await signOut(); router.push("/app"); }}
         className="w-full py-3 text-red-500 text-sm font-medium hover:bg-red-50 rounded-xl transition-colors"

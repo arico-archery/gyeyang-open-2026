@@ -6,14 +6,31 @@ import { useAuth } from "@/lib/supabase/auth-context";
 import { supabase } from "@/lib/supabase/client";
 import type { Profile } from "@/lib/supabase/types";
 
+interface ScannedData {
+  profile: Profile;
+  registration: { status: string; category: string } | null;
+  targetAssignment: { target_number: string; session_time: string; distance: string } | null;
+}
+
+const ROLE_LABELS: Record<string, Record<string, string>> = {
+  athlete: { ko: "선수", en: "Athlete" },
+  coach: { ko: "코치", en: "Coach" },
+  judge: { ko: "심판", en: "Judge" },
+  admin: { ko: "관리자", en: "Admin" },
+};
+
+const CATEGORY_LABELS: Record<string, Record<string, string>> = {
+  recurve_men: { ko: "남자 리커브", en: "Recurve Men" },
+  recurve_women: { ko: "여자 리커브", en: "Recurve Women" },
+};
+
 export default function ScanPage() {
   const { locale } = useI18n();
-  const { profile: myProfile } = useAuth();
-  const [scannedProfile, setScannedProfile] = useState<Profile | null>(null);
+  const { user, profile: myProfile } = useAuth();
+  const [scannedData, setScannedData] = useState<ScannedData | null>(null);
   const [scanning, setScanning] = useState(false);
   const [error, setError] = useState("");
   const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
   const t = (ko: string, en: string) => (locale === "ko" ? ko : en);
@@ -23,7 +40,7 @@ export default function ScanPage() {
   const startScanning = async () => {
     try {
       setError("");
-      setScannedProfile(null);
+      setScannedData(null);
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "environment" },
       });
@@ -50,10 +67,8 @@ export default function ScanPage() {
     };
   }, []);
 
-  // BarcodeDetector API polling
   useEffect(() => {
     if (!scanning) return;
-
     let active = true;
 
     const detect = async () => {
@@ -74,7 +89,7 @@ export default function ScanPage() {
           }
         }
       } catch {
-        // BarcodeDetector not supported, fallback message
+        // BarcodeDetector not supported
       }
 
       if (active) setTimeout(detect, 500);
@@ -85,27 +100,48 @@ export default function ScanPage() {
   }, [scanning]);
 
   const lookupAthlete = async (token: string) => {
-    const { data } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("qr_token", token)
+    let profileData: Profile | null = null;
+    const { data } = await supabase.from("profiles").select("*").eq("qr_token", token).single();
+    if (data) {
+      profileData = data;
+    } else {
+      const { data: byId } = await supabase.from("profiles").select("*").eq("id", token).single();
+      if (byId) profileData = byId;
+    }
+
+    if (!profileData) {
+      setError(t("선수를 찾을 수 없습니다", "Athlete not found"));
+      return;
+    }
+
+    const { data: regData } = await supabase
+      .from("registrations")
+      .select("status, category")
+      .eq("user_id", profileData.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
       .single();
 
-    if (data) {
-      setScannedProfile(data);
-    } else {
-      // Try by id
-      const { data: byId } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", token)
-        .single();
-      if (byId) {
-        setScannedProfile(byId);
-      } else {
-        setError(t("선수를 찾을 수 없습니다", "Athlete not found"));
-      }
+    const { data: targetData } = await supabase
+      .from("target_assignments")
+      .select("target_number, session_time, distance")
+      .eq("user_id", profileData.id)
+      .limit(1)
+      .single();
+
+    if (user) {
+      await supabase.from("qr_scan_logs").insert({
+        scanned_by: user.id,
+        scanned_user_id: profileData.id,
+        scan_type: "checkin",
+      });
     }
+
+    setScannedData({
+      profile: profileData,
+      registration: regData || null,
+      targetAssignment: targetData || null,
+    });
   };
 
   if (!isAuthorized) {
@@ -122,16 +158,14 @@ export default function ScanPage() {
   }
 
   return (
-    <div className="max-w-lg mx-auto px-4 pt-6">
+    <div className="max-w-lg mx-auto px-4 pt-6 pb-24">
       <h1 className="text-xl font-bold text-gray-900 mb-4">{t("QR 스캔", "QR Scan")}</h1>
 
-      {/* Scanner */}
-      {!scannedProfile && (
+      {!scannedData && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-4">
           {scanning ? (
             <div className="relative">
               <video ref={videoRef} className="w-full aspect-square object-cover" playsInline muted />
-              <canvas ref={canvasRef} className="hidden" />
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="w-48 h-48 border-2 border-white rounded-xl opacity-50" />
               </div>
@@ -164,58 +198,101 @@ export default function ScanPage() {
       )}
 
       {error && (
-        <div className="bg-red-50 text-red-600 text-sm rounded-xl px-4 py-3 mb-4">
-          {error}
-        </div>
+        <div className="bg-red-50 text-red-600 text-sm rounded-xl px-4 py-3 mb-4">{error}</div>
       )}
 
-      {/* Scanned Result */}
-      {scannedProfile && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-4">
-          <div className="bg-blue-600 px-5 py-4 text-white">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center text-xl font-bold">
-                {scannedProfile.full_name.charAt(0)}
-              </div>
-              <div>
-                <h2 className="text-lg font-bold">{scannedProfile.full_name}</h2>
-                {scannedProfile.full_name_en && (
-                  <p className="text-blue-100 text-sm">{scannedProfile.full_name_en}</p>
-                )}
-                <p className="text-blue-200 text-xs mt-0.5">
-                  {scannedProfile.nationality} · {scannedProfile.team || "-"}
-                </p>
+      {scannedData && (
+        <div className="space-y-4">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="bg-blue-600 px-5 py-4 text-white">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center text-xl font-bold">
+                  {scannedData.profile.full_name.charAt(0)}
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold">{scannedData.profile.full_name}</h2>
+                  {scannedData.profile.full_name_en && (
+                    <p className="text-blue-100 text-sm">{scannedData.profile.full_name_en}</p>
+                  )}
+                  <p className="text-blue-200 text-xs mt-0.5">
+                    {scannedData.profile.nationality} \u00b7 {scannedData.profile.team || "-"}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="p-5 space-y-3">
-            <div className="flex gap-2 text-sm">
-              <span className="text-gray-400 w-16 shrink-0">{t("역할", "Role")}</span>
-              <span className="font-medium text-gray-900">{scannedProfile.role}</span>
-            </div>
-            {scannedProfile.category && (
+            <div className="p-5 space-y-3">
               <div className="flex gap-2 text-sm">
-                <span className="text-gray-400 w-16 shrink-0">{t("종별", "Event")}</span>
-                <span className="font-medium text-gray-900">{scannedProfile.category}</span>
+                <span className="text-gray-400 w-16 shrink-0">{t("역할", "Role")}</span>
+                <span className="font-medium text-gray-900">
+                  {ROLE_LABELS[scannedData.profile.role]?.[locale] || scannedData.profile.role}
+                </span>
               </div>
-            )}
-            <div className="flex gap-2 text-sm">
-              <span className="text-gray-400 w-16 shrink-0">{t("등록", "Status")}</span>
-              <span className="px-2 py-0.5 bg-green-50 text-green-600 text-xs font-medium rounded-md">
-                {t("확인됨", "Verified")}
-              </span>
+              {scannedData.profile.category && (
+                <div className="flex gap-2 text-sm">
+                  <span className="text-gray-400 w-16 shrink-0">{t("종별", "Event")}</span>
+                  <span className="font-medium text-gray-900">
+                    {CATEGORY_LABELS[scannedData.profile.category]?.[locale] || scannedData.profile.category}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
 
-          <div className="px-5 pb-5">
-            <button
-              onClick={() => { setScannedProfile(null); setError(""); }}
-              className="w-full py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors"
-            >
-              {t("다시 스캔", "Scan Again")}
-            </button>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+            <h3 className="text-sm font-bold text-gray-700 mb-3">{t("참가 등록", "Registration")}</h3>
+            {scannedData.registration ? (
+              <div className="flex items-center gap-3">
+                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                  scannedData.registration.status === "approved"
+                    ? "bg-green-100 text-green-700"
+                    : scannedData.registration.status === "pending"
+                    ? "bg-yellow-100 text-yellow-700"
+                    : "bg-red-100 text-red-700"
+                }`}>
+                  {scannedData.registration.status === "approved"
+                    ? t("승인됨", "Approved")
+                    : scannedData.registration.status === "pending"
+                    ? t("심사중", "Pending")
+                    : t("반려됨", "Rejected")}
+                </span>
+                <span className="text-sm text-gray-500">
+                  {CATEGORY_LABELS[scannedData.registration.category]?.[locale] || scannedData.registration.category}
+                </span>
+              </div>
+            ) : (
+              <p className="text-sm text-gray-400">{t("미등록", "Not registered")}</p>
+            )}
           </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+            <h3 className="text-sm font-bold text-gray-700 mb-3">{t("타겟 배정", "Target Assignment")}</h3>
+            {scannedData.targetAssignment ? (
+              <div className="grid grid-cols-3 gap-3 text-center">
+                <div className="bg-blue-50 rounded-lg p-3">
+                  <p className="text-xs text-blue-500 mb-1">{t("타겟", "Target")}</p>
+                  <p className="text-lg font-bold text-blue-700">{scannedData.targetAssignment.target_number}</p>
+                </div>
+                <div className="bg-gray-50 rounded-lg p-3">
+                  <p className="text-xs text-gray-500 mb-1">{t("시간", "Time")}</p>
+                  <p className="text-sm font-bold text-gray-700">{scannedData.targetAssignment.session_time}</p>
+                </div>
+                <div className="bg-gray-50 rounded-lg p-3">
+                  <p className="text-xs text-gray-500 mb-1">{t("거리", "Distance")}</p>
+                  <p className="text-sm font-bold text-gray-700">{scannedData.targetAssignment.distance}</p>
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-gray-400">{t("배정되지 않음", "Not assigned yet")}</p>
+            )}
+          </div>
+
+          <button
+            onClick={() => { setScannedData(null); setError(""); }}
+            className="w-full py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors"
+          >
+            {t("다시 스캔", "Scan Again")}
+          </button>
         </div>
       )}
     </div>

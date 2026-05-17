@@ -213,11 +213,11 @@ export default function AdminUsersPage() {
         <div className="flex flex-col gap-1">
           <div className="flex items-center justify-between">
             <span className="text-xs text-gray-500">{t("심판", "Judge")}</span>
-            <code className="text-xs font-mono bg-white border border-gray-200 px-2 py-0.5 rounded text-purple-700">GYEYANG-JUDGE-2026</code>
+            <button onClick={() => { navigator.clipboard.writeText("GYEYANG-JUDGE-2026"); setToast(t("복사됨!", "Copied!")); setTimeout(() => setToast(""), 1500); }} className="text-xs font-mono bg-white border border-gray-200 px-2 py-0.5 rounded text-purple-700 hover:bg-purple-50 active:scale-95 transition-all cursor-pointer">GYEYANG-JUDGE-2026</button>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-xs text-gray-500">{t("관리자", "Admin")}</span>
-            <code className="text-xs font-mono bg-white border border-gray-200 px-2 py-0.5 rounded text-red-700">GYEYANG-ADMIN-2026</code>
+            <button onClick={() => { navigator.clipboard.writeText("GYEYANG-ADMIN-2026"); setToast(t("복사됨!", "Copied!")); setTimeout(() => setToast(""), 1500); }} className="text-xs font-mono bg-white border border-gray-200 px-2 py-0.5 rounded text-red-700 hover:bg-red-50 active:scale-95 transition-all cursor-pointer">GYEYANG-ADMIN-2026</button>
           </div>
         </div>
       </div>

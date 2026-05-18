@@ -32,7 +32,11 @@ export default function Footer() {
             <Image key={i + 4} src={s.src} alt={s.alt} width={s.width} height={60} className="h-12 w-auto object-contain" />
           ))}
         </div>
-        <div className="text-center mb-4">
+        <div className="text-center mb-4 flex items-center justify-center gap-4">
+          <Link href="/archive/2026" className="text-sm text-gray-500 hover:text-blue-600 transition-colors">
+            {t("nav.archive2026")}
+          </Link>
+          <span className="text-gray-300">·</span>
           <Link href="/archive/2025" className="text-sm text-gray-500 hover:text-amber-600 transition-colors">
             {t("nav.archive2025")}
           </Link>

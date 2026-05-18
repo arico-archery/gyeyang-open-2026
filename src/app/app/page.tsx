@@ -6,8 +6,7 @@ import { useI18n } from "@/lib/i18n/context";
 import { useAuth } from "@/lib/supabase/auth-context";
 import { supabase } from "@/lib/supabase/client";
 import { isSuperAdmin } from "@/lib/super-admin";
-
-const EVENT_DATE = new Date("2026-05-13T00:00:00+09:00");
+import { getDDay } from "@/lib/event";
 
 interface Announcement {
   id: string;
@@ -26,17 +25,7 @@ export default function AppHome() {
   const t = (ko: string, en: string) => (locale === "ko" ? ko : en);
 
   useEffect(() => {
-    const now = new Date();
-    const diff = Math.ceil(
-      (EVENT_DATE.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
-    );
-    if (diff > 0) {
-      setDDay("D-" + diff);
-    } else if (diff === 0) {
-      setDDay("D-DAY");
-    } else {
-      setDDay("D+" + Math.abs(diff));
-    }
+    setDDay(getDDay().label);
   }, []);
 
   useEffect(() => {

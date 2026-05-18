@@ -85,7 +85,7 @@ export default function Hero() {
             {/* CTA buttons */}
             <div className="flex flex-wrap gap-3">
               {dDay?.ended ? (
-                <a href="/archive/2026" className="btn-download btn-download-sm">
+                <a href="/scoreboard" className="btn-download btn-download-sm">
                   {t("hero.viewResults")}
                 </a>
               ) : (

@@ -14,7 +14,7 @@ interface Announcement {
   title: string;
   title_en: string | null;
   created_at: string;
-  is_important: boolean;
+  priority: "normal" | "important" | "urgent";
 }
 
 export default function AppHome() {
@@ -42,7 +42,7 @@ export default function AppHome() {
   useEffect(() => {
     supabase
       .from("announcements")
-      .select("id, title, title_en, created_at, is_important")
+      .select("id, title, title_en, created_at, priority")
       .order("created_at", { ascending: false })
       .limit(3)
       .then(({ data }) => {
@@ -135,9 +135,14 @@ export default function AppHome() {
                 href={"/app/announcements/" + a.id}
                 className="flex items-start gap-2 py-1.5"
               >
-                {a.is_important && (
+                {a.priority === "urgent" && (
                   <span className="shrink-0 px-1.5 py-0.5 bg-red-100 text-red-600 text-[10px] font-bold rounded">
-                    {t("중요", "IMP")}
+                    {t("긴급", "URG")}
+                  </span>
+                )}
+                {a.priority === "important" && (
+                  <span className="shrink-0 px-1.5 py-0.5 bg-amber-100 text-amber-700 text-[10px] font-bold rounded">
+                    {t("안내", "NOT")}
                   </span>
                 )}
                 <span className="text-sm text-gray-700 line-clamp-1 flex-1">
@@ -193,13 +198,13 @@ export default function AppHome() {
 
       {/* Website Link */}
       <a
-        href="https://gyeyang-open-2026.vercel.app/"
+        href="https://www.gyeyangopen.com/"
         target="_blank"
         rel="noopener noreferrer"
         className="block bg-gray-50 rounded-xl border border-gray-200 p-4 text-center hover:bg-gray-100 transition-colors mb-4"
       >
         <p className="text-sm font-medium text-gray-700">{t("공식 웹사이트 방문", "Visit Official Website")}</p>
-        <p className="text-xs text-gray-400 mt-1">gyeyang-open-2026.vercel.app</p>
+        <p className="text-xs text-gray-400 mt-1">www.gyeyangopen.com</p>
       </a>
 
       {/* Admin Link */}

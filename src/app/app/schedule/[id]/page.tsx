@@ -5,33 +5,21 @@ import { useParams, useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n/context";
 import { useAuth } from "@/lib/supabase/auth-context";
 import { supabase } from "@/lib/supabase/client";
+import type { Schedule, TargetAssignment, ScheduleType } from "@/lib/supabase/types";
 
-interface ScheduleDetail {
-  id: string;
-  title_ko: string;
-  title_en: string;
-  date: string;
-  start_time: string;
-  end_time: string;
-  location: string | null;
-  description_ko: string | null;
-  description_en: string | null;
-  schedule_type: string;
-}
-
-interface TargetAssignment {
-  target_number: string;
-  session_time: string;
-  distance: string;
-}
-
-const TYPE_COLORS: Record<string, string> = {
-  practice: "bg-green-100 text-green-700",
-  qualification: "bg-blue-100 text-blue-700",
-  elimination: "bg-purple-100 text-purple-700",
-  ceremony: "bg-amber-100 text-amber-700",
-  meeting: "bg-gray-100 text-gray-700",
+const TYPE_LABELS: Record<ScheduleType, { ko: string; en: string; color: string }> = {
+  practice: { ko: "공식 연습", en: "Practice", color: "bg-green-100 text-green-700" },
+  qualification: { ko: "예선", en: "Qualification", color: "bg-blue-100 text-blue-700" },
+  elimination: { ko: "본선", en: "Elimination", color: "bg-purple-100 text-purple-700" },
+  ceremony: { ko: "시상식", en: "Ceremony", color: "bg-amber-100 text-amber-700" },
+  other: { ko: "기타", en: "Other", color: "bg-gray-100 text-gray-700" },
 };
+
+function formatTime(t: string | null): string {
+  if (!t) return "";
+  // Postgres time format is HH:MM:SS — trim seconds
+  return t.length >= 5 ? t.slice(0, 5) : t;
+}
 
 export default function ScheduleDetailPage() {
   const { locale } = useI18n();
@@ -40,7 +28,7 @@ export default function ScheduleDetailPage() {
   const router = useRouter();
   const id = params.id as string;
 
-  const [schedule, setSchedule] = useState<ScheduleDetail | null>(null);
+  const [schedule, setSchedule] = useState<Schedule | null>(null);
   const [target, setTarget] = useState<TargetAssignment | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -56,20 +44,20 @@ export default function ScheduleDetailPage() {
       .from("schedules")
       .select("*")
       .eq("id", id)
-      .single();
+      .maybeSingle();
 
-    if (scheduleData) setSchedule(scheduleData);
+    if (scheduleData) setSchedule(scheduleData as Schedule);
 
     // Fetch my target assignment for this schedule
     if (user) {
       const { data: targetData } = await supabase
         .from("target_assignments")
-        .select("target_number, session_time, distance")
-        .eq("user_id", user.id)
+        .select("target_number, target_position, session")
+        .eq("athlete_id", user.id)
         .eq("schedule_id", id)
-        .single();
+        .maybeSingle();
 
-      if (targetData) setTarget(targetData);
+      if (targetData) setTarget(targetData as TargetAssignment);
     }
 
     setLoading(false);
@@ -91,8 +79,14 @@ export default function ScheduleDetailPage() {
     );
   }
 
-  const title = locale === "ko" ? schedule.title_ko : schedule.title_en;
-  const description = locale === "ko" ? schedule.description_ko : schedule.description_en;
+  const title = locale === "ko" ? schedule.title : schedule.title_en || schedule.title;
+  const description = schedule.description;
+  const typeMeta = TYPE_LABELS[schedule.schedule_type] || TYPE_LABELS.other;
+
+  const dateLabel = new Date(schedule.event_date + "T00:00:00").toLocaleDateString(
+    locale === "ko" ? "ko-KR" : "en-US",
+    { year: "numeric", month: "long", day: "numeric", weekday: "short" }
+  );
 
   return (
     <div className="max-w-lg mx-auto px-4 pt-6 pb-24">
@@ -108,10 +102,10 @@ export default function ScheduleDetailPage() {
 
       {/* Main Info */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-4">
-        <div className="flex items-start justify-between mb-3">
+        <div className="flex items-start justify-between mb-3 gap-2">
           <h2 className="text-lg font-bold text-gray-900 flex-1">{title}</h2>
-          <span className={`px-2.5 py-1 rounded-full text-[10px] font-semibold shrink-0 ml-2 ${TYPE_COLORS[schedule.schedule_type] || "bg-gray-100 text-gray-700"}`}>
-            {schedule.schedule_type}
+          <span className={`px-2.5 py-1 rounded-full text-[10px] font-semibold shrink-0 ${typeMeta.color}`}>
+            {locale === "ko" ? typeMeta.ko : typeMeta.en}
           </span>
         </div>
 
@@ -120,14 +114,19 @@ export default function ScheduleDetailPage() {
             <svg className="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            <span className="text-gray-700">{schedule.date}</span>
+            <span className="text-gray-700">{dateLabel}</span>
           </div>
-          <div className="flex items-center gap-3">
-            <svg className="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span className="text-gray-700">{schedule.start_time} - {schedule.end_time}</span>
-          </div>
+          {(schedule.start_time || schedule.end_time) && (
+            <div className="flex items-center gap-3">
+              <svg className="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="text-gray-700">
+                {formatTime(schedule.start_time)}
+                {schedule.end_time ? ` - ${formatTime(schedule.end_time)}` : ""}
+              </span>
+            </div>
+          )}
           {schedule.location && (
             <div className="flex items-center gap-3">
               <svg className="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -141,7 +140,7 @@ export default function ScheduleDetailPage() {
 
         {description && (
           <div className="mt-4 pt-4 border-t border-gray-100">
-            <p className="text-sm text-gray-600 leading-relaxed">{description}</p>
+            <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">{description}</p>
           </div>
         )}
       </div>
@@ -152,16 +151,16 @@ export default function ScheduleDetailPage() {
           <h3 className="text-sm font-bold text-gray-700 mb-4">{t("내 타겟 배정", "My Target Assignment")}</h3>
           <div className="grid grid-cols-3 gap-3 text-center">
             <div className="bg-blue-50 rounded-xl p-4">
-              <p className="text-xs text-blue-500 mb-1">{t("타겟", "Target")}</p>
+              <p className="text-xs text-blue-500 mb-1">{t("사대", "Target")}</p>
               <p className="text-2xl font-bold text-blue-700">{target.target_number}</p>
             </div>
             <div className="bg-gray-50 rounded-xl p-4">
-              <p className="text-xs text-gray-500 mb-1">{t("시간", "Time")}</p>
-              <p className="text-base font-bold text-gray-700">{target.session_time}</p>
+              <p className="text-xs text-gray-500 mb-1">{t("위치", "Position")}</p>
+              <p className="text-2xl font-bold text-gray-700">{target.target_position || "-"}</p>
             </div>
             <div className="bg-gray-50 rounded-xl p-4">
-              <p className="text-xs text-gray-500 mb-1">{t("거리", "Distance")}</p>
-              <p className="text-base font-bold text-gray-700">{target.distance}</p>
+              <p className="text-xs text-gray-500 mb-1">{t("세션", "Session")}</p>
+              <p className="text-2xl font-bold text-gray-700">{target.session ?? "-"}</p>
             </div>
           </div>
         </div>

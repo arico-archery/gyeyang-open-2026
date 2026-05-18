@@ -5,22 +5,20 @@ import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n/context";
 import { useAuth } from "@/lib/supabase/auth-context";
 import { supabase } from "@/lib/supabase/client";
+import type { Registration, RegistrationStatus } from "@/lib/supabase/types";
 
-interface Registration {
-  id: string;
-  status: string;
-  created_at: string;
-  category: string;
-  emergency_contact: string | null;
-  dietary_requirements: string | null;
-  notes: string | null;
-}
-
-const STATUS_CONFIG: Record<string, { ko: string; en: string; color: string }> = {
-  pending: { ko: "심사중", en: "Pending", color: "bg-yellow-100 text-yellow-700" },
+const STATUS_CONFIG: Record<RegistrationStatus, { ko: string; en: string; color: string }> = {
+  submitted: { ko: "접수됨", en: "Submitted", color: "bg-yellow-100 text-yellow-700" },
+  reviewing: { ko: "검토중", en: "Reviewing", color: "bg-blue-100 text-blue-700" },
   approved: { ko: "승인됨", en: "Approved", color: "bg-green-100 text-green-700" },
+  confirmed: { ko: "확정", en: "Confirmed", color: "bg-emerald-100 text-emerald-700" },
   rejected: { ko: "반려됨", en: "Rejected", color: "bg-red-100 text-red-700" },
 };
+
+const EVENT_TYPES = [
+  { value: "individual", ko: "개인전", en: "Individual" },
+  { value: "team", ko: "단체전", en: "Team" },
+];
 
 const CATEGORIES = [
   { value: "recurve_men", ko: "남자 리커브", en: "Recurve Men" },
@@ -39,14 +37,21 @@ export default function RegistrationPage() {
   const [showForm, setShowForm] = useState(false);
 
   // Form state
+  const [eventType, setEventType] = useState("individual");
   const [category, setCategory] = useState("recurve_men");
-  const [emergencyContact, setEmergencyContact] = useState("");
-  const [dietary, setDietary] = useState("");
-  const [notes, setNotes] = useState("");
+  const [teamName, setTeamName] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
   const t = (ko: string, en: string) => (locale === "ko" ? ko : en);
+
+  // Prefill category from profile if available
+  useEffect(() => {
+    if (profile?.category) {
+      const known = CATEGORIES.find((c) => c.value === profile.category);
+      if (known) setCategory(known.value);
+    }
+  }, [profile]);
 
   useEffect(() => {
     if (user) {
@@ -60,12 +65,12 @@ export default function RegistrationPage() {
     const { data } = await supabase
       .from("registrations")
       .select("*")
-      .eq("user_id", user!.id)
+      .eq("athlete_id", user!.id)
       .order("created_at", { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
 
-    if (data) setRegistration(data);
+    if (data) setRegistration(data as Registration);
     setFetching(false);
   };
 
@@ -74,14 +79,16 @@ export default function RegistrationPage() {
     setError("");
     setSubmitting(true);
 
-    const { error: insertError } = await supabase.from("registrations").insert({
-      user_id: user!.id,
+    const payload: Record<string, unknown> = {
+      athlete_id: user!.id,
+      event_type: eventType,
       category,
-      emergency_contact: emergencyContact || null,
-      dietary_requirements: dietary || null,
-      notes: notes || null,
-      status: "pending",
-    });
+    };
+    if (eventType === "team" && teamName.trim()) {
+      payload.team_name = teamName.trim();
+    }
+
+    const { error: insertError } = await supabase.from("registrations").insert(payload);
 
     if (insertError) {
       setError(insertError.message);
@@ -90,6 +97,21 @@ export default function RegistrationPage() {
       await fetchRegistration();
     }
     setSubmitting(false);
+  };
+
+  const statusLabel = (s: string) => {
+    const m = STATUS_CONFIG[s as RegistrationStatus];
+    return m ? (locale === "ko" ? m.ko : m.en) : s;
+  };
+  const statusColor = (s: string) =>
+    STATUS_CONFIG[s as RegistrationStatus]?.color || "bg-gray-100 text-gray-600";
+  const categoryLabel = (c: string) => {
+    const m = CATEGORIES.find((x) => x.value === c);
+    return m ? (locale === "ko" ? m.ko : m.en) : c;
+  };
+  const eventTypeLabel = (e: string) => {
+    const m = EVENT_TYPES.find((x) => x.value === e);
+    return m ? (locale === "ko" ? m.ko : m.en) : e;
   };
 
   if (loading || fetching) {
@@ -122,34 +144,36 @@ export default function RegistrationPage() {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-base font-bold text-gray-900">{t("신청 현황", "Status")}</h2>
-            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${STATUS_CONFIG[registration.status]?.color || "bg-gray-100 text-gray-600"}`}>
-              {STATUS_CONFIG[registration.status]?.[locale === "ko" ? "ko" : "en"] || registration.status}
+            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColor(registration.status)}`}>
+              {statusLabel(registration.status)}
             </span>
           </div>
 
           <div className="space-y-3 text-sm">
             <div className="flex justify-between">
-              <span className="text-gray-500">{t("종목", "Event")}</span>
-              <span className="text-gray-900 font-medium">
-                {CATEGORIES.find((c) => c.value === registration.category)?.[locale === "ko" ? "ko" : "en"] || registration.category}
-              </span>
+              <span className="text-gray-500">{t("경기 종류", "Event Type")}</span>
+              <span className="text-gray-900 font-medium">{eventTypeLabel(registration.event_type)}</span>
             </div>
+            <div className="flex justify-between">
+              <span className="text-gray-500">{t("종목", "Category")}</span>
+              <span className="text-gray-900 font-medium">{categoryLabel(registration.category)}</span>
+            </div>
+            {registration.team_name && (
+              <div className="flex justify-between">
+                <span className="text-gray-500">{t("팀명", "Team")}</span>
+                <span className="text-gray-900">{registration.team_name}</span>
+              </div>
+            )}
+            {registration.registration_number && (
+              <div className="flex justify-between">
+                <span className="text-gray-500">{t("등록번호", "Reg No.")}</span>
+                <span className="text-gray-900 font-mono">{registration.registration_number}</span>
+              </div>
+            )}
             <div className="flex justify-between">
               <span className="text-gray-500">{t("신청일", "Applied")}</span>
               <span className="text-gray-900">{new Date(registration.created_at).toLocaleDateString()}</span>
             </div>
-            {registration.emergency_contact && (
-              <div className="flex justify-between">
-                <span className="text-gray-500">{t("비상연락처", "Emergency")}</span>
-                <span className="text-gray-900">{registration.emergency_contact}</span>
-              </div>
-            )}
-            {registration.dietary_requirements && (
-              <div className="flex justify-between">
-                <span className="text-gray-500">{t("식이사항", "Dietary")}</span>
-                <span className="text-gray-900">{registration.dietary_requirements}</span>
-              </div>
-            )}
           </div>
 
           {registration.status === "rejected" && (
@@ -161,7 +185,7 @@ export default function RegistrationPage() {
             </button>
           )}
 
-          {registration.status === "approved" && (
+          {(registration.status === "approved" || registration.status === "confirmed") && (
             <div className="mt-4 p-3 bg-green-50 rounded-xl">
               <p className="text-sm text-green-700 text-center font-medium">
                 {t("참가가 승인되었습니다! 대회에서 만나요.", "Your registration is approved! See you at the event.")}
@@ -183,7 +207,7 @@ export default function RegistrationPage() {
             {t("아직 참가 신청을 하지 않았습니다", "No registration yet")}
           </h2>
           <p className="text-sm text-gray-500 mb-6">
-            {t("2026 계양오픈에 참가하려면 아래 버튼을 눌러 신청하세요.", "Apply below to participate in the 2026 Gyeyang Open.")}
+            {t("계양오픈에 참가하려면 아래 버튼을 눌러 신청하세요.", "Apply below to participate in the Gyeyang Open.")}
           </p>
           <button
             onClick={() => setShowForm(true)}
@@ -205,7 +229,26 @@ export default function RegistrationPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("종목", "Event")}</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("경기 종류", "Event Type")}</label>
+              <div className="grid grid-cols-2 gap-2">
+                {EVENT_TYPES.map((e) => (
+                  <button
+                    key={e.value} type="button"
+                    onClick={() => setEventType(e.value)}
+                    className={`py-2.5 rounded-xl text-sm font-medium border transition-colors ${
+                      eventType === e.value
+                        ? "bg-blue-600 text-white border-blue-600"
+                        : "bg-white text-gray-700 border-gray-200 hover:border-blue-300"
+                    }`}
+                  >
+                    {locale === "ko" ? e.ko : e.en}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("종목", "Category")}</label>
               <div className="grid grid-cols-2 gap-2">
                 {CATEGORIES.map((c) => (
                   <button
@@ -223,35 +266,21 @@ export default function RegistrationPage() {
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("비상연락처", "Emergency Contact")}</label>
-              <input
-                type="text" value={emergencyContact} onChange={(e) => setEmergencyContact(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder={t("010-0000-0000", "+82-10-0000-0000")}
-              />
-            </div>
+            {eventType === "team" && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t("팀명", "Team Name")}</label>
+                <input
+                  type="text" value={teamName} onChange={(e) => setTeamName(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder={t("팀 이름 입력", "Enter team name")}
+                />
+                <p className="text-xs text-gray-400 mt-1">
+                  {t("팀 구성원은 관리자 측에서 별도 등록합니다.", "Team members are added separately by an admin.")}
+                </p>
+              </div>
+            )}
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("식이 요구사항", "Dietary Requirements")}</label>
-              <input
-                type="text" value={dietary} onChange={(e) => setDietary(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder={t("채식, 할랄, 알레르기 등", "Vegetarian, Halal, Allergies, etc.")}
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("기타 메모", "Notes")}</label>
-              <textarea
-                value={notes} onChange={(e) => setNotes(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                rows={3}
-                placeholder={t("추가 요청사항을 입력하세요", "Any additional requests")}
-              />
-            </div>
-
-            <div className="flex gap-2">
+            <div className="flex gap-2 pt-2">
               <button
                 type="button" onClick={() => setShowForm(false)}
                 className="flex-1 py-3 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition-colors"

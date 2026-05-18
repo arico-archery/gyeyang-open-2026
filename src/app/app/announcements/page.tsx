@@ -4,16 +4,13 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n/context";
 import { supabase } from "@/lib/supabase/client";
+import type { Announcement, AnnouncementPriority } from "@/lib/supabase/types";
 
-interface Announcement {
-  id: string;
-  title_ko: string;
-  title_en: string;
-  content_ko: string;
-  content_en: string;
-  priority: string;
-  created_at: string;
-}
+const PRIORITY_STYLE: Record<AnnouncementPriority, { dot: string; badge: string; label_ko: string; label_en: string }> = {
+  normal: { dot: "", badge: "", label_ko: "", label_en: "" },
+  important: { dot: "bg-amber-500", badge: "bg-amber-100 text-amber-700", label_ko: "안내", label_en: "Notice" },
+  urgent: { dot: "bg-red-500", badge: "bg-red-100 text-red-600", label_ko: "긴급", label_en: "Urgent" },
+};
 
 export default function AnnouncementsPage() {
   const { locale } = useI18n();
@@ -38,6 +35,11 @@ export default function AnnouncementsPage() {
     setLoading(false);
   };
 
+  const titleFor = (a: Announcement) =>
+    locale === "ko" ? a.title : a.title_en || a.title;
+  const contentFor = (a: Announcement) =>
+    locale === "ko" ? a.content : a.content_en || a.content;
+
   const selected = announcements.find((a) => a.id === selectedId);
 
   if (loading) {
@@ -50,8 +52,8 @@ export default function AnnouncementsPage() {
 
   // Detail view
   if (selected) {
-    const title = locale === "ko" ? selected.title_ko : selected.title_en;
-    const content = locale === "ko" ? selected.content_ko : selected.content_en;
+    const style = PRIORITY_STYLE[selected.priority];
+    const showBadge = selected.priority !== "normal";
 
     return (
       <div className="max-w-lg mx-auto px-4 pt-6 pb-24">
@@ -65,17 +67,17 @@ export default function AnnouncementsPage() {
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-          {selected.priority === "high" && (
-            <span className="inline-block px-2 py-0.5 bg-red-100 text-red-600 text-[10px] font-semibold rounded-md mb-2">
-              {t("중요", "Important")}
+          {showBadge && (
+            <span className={`inline-block px-2 py-0.5 ${style.badge} text-[10px] font-semibold rounded-md mb-2`}>
+              {t(style.label_ko, style.label_en)}
             </span>
           )}
-          <h2 className="text-lg font-bold text-gray-900 mb-2">{title}</h2>
+          <h2 className="text-lg font-bold text-gray-900 mb-2">{titleFor(selected)}</h2>
           <p className="text-xs text-gray-400 mb-4">
             {new Date(selected.created_at).toLocaleDateString()}
           </p>
           <div className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
-            {content}
+            {contentFor(selected)}
           </div>
         </div>
       </div>
@@ -101,7 +103,7 @@ export default function AnnouncementsPage() {
       ) : (
         <div className="space-y-3">
           {announcements.map((item) => {
-            const title = locale === "ko" ? item.title_ko : item.title_en;
+            const style = PRIORITY_STYLE[item.priority];
             return (
               <button
                 key={item.id}
@@ -109,11 +111,11 @@ export default function AnnouncementsPage() {
                 className="w-full bg-white rounded-xl shadow-sm border border-gray-100 p-4 text-left hover:border-blue-200 transition-colors"
               >
                 <div className="flex items-start gap-3">
-                  {item.priority === "high" && (
-                    <span className="shrink-0 mt-0.5 w-2 h-2 bg-red-500 rounded-full" />
+                  {item.priority !== "normal" && (
+                    <span className={`shrink-0 mt-0.5 w-2 h-2 ${style.dot} rounded-full`} />
                   )}
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-semibold text-gray-900 truncate">{title}</h3>
+                    <h3 className="text-sm font-semibold text-gray-900 truncate">{titleFor(item)}</h3>
                     <p className="text-xs text-gray-400 mt-1">
                       {new Date(item.created_at).toLocaleDateString()}
                     </p>

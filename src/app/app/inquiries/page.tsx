@@ -5,21 +5,22 @@ import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n/context";
 import { useAuth } from "@/lib/supabase/auth-context";
 import { supabase } from "@/lib/supabase/client";
+import type { Inquiry, InquiryStatus } from "@/lib/supabase/types";
 
-interface Inquiry {
-  id: string;
-  subject: string;
-  message: string;
-  status: string;
-  admin_reply: string | null;
-  created_at: string;
-}
-
-const STATUS_MAP: Record<string, { ko: string; en: string; color: string }> = {
-  open: { ko: "대기중", en: "Open", color: "bg-yellow-100 text-yellow-700" },
-  answered: { ko: "답변완료", en: "Answered", color: "bg-green-100 text-green-700" },
+const STATUS_MAP: Record<InquiryStatus, { ko: string; en: string; color: string }> = {
+  pending: { ko: "대기중", en: "Pending", color: "bg-yellow-100 text-yellow-700" },
+  replied: { ko: "답변완료", en: "Replied", color: "bg-green-100 text-green-700" },
   closed: { ko: "종료", en: "Closed", color: "bg-gray-100 text-gray-600" },
 };
+
+const CATEGORY_OPTIONS: { value: string; ko: string; en: string }[] = [
+  { value: "general", ko: "일반", en: "General" },
+  { value: "registration", ko: "참가신청", en: "Registration" },
+  { value: "visa", ko: "비자", en: "Visa" },
+  { value: "lodging", ko: "숙소", en: "Lodging" },
+  { value: "transport", ko: "교통", en: "Transport" },
+  { value: "other", ko: "기타", en: "Other" },
+];
 
 export default function InquiriesPage() {
   const { locale } = useI18n();
@@ -32,6 +33,7 @@ export default function InquiriesPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   // Form
+  const [category, setCategory] = useState("general");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -51,7 +53,7 @@ export default function InquiriesPage() {
       .eq("user_id", user!.id)
       .order("created_at", { ascending: false });
 
-    if (data) setInquiries(data);
+    if (data) setInquiries(data as Inquiry[]);
     setLoading(false);
   };
 
@@ -62,20 +64,32 @@ export default function InquiriesPage() {
 
     const { error: insertError } = await supabase.from("inquiries").insert({
       user_id: user!.id,
+      category,
       subject,
       message,
-      status: "open",
     });
 
     if (insertError) {
       setError(insertError.message);
     } else {
+      setCategory("general");
       setSubject("");
       setMessage("");
       setShowForm(false);
       await fetchInquiries();
     }
     setSubmitting(false);
+  };
+
+  const statusLabel = (s: string) => {
+    const m = STATUS_MAP[s as InquiryStatus];
+    return m ? (locale === "ko" ? m.ko : m.en) : s;
+  };
+  const statusColor = (s: string) =>
+    STATUS_MAP[s as InquiryStatus]?.color || "bg-gray-100 text-gray-600";
+  const categoryLabel = (c: string) => {
+    const m = CATEGORY_OPTIONS.find((x) => x.value === c);
+    return m ? (locale === "ko" ? m.ko : m.en) : c;
   };
 
   if (authLoading || loading) {
@@ -107,10 +121,13 @@ export default function InquiriesPage() {
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
-          <div className="flex items-start justify-between">
-            <h2 className="text-base font-bold text-gray-900">{selected.subject}</h2>
-            <span className={`px-2.5 py-1 rounded-full text-[10px] font-semibold shrink-0 ml-2 ${STATUS_MAP[selected.status]?.color || "bg-gray-100 text-gray-600"}`}>
-              {STATUS_MAP[selected.status]?.[locale === "ko" ? "ko" : "en"] || selected.status}
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] font-semibold text-blue-600 uppercase mb-1">{categoryLabel(selected.category)}</p>
+              <h2 className="text-base font-bold text-gray-900">{selected.subject}</h2>
+            </div>
+            <span className={`px-2.5 py-1 rounded-full text-[10px] font-semibold shrink-0 ${statusColor(selected.status)}`}>
+              {statusLabel(selected.status)}
             </span>
           </div>
           <p className="text-xs text-gray-400">{new Date(selected.created_at).toLocaleDateString()}</p>
@@ -119,14 +136,21 @@ export default function InquiriesPage() {
             <p className="text-sm text-gray-700 whitespace-pre-wrap">{selected.message}</p>
           </div>
 
-          {selected.admin_reply && (
+          {selected.reply && (
             <div className="bg-blue-50 rounded-xl p-4">
-              <p className="text-xs font-semibold text-blue-600 mb-2">{t("관리자 답변", "Admin Reply")}</p>
-              <p className="text-sm text-gray-700 whitespace-pre-wrap">{selected.admin_reply}</p>
+              <p className="text-xs font-semibold text-blue-600 mb-2">
+                {t("관리자 답변", "Admin Reply")}
+                {selected.replied_at && (
+                  <span className="text-gray-400 font-normal ml-2">
+                    {new Date(selected.replied_at).toLocaleDateString()}
+                  </span>
+                )}
+              </p>
+              <p className="text-sm text-gray-700 whitespace-pre-wrap">{selected.reply}</p>
             </div>
           )}
 
-          {!selected.admin_reply && selected.status === "open" && (
+          {!selected.reply && selected.status === "pending" && (
             <p className="text-sm text-gray-400 text-center">
               {t("답변 대기 중입니다", "Waiting for a reply")}
             </p>
@@ -155,6 +179,19 @@ export default function InquiriesPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("카테고리", "Category")}</label>
+              <select
+                value={category} onChange={(e) => setCategory(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {CATEGORY_OPTIONS.map((c) => (
+                  <option key={c.value} value={c.value}>
+                    {locale === "ko" ? c.ko : c.en}
+                  </option>
+                ))}
+              </select>
+            </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">{t("제목", "Subject")}</label>
               <input
@@ -217,10 +254,13 @@ export default function InquiriesPage() {
               onClick={() => setSelectedId(item.id)}
               className="w-full bg-white rounded-xl shadow-sm border border-gray-100 p-4 text-left hover:border-blue-200 transition-colors"
             >
-              <div className="flex items-center justify-between mb-1">
-                <h3 className="text-sm font-semibold text-gray-900 truncate flex-1">{item.subject}</h3>
-                <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ml-2 shrink-0 ${STATUS_MAP[item.status]?.color || "bg-gray-100 text-gray-600"}`}>
-                  {STATUS_MAP[item.status]?.[locale === "ko" ? "ko" : "en"] || item.status}
+              <div className="flex items-center justify-between gap-2 mb-1">
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] font-semibold text-blue-600 uppercase mb-0.5">{categoryLabel(item.category)}</p>
+                  <h3 className="text-sm font-semibold text-gray-900 truncate">{item.subject}</h3>
+                </div>
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold shrink-0 ${statusColor(item.status)}`}>
+                  {statusLabel(item.status)}
                 </span>
               </div>
               <p className="text-xs text-gray-400">{new Date(item.created_at).toLocaleDateString()}</p>

@@ -21,13 +21,13 @@ export default function Header() {
   const [openGroup, setOpenGroup] = useState<string | null>(null);
   const { locale, setLocale, t } = useI18n();
 
-  // Three content groups + standalone Contact
+  // Three content groups + standalone Contact — each item is a dedicated route
   const GROUPS: NavGroup[] = [
     {
       label: t("nav.groupAbout"),
       items: [
-        { label: t("nav.invitation"), href: "/#invitation" },
-        { label: t("nav.schedule"), href: "/#schedule" },
+        { label: t("nav.invitation"), href: "/invitation" },
+        { label: t("nav.schedule"), href: "/schedule" },
         { label: t("nav.guideMap"), href: "/guide_map" },
         { label: t("nav.practiceSchedule"), href: "/practice_schedule" },
       ],
@@ -35,10 +35,10 @@ export default function Header() {
     {
       label: t("nav.groupParticipate"),
       items: [
-        { label: t("nav.registration"), href: "/#registration" },
-        { label: t("sectionNav.visa"), href: "/#visa" },
-        { label: t("sectionNav.hotel"), href: "/#hotel" },
-        { label: t("sectionNav.rentcar"), href: "/#rent-car" },
+        { label: t("nav.registration"), href: "/registration" },
+        { label: t("sectionNav.visa"), href: "/visa" },
+        { label: t("sectionNav.hotel"), href: "/hotel" },
+        { label: t("sectionNav.rentcar"), href: "/rent-car" },
       ],
     },
     {
@@ -112,7 +112,7 @@ export default function Header() {
 
             {/* Standalone Contact */}
             <Link
-              href="/#contact"
+              href="/contact"
               className="text-[15px] font-medium text-slate-700 hover:text-blue-600 transition-colors py-2"
             >
               {contactLabel}
@@ -208,7 +208,7 @@ export default function Header() {
               <div>
                 <div className="flex flex-col">
                   <Link
-                    href="/#contact"
+                    href="/contact"
                     className="px-4 py-2.5 text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600 rounded-lg transition-colors"
                     onClick={() => setMobileOpen(false)}
                   >

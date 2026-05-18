@@ -26,7 +26,7 @@ export default function Header() {
   return (
     <header className="site-header sticky top-0 z-50 bg-white border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-[72px]">
           <Link href="/" className="flex items-center gap-3 shrink-0">
             <Image
               src="/images/logo.png"
@@ -36,12 +36,12 @@ export default function Header() {
             />
           </Link>
 
-          <nav className="hidden lg:flex items-center gap-6">
+          <nav className="hidden lg:flex items-center gap-7">
             {NAV_ITEMS.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-base font-normal text-[#374151] hover:text-blue-600 transition-colors"
+                className="text-[15px] font-medium text-slate-700 hover:text-blue-600 transition-colors"
               >
                 {item.label}
               </Link>

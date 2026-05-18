@@ -18,23 +18,23 @@ export default function RentCarSection() {
   const { t } = useI18n();
   const RENTAL_COMPANIES = getRentalCompanies(t);
   return (
-    <section id="rent-car" className="py-16 lg:py-24 bg-white">
+    <section id="rent-car" className="py-20 lg:py-28 bg-white">
       <div className="max-w-4xl mx-auto px-4">
-        <div className="section-tag mb-8">
+        <div className="section-tag mb-9">
           <span className="tag-num">05</span>
           <span>{t("rentcar.sectionTag")}</span>
         </div>
 
-        <h3 className="text-2xl font-bold text-center text-gray-900 mb-12">
+        <h3 className="text-2xl lg:text-3xl font-bold text-center text-slate-900 mb-12 tracking-tight">
           {t("rentcar.heading")}
         </h3>
 
         {/* Rental Car Table */}
         <div className="info-card">
-          <h4 className="text-lg font-bold text-gray-900 mb-4">
+          <h4 className="text-xl font-bold text-slate-900 mb-5 tracking-tight">
             {t("rentcar.rentalInfo")}
           </h4>
-          <p className="text-gray-600 mb-6">
+          <p className="body-text mb-6">
             {t("rentcar.rentalDesc")}
           </p>
 
@@ -59,19 +59,19 @@ export default function RentCarSection() {
             </table>
           </div>
 
-          <div className="mt-6 space-y-2 text-gray-600 text-sm">
-            <p>{t("rentcar.inquiry")} <a href="mailto:gyeyangopen@gmail.com" className="text-primary underline">gyeyangopen@gmail.com</a></p>
-            <p>{t("rentcar.referWebsite")} <a href="https://www.gyeyangopen.com" target="_blank" rel="noopener noreferrer" className="text-primary underline">www.gyeyangopen.com</a></p>
+          <div className="mt-6 space-y-2 text-[15px] text-slate-700 leading-relaxed">
+            <p>{t("rentcar.inquiry")} <a href="mailto:gyeyangopen@gmail.com" className="link">gyeyangopen@gmail.com</a></p>
+            <p>{t("rentcar.referWebsite")} <a href="https://www.gyeyangopen.com" target="_blank" rel="noopener noreferrer" className="link">www.gyeyangopen.com</a></p>
             <p>{t("rentcar.privateVehicle")}</p>
           </div>
         </div>
 
         {/* TABA App */}
         <div className="info-card">
-          <h4 className="text-lg font-bold text-gray-900 mb-4">
+          <h4 className="text-xl font-bold text-slate-900 mb-5 tracking-tight">
             {t("rentcar.tabaTitle")}
           </h4>
-          <p className="text-gray-600 mb-4">
+          <p className="body-text mb-5">
             {t("rentcar.tabaDesc")}
           </p>
           <div className="grid grid-cols-2 gap-4 my-6">
@@ -90,13 +90,13 @@ export default function RentCarSection() {
 
         {/* International Taxi */}
         <div className="info-card">
-          <h4 className="text-lg font-bold text-gray-900 mb-4">
+          <h4 className="text-xl font-bold text-slate-900 mb-5 tracking-tight">
             {t("rentcar.intlTaxiTitle")}
           </h4>
-          <p className="text-gray-600 mb-4">
+          <p className="body-text mb-5">
             {t("rentcar.intlTaxiDesc")}
           </p>
-          <div className="space-y-2 text-gray-600 text-sm mb-6">
+          <div className="space-y-2 text-[15px] text-slate-700 mb-6 leading-relaxed">
             <p>{t("rentcar.intlTaxiNote1")}</p>
             <p>{t("rentcar.intlTaxiNote2")}</p>
             <p>
@@ -105,7 +105,7 @@ export default function RentCarSection() {
                 href="https://ktaxi.net"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-primary underline"
+                className="link"
               >
                 https://ktaxi.net
               </a>

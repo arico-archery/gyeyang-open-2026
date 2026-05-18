@@ -393,6 +393,7 @@ export const en = {
   },
   footer: {
     copyright: "\u00a9 2026 GYEYANG OPEN. All rights reserved.",
+    sponsorsLabel: "Hosts \u00b7 Sponsors",
   },
   archive2025: {
     pageTitle: "2025 GYEYANG OPEN Archive",

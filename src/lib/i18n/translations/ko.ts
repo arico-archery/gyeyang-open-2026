@@ -393,6 +393,7 @@ export const ko = {
   },
   footer: {
     copyright: "© 2026 GYEYANG OPEN. All rights reserved.",
+    sponsorsLabel: "주최 · 후원",
   },
   archive2025: {
     pageTitle: "2025 GYEYANG OPEN 아카이브",

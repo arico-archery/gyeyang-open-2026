@@ -112,14 +112,14 @@ export default function HotelSection() {
   const { t } = useI18n();
   const HOTELS = getHotels(t);
   return (
-    <section id="hotel" className="py-16 lg:py-24 bg-white">
+    <section id="hotel" className="py-20 lg:py-28 bg-white">
       <div className="max-w-4xl mx-auto px-4">
-        <div className="section-tag mb-8">
+        <div className="section-tag mb-9">
           <span className="tag-num">04</span>
           <span>{t("hotel.sectionTag")}</span>
         </div>
 
-        <h3 className="text-2xl font-bold text-center text-gray-900 mb-12">
+        <h3 className="text-2xl lg:text-3xl font-bold text-center text-slate-900 mb-12 tracking-tight">
           {t("hotel.heading")}
         </h3>
 
@@ -129,7 +129,7 @@ export default function HotelSection() {
               <div className="lg:flex gap-8">
                 {/* Hotel Info */}
                 <div className="flex-1">
-                  <h4 className="text-lg font-bold text-gray-900 mb-2">
+                  <h4 className="text-xl font-bold text-slate-900 mb-2 tracking-tight">
                     {i + 1}. {hotel.name}
                   </h4>
                   {hotel.website && (
@@ -137,15 +137,15 @@ export default function HotelSection() {
                       href={hotel.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-primary text-sm underline mb-3 block"
+                      className="link text-[14px] mb-3 inline-block"
                     >
                       {hotel.website}
                     </a>
                   )}
-                  <div className="space-y-1 text-sm text-gray-600">
+                  <div className="space-y-1.5 text-[15px] text-slate-700 leading-relaxed">
                     <p>{hotel.address}</p>
                     {hotel.phone.map((p, j) => (
-                      <p key={j}>{p}</p>
+                      <p key={j} className="value-mono text-[14px]">{p}</p>
                     ))}
                     <p>- {t("hotel.checkIn")} {hotel.checkIn} / {t("hotel.checkOut")} {hotel.checkOut}</p>
                     <p>- {t("hotel.breakfast")} {hotel.breakfast}</p>
@@ -187,8 +187,8 @@ export default function HotelSection() {
         </div>
 
         {/* Notes */}
-        <div className="mt-12 p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <ul className="space-y-2 text-sm text-gray-700">
+        <div className="callout callout-warning mt-12">
+          <ul className="space-y-2.5">
             <li>{t("hotel.note1")}</li>
             <li>{t("hotel.note2")}</li>
           </ul>

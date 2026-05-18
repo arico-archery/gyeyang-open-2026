@@ -40,7 +40,7 @@ export default function SectionNav() {
   };
 
   return (
-    <nav className="section-nav sticky top-16 z-40 bg-white border-b border-gray-200">
+    <nav className="section-nav sticky top-[72px] z-40 bg-white/95 border-b border-slate-200 backdrop-blur-sm">
       {/* Desktop: 6-col grid, Mobile: horizontal scroll to avoid label clipping */}
       <div className="hidden md:grid grid-cols-6">
         {SECTIONS.map(({ id, key }, index) => (
@@ -50,13 +50,13 @@ export default function SectionNav() {
             className={`flex flex-col items-center py-4 transition-colors border-b-[3px] ${
               active === id
                 ? "text-blue-600 border-blue-600 bg-blue-50"
-                : "text-gray-400 border-transparent hover:text-gray-600 hover:bg-gray-50"
+                : "text-slate-500 border-transparent hover:text-slate-900 hover:bg-slate-50"
             }`}
           >
-            <span className={`text-xs font-medium mb-0.5 ${active === id ? "text-blue-600" : "text-gray-300"}`}>
+            <span className={`text-xs font-bold mb-1 ${active === id ? "text-blue-600" : "text-slate-400"}`}>
               {String(index + 1).padStart(2, "0")}
             </span>
-            <span className="text-sm font-medium">{t(key)}</span>
+            <span className="text-sm font-semibold">{t(key)}</span>
           </button>
         ))}
       </div>
@@ -69,13 +69,13 @@ export default function SectionNav() {
               className={`flex flex-col items-center py-3 px-5 whitespace-nowrap transition-colors border-b-[3px] ${
                 active === id
                   ? "text-blue-600 border-blue-600 bg-blue-50"
-                  : "text-gray-400 border-transparent hover:text-gray-600 hover:bg-gray-50"
+                  : "text-slate-500 border-transparent hover:text-slate-900 hover:bg-slate-50"
               }`}
             >
-              <span className={`text-[10px] font-medium mb-0.5 ${active === id ? "text-blue-600" : "text-gray-300"}`}>
+              <span className={`text-[10px] font-bold mb-0.5 ${active === id ? "text-blue-600" : "text-slate-400"}`}>
                 {String(index + 1).padStart(2, "0")}
               </span>
-              <span className="text-sm font-medium">{t(key)}</span>
+              <span className="text-sm font-semibold">{t(key)}</span>
             </button>
           ))}
         </div>

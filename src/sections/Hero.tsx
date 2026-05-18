@@ -50,36 +50,36 @@ export default function Hero() {
               priority
             />
           </div>
-          <div className="flex flex-col items-start gap-6">
-            {/* D-Day badge + date range */}
-            <div className="flex flex-col gap-2 w-full">
+          <div className="flex flex-col items-start gap-7">
+            {/* D-Day badge + status */}
+            <div className="flex flex-col gap-3 w-full">
               {dDay && (
                 <div className="inline-flex items-center gap-3">
                   <span
-                    className={`inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold ${
+                    className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold ${
                       dDay.inEvent
-                        ? "bg-red-100 text-red-600"
+                        ? "bg-red-100 text-red-700"
                         : dDay.ended
-                          ? "bg-gray-100 text-gray-500"
+                          ? "bg-slate-100 text-slate-700"
                           : "bg-blue-100 text-blue-700"
                     }`}
                   >
                     {dDay.label}
                   </span>
                   {dDay.inEvent && (
-                    <span className="text-sm font-semibold text-red-600">
+                    <span className="text-base font-semibold text-red-600">
                       {t("hero.inProgress")}
                     </span>
                   )}
                   {dDay.ended && (
-                    <span className="text-sm text-gray-500">{t("hero.ended")}</span>
+                    <span className="text-base font-semibold text-slate-600">{t("hero.ended")}</span>
                   )}
                 </div>
               )}
-              <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-gray-900">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight leading-tight">
                 {t("hero.date")}
               </h2>
-              <p className="text-sm text-gray-500">{dateRange}</p>
+              <p className="text-base text-slate-600 font-medium">{dateRange}</p>
             </div>
 
             {/* CTA buttons */}

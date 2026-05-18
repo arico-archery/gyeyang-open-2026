@@ -8,22 +8,22 @@ export default function Invitation() {
 
   return (
     <section className="invitation-section">
-      <div className="max-w-4xl mx-auto px-4 py-16">
-        <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 text-center mb-10">
+      <div className="max-w-3xl mx-auto px-4 py-20 lg:py-24">
+        <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 text-center mb-12 tracking-tight">
           {t("invitation.title")}
         </h2>
-        <div className="space-y-5 text-gray-600 leading-relaxed">
-          <p className="font-semibold">{t("invitation.greeting")}</p>
-          <p>{t("invitation.body1")}</p>
-          <p>{t("invitation.body2")}</p>
-          <p>{t("invitation.body3")}</p>
-          <p>{t("invitation.body4")}</p>
-          <p>{t("invitation.body5")}</p>
-          <p>{t("invitation.body6")}</p>
+        <div className="space-y-6">
+          <p className="text-lg font-semibold text-slate-900">{t("invitation.greeting")}</p>
+          <p className="body-text-lg">{t("invitation.body1")}</p>
+          <p className="body-text-lg">{t("invitation.body2")}</p>
+          <p className="body-text-lg">{t("invitation.body3")}</p>
+          <p className="body-text-lg">{t("invitation.body4")}</p>
+          <p className="body-text-lg">{t("invitation.body5")}</p>
+          <p className="body-text-lg">{t("invitation.body6")}</p>
         </div>
-        <div className="mt-10 text-right">
-          <p className="font-semibold text-gray-800">{t("invitation.organizer")}</p>
-          <p className="mt-1 text-gray-700">{t("invitation.chairperson")}</p>
+        <div className="mt-12 text-right">
+          <p className="text-base font-semibold text-slate-900">{t("invitation.organizer")}</p>
+          <p className="mt-1 text-xl font-bold text-slate-800">{t("invitation.chairperson")}</p>
           <Image
             src="/images/signature.png"
             alt="Signature"

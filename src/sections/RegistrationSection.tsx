@@ -2,15 +2,21 @@
 
 import { useI18n } from "@/lib/i18n/context";
 
-export default function RegistrationSection() {
+interface RegistrationSectionProps {
+  hideHeader?: boolean;
+}
+
+export default function RegistrationSection({ hideHeader }: RegistrationSectionProps = {}) {
   const { t } = useI18n();
   return (
-    <section id="registration" className="py-20 lg:py-28 bg-white scroll-mt-24">
+    <section id="registration" className="py-16 lg:py-20 bg-white scroll-mt-24">
       <div className="max-w-4xl mx-auto px-4">
-        <div className="section-tag mb-9">
-          <span className="tag-num">02</span>
-          <span>{t("registration.title")}</span>
-        </div>
+        {!hideHeader && (
+          <div className="section-tag mb-9">
+            <span className="tag-num">02</span>
+            <span>{t("registration.title")}</span>
+          </div>
+        )}
 
         {/* Important Dates */}
         <div className="info-card">

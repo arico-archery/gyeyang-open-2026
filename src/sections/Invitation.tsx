@@ -3,17 +3,24 @@
 import Image from "next/image";
 import { useI18n } from "@/lib/i18n/context";
 
-export default function Invitation() {
+interface InvitationProps {
+  hideHeader?: boolean;
+}
+
+export default function Invitation({ hideHeader }: InvitationProps = {}) {
   const { t } = useI18n();
 
   return (
-    <section id="invitation" className="bg-slate-50 py-20 lg:py-28 scroll-mt-24">
+    <section id="invitation" className="bg-white py-16 lg:py-20 scroll-mt-24">
       <div className="max-w-3xl mx-auto px-6 lg:px-8">
-        {/* Simple section label */}
-        <p className="text-center section-label mb-4">Invitation</p>
-        <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 text-center mb-14 tracking-tight">
-          {t("invitation.title")}
-        </h2>
+        {!hideHeader && (
+          <>
+            <p className="text-center section-label mb-4">Invitation</p>
+            <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 text-center mb-14 tracking-tight">
+              {t("invitation.title")}
+            </h2>
+          </>
+        )}
 
         {/* Card */}
         <div className="bg-white rounded-2xl border border-slate-200 p-8 sm:p-12 lg:p-14">

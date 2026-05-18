@@ -2,15 +2,21 @@
 
 import { useI18n } from "@/lib/i18n/context";
 
-export default function VisaSection() {
+interface VisaSectionProps {
+  hideHeader?: boolean;
+}
+
+export default function VisaSection({ hideHeader }: VisaSectionProps = {}) {
   const { t } = useI18n();
   return (
-    <section id="visa" className="py-20 lg:py-28 bg-white scroll-mt-24">
+    <section id="visa" className="py-16 lg:py-20 bg-white scroll-mt-24">
       <div className="max-w-4xl mx-auto px-4">
-        <div className="section-tag mb-9">
-          <span className="tag-num">03</span>
-          <span>{t("visa.sectionTag")}</span>
-        </div>
+        {!hideHeader && (
+          <div className="section-tag mb-9">
+            <span className="tag-num">03</span>
+            <span>{t("visa.sectionTag")}</span>
+          </div>
+        )}
 
         <div className="bg-pink-50 rounded-2xl p-10 lg:p-14">
           <h3 className="text-2xl lg:text-3xl font-bold text-slate-900 mb-7 tracking-tight">{t("visa.heading")}</h3>

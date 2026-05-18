@@ -1,10 +1,19 @@
-import RentCarSection from "@/sections/RentCarSection";
+"use client";
 
-export const metadata = {
-  title: "Transport - 2026 GYEYANG OPEN",
-  description: "Car rental, TABA taxi app, and international taxi services for 2026 GYEYANG OPEN participants.",
-};
+import RentCarSection from "@/sections/RentCarSection";
+import PageHeader from "@/components/PageHeader";
+import { useI18n } from "@/lib/i18n/context";
 
 export default function RentCarPage() {
-  return <RentCarSection />;
+  const { t } = useI18n();
+  return (
+    <>
+      <PageHeader
+        kicker={t("nav.groupParticipate")}
+        title={t("pageHeader.rentcarTitle")}
+        subtitle={t("pageHeader.rentcarSubtitle")}
+      />
+      <RentCarSection hideHeader />
+    </>
+  );
 }

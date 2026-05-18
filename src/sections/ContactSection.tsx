@@ -4,15 +4,21 @@ import { useI18n } from "@/lib/i18n/context";
 
 import Image from "next/image";
 
-export default function ContactSection() {
+interface ContactSectionProps {
+  hideHeader?: boolean;
+}
+
+export default function ContactSection({ hideHeader }: ContactSectionProps = {}) {
   const { t } = useI18n();
   return (
-    <section id="contact" className="py-20 lg:py-28 bg-white scroll-mt-24">
+    <section id="contact" className="py-16 lg:py-20 bg-white scroll-mt-24">
       <div className="max-w-4xl mx-auto px-4">
-        <div className="section-tag mb-9">
-          <span className="tag-num">06</span>
-          <span>{t("contact.sectionTag")}</span>
-        </div>
+        {!hideHeader && (
+          <div className="section-tag mb-9">
+            <span className="tag-num">06</span>
+            <span>{t("contact.sectionTag")}</span>
+          </div>
+        )}
 
         <div className="bg-blue-600 rounded-3xl p-10 lg:p-14 text-white relative overflow-hidden">
           {/* Background decoration */}

@@ -1,10 +1,19 @@
-import HotelSection from "@/sections/HotelSection";
+"use client";
 
-export const metadata = {
-  title: "Hotels - 2026 GYEYANG OPEN",
-  description: "Partner hotels with athlete discounts near the 2026 GYEYANG OPEN venues in Incheon.",
-};
+import HotelSection from "@/sections/HotelSection";
+import PageHeader from "@/components/PageHeader";
+import { useI18n } from "@/lib/i18n/context";
 
 export default function HotelPage() {
-  return <HotelSection />;
+  const { t } = useI18n();
+  return (
+    <>
+      <PageHeader
+        kicker={t("nav.groupParticipate")}
+        title={t("pageHeader.hotelTitle")}
+        subtitle={t("pageHeader.hotelSubtitle")}
+      />
+      <HotelSection hideHeader />
+    </>
+  );
 }

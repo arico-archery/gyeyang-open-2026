@@ -14,20 +14,28 @@ function getRentalCompanies(t: (key: string) => string) {
   ];
 }
 
-export default function RentCarSection() {
+interface RentCarSectionProps {
+  hideHeader?: boolean;
+}
+
+export default function RentCarSection({ hideHeader }: RentCarSectionProps = {}) {
   const { t } = useI18n();
   const RENTAL_COMPANIES = getRentalCompanies(t);
   return (
-    <section id="rent-car" className="py-20 lg:py-28 bg-white scroll-mt-24">
+    <section id="rent-car" className="py-16 lg:py-20 bg-white scroll-mt-24">
       <div className="max-w-4xl mx-auto px-4">
-        <div className="section-tag mb-9">
-          <span className="tag-num">05</span>
-          <span>{t("rentcar.sectionTag")}</span>
-        </div>
+        {!hideHeader && (
+          <>
+            <div className="section-tag mb-9">
+              <span className="tag-num">05</span>
+              <span>{t("rentcar.sectionTag")}</span>
+            </div>
 
-        <h3 className="text-2xl lg:text-3xl font-bold text-center text-slate-900 mb-12 tracking-tight">
-          {t("rentcar.heading")}
-        </h3>
+            <h3 className="text-2xl lg:text-3xl font-bold text-center text-slate-900 mb-12 tracking-tight">
+              {t("rentcar.heading")}
+            </h3>
+          </>
+        )}
 
         {/* Rental Car Table */}
         <div className="info-card">

@@ -1,14 +1,19 @@
-import ContactSection from "@/sections/ContactSection";
+"use client";
 
-export const metadata = {
-  title: "Contact - 2026 GYEYANG OPEN",
-  description: "Contact information for the 2026 GYEYANG OPEN LOC",
-};
+import ContactSection from "@/sections/ContactSection";
+import PageHeader from "@/components/PageHeader";
+import { useI18n } from "@/lib/i18n/context";
 
 export default function ContactPage() {
+  const { t } = useI18n();
   return (
-    <div className="py-8">
-      <ContactSection />
-    </div>
+    <>
+      <PageHeader
+        kicker="LOC"
+        title={t("pageHeader.contactTitle")}
+        subtitle={t("pageHeader.contactSubtitle")}
+      />
+      <ContactSection hideHeader />
+    </>
   );
 }

@@ -1,10 +1,19 @@
-import Invitation from "@/sections/Invitation";
+"use client";
 
-export const metadata = {
-  title: "Invitation - 2026 GYEYANG OPEN",
-  description: "Invitation letter from the Chairperson of the 2026 GYEYANG OPEN International Archery Tournament.",
-};
+import Invitation from "@/sections/Invitation";
+import PageHeader from "@/components/PageHeader";
+import { useI18n } from "@/lib/i18n/context";
 
 export default function InvitationPage() {
-  return <Invitation />;
+  const { t } = useI18n();
+  return (
+    <>
+      <PageHeader
+        kicker={t("nav.groupAbout")}
+        title={t("pageHeader.invitationTitle")}
+        subtitle={t("pageHeader.invitationSubtitle")}
+      />
+      <Invitation hideHeader />
+    </>
+  );
 }

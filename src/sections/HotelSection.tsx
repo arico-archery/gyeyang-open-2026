@@ -108,20 +108,28 @@ function getHotels(t: (key: string) => string) {
   ];
 }
 
-export default function HotelSection() {
+interface HotelSectionProps {
+  hideHeader?: boolean;
+}
+
+export default function HotelSection({ hideHeader }: HotelSectionProps = {}) {
   const { t } = useI18n();
   const HOTELS = getHotels(t);
   return (
-    <section id="hotel" className="py-20 lg:py-28 bg-white scroll-mt-24">
+    <section id="hotel" className="py-16 lg:py-20 bg-white scroll-mt-24">
       <div className="max-w-4xl mx-auto px-4">
-        <div className="section-tag mb-9">
-          <span className="tag-num">04</span>
-          <span>{t("hotel.sectionTag")}</span>
-        </div>
+        {!hideHeader && (
+          <>
+            <div className="section-tag mb-9">
+              <span className="tag-num">04</span>
+              <span>{t("hotel.sectionTag")}</span>
+            </div>
 
-        <h3 className="text-2xl lg:text-3xl font-bold text-center text-slate-900 mb-12 tracking-tight">
-          {t("hotel.heading")}
-        </h3>
+            <h3 className="text-2xl lg:text-3xl font-bold text-center text-slate-900 mb-12 tracking-tight">
+              {t("hotel.heading")}
+            </h3>
+          </>
+        )}
 
         <div className="space-y-8">
           {HOTELS.map((hotel, i) => (

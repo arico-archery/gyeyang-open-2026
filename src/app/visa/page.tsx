@@ -1,10 +1,19 @@
-import VisaSection from "@/sections/VisaSection";
+"use client";
 
-export const metadata = {
-  title: "Visa - 2026 GYEYANG OPEN",
-  description: "Visa support and K-ETA information for international participants of the 2026 GYEYANG OPEN.",
-};
+import VisaSection from "@/sections/VisaSection";
+import PageHeader from "@/components/PageHeader";
+import { useI18n } from "@/lib/i18n/context";
 
 export default function VisaPage() {
-  return <VisaSection />;
+  const { t } = useI18n();
+  return (
+    <>
+      <PageHeader
+        kicker={t("nav.groupParticipate")}
+        title={t("pageHeader.visaTitle")}
+        subtitle={t("pageHeader.visaSubtitle")}
+      />
+      <VisaSection hideHeader />
+    </>
+  );
 }

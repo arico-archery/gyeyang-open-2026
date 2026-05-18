@@ -7,7 +7,7 @@ export default function Invitation() {
   const { t } = useI18n();
 
   return (
-    <section className="bg-slate-50 py-20 lg:py-28">
+    <section id="invitation" className="bg-slate-50 py-20 lg:py-28 scroll-mt-24">
       <div className="max-w-3xl mx-auto px-6 lg:px-8">
         {/* Simple section label */}
         <p className="text-center section-label mb-4">Invitation</p>

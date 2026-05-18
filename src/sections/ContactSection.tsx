@@ -7,7 +7,7 @@ import Image from "next/image";
 export default function ContactSection() {
   const { t } = useI18n();
   return (
-    <section id="contact" className="py-20 lg:py-28 bg-white">
+    <section id="contact" className="py-20 lg:py-28 bg-white scroll-mt-24">
       <div className="max-w-4xl mx-auto px-4">
         <div className="section-tag mb-9">
           <span className="tag-num">06</span>

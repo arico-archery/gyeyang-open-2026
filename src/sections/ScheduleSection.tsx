@@ -142,7 +142,7 @@ export default function ScheduleSection() {
       event.desc === t("schedule.day5E11"));
 
   return (
-    <section id="schedule" className="py-20 lg:py-28 bg-white">
+    <section id="schedule" className="py-20 lg:py-28 bg-white scroll-mt-24">
       <div className="max-w-7xl mx-auto px-4">
         {/* Download button */}
         <div className="text-center mb-12">

@@ -11,6 +11,10 @@ export const ko = {
     archive2026: "2026 아카이브",
     gallery: "갤러리",
     more: "더보기",
+    groupAbout: "대회 안내",
+    groupParticipate: "참가 안내",
+    groupResults: "결과 & 미디어",
+    invitation: "초대장",
   },
   sectionNav: {
     schedule: "일정",

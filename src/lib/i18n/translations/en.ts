@@ -11,6 +11,10 @@ export const en = {
     archive2026: "2026 Archive",
     gallery: "Gallery",
     more: "More",
+    groupAbout: "About",
+    groupParticipate: "Participate",
+    groupResults: "Results & Media",
+    invitation: "Invitation",
   },
   sectionNav: {
     schedule: "Schedule",

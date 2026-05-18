@@ -5,35 +5,55 @@ import Image from "next/image";
 import { useState } from "react";
 import { useI18n } from "@/lib/i18n/context";
 
+interface NavItem {
+  label: string;
+  href: string;
+}
+
+interface NavGroup {
+  label: string;
+  items: NavItem[];
+}
+
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
-  const [moreOpen, setMoreOpen] = useState(false);
+  const [openGroup, setOpenGroup] = useState<string | null>(null);
   const { locale, setLocale, t } = useI18n();
 
-  // Primary nav — sections of the home page (anchors) + dedicated pages
-  const PRIMARY_ITEMS = [
-    { label: t("nav.schedule"), href: "/#schedule" },
-    { label: t("nav.registration"), href: "/#registration" },
-    { label: t("sectionNav.visa"), href: "/#visa" },
-    { label: t("sectionNav.hotel"), href: "/#hotel" },
-    { label: t("sectionNav.rentcar"), href: "/#rent-car" },
-    { label: t("nav.gallery"), href: "/gallery" },
-    { label: t("nav.contact"), href: "/#contact" },
+  // Three content groups + standalone Contact
+  const GROUPS: NavGroup[] = [
+    {
+      label: t("nav.groupAbout"),
+      items: [
+        { label: t("nav.invitation"), href: "/#invitation" },
+        { label: t("nav.schedule"), href: "/#schedule" },
+        { label: t("nav.guideMap"), href: "/guide_map" },
+        { label: t("nav.practiceSchedule"), href: "/practice_schedule" },
+      ],
+    },
+    {
+      label: t("nav.groupParticipate"),
+      items: [
+        { label: t("nav.registration"), href: "/#registration" },
+        { label: t("sectionNav.visa"), href: "/#visa" },
+        { label: t("sectionNav.hotel"), href: "/#hotel" },
+        { label: t("sectionNav.rentcar"), href: "/#rent-car" },
+      ],
+    },
+    {
+      label: t("nav.groupResults"),
+      items: [
+        { label: t("nav.scoreTarget"), href: "/scoreboard" },
+        { label: t("nav.archeryRecord"), href: "/record_table" },
+        { label: t("nav.gallery"), href: "/gallery" },
+        { label: t("nav.archive2026"), href: "/archive/2026" },
+        { label: t("nav.archive2025"), href: "/archive/2025" },
+      ],
+    },
   ];
 
-  // Secondary nav — under "More" dropdown
-  const SECONDARY_ITEMS = [
-    { label: t("nav.scoreTarget"), href: "/scoreboard" },
-    { label: t("nav.guideMap"), href: "/guide_map" },
-    { label: t("nav.archeryRecord"), href: "/record_table" },
-    { label: t("nav.practiceSchedule"), href: "/practice_schedule" },
-    { label: t("nav.archive2026"), href: "/archive/2026" },
-    { label: t("nav.archive2025"), href: "/archive/2025" },
-  ];
-
-  const ALL_ITEMS = [...PRIMARY_ITEMS, ...SECONDARY_ITEMS];
-  const moreLabel = t("nav.more");
+  const contactLabel = t("nav.contact");
   const appLabel = locale === "ko" ? "참가자 앱" : "Athlete App";
 
   return (
@@ -49,49 +69,56 @@ export default function Header() {
             />
           </Link>
 
-          <nav className="hidden lg:flex items-center gap-5 xl:gap-6">
-            {PRIMARY_ITEMS.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="text-[14.5px] font-medium text-slate-700 hover:text-blue-600 transition-colors whitespace-nowrap"
+          {/* Desktop nav with group dropdowns */}
+          <nav className="hidden lg:flex items-center gap-8">
+            {GROUPS.map((group) => (
+              <div
+                key={group.label}
+                className="relative"
+                onMouseEnter={() => setOpenGroup(group.label)}
+                onMouseLeave={() => setOpenGroup(null)}
               >
-                {item.label}
-              </Link>
+                <button
+                  onClick={() => setOpenGroup(openGroup === group.label ? null : group.label)}
+                  className={`flex items-center gap-1 text-[15px] font-medium transition-colors py-2 ${
+                    openGroup === group.label ? "text-blue-600" : "text-slate-700 hover:text-blue-600"
+                  }`}
+                  aria-expanded={openGroup === group.label}
+                >
+                  {group.label}
+                  <svg className={`w-4 h-4 transition-transform ${openGroup === group.label ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                {openGroup === group.label && (
+                  <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 z-50 min-w-[200px]">
+                    <div className="bg-white border border-slate-200 rounded-xl shadow-lg py-2 overflow-hidden">
+                      {group.items.map((item) => (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={() => setOpenGroup(null)}
+                          className="block px-5 py-2.5 text-[14px] font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors whitespace-nowrap"
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             ))}
 
-            {/* More dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => setMoreOpen(!moreOpen)}
-                className="flex items-center gap-1 text-[14.5px] font-medium text-slate-700 hover:text-blue-600 transition-colors"
-                aria-expanded={moreOpen}
-              >
-                {moreLabel}
-                <svg className={`w-4 h-4 transition-transform ${moreOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
+            {/* Standalone Contact */}
+            <Link
+              href="/#contact"
+              className="text-[15px] font-medium text-slate-700 hover:text-blue-600 transition-colors py-2"
+            >
+              {contactLabel}
+            </Link>
 
-              {moreOpen && (
-                <>
-                  <div className="fixed inset-0 z-40" onClick={() => setMoreOpen(false)} />
-                  <div className="absolute right-0 top-9 z-50 bg-white border border-slate-200 rounded-lg shadow-lg py-2 min-w-[200px]">
-                    {SECONDARY_ITEMS.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => setMoreOpen(false)}
-                        className="block px-4 py-2.5 text-[14px] font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors"
-                      >
-                        {item.label}
-                      </Link>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
-
+            {/* CTA — Athlete app */}
             <Link
               href="/app"
               className="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors"
@@ -155,22 +182,43 @@ export default function Header() {
           </div>
         </div>
 
+        {/* Mobile menu — grouped headings with indented items */}
         {mobileOpen && (
-          <nav className="lg:hidden border-t border-slate-100 py-4">
-            <div className="flex flex-col gap-1">
-              {ALL_ITEMS.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="px-4 py-2.5 text-base text-slate-700 hover:bg-slate-50 hover:text-blue-600 rounded-lg transition-colors"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  {item.label}
-                </Link>
+          <nav className="lg:hidden border-t border-slate-100 py-4 max-h-[calc(100vh-72px)] overflow-y-auto">
+            <div className="flex flex-col gap-6">
+              {GROUPS.map((group) => (
+                <div key={group.label}>
+                  <p className="px-4 mb-2 text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em]">
+                    {group.label}
+                  </p>
+                  <div className="flex flex-col">
+                    {group.items.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className="px-4 py-2.5 text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600 rounded-lg transition-colors"
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
               ))}
+              <div>
+                <div className="flex flex-col">
+                  <Link
+                    href="/#contact"
+                    className="px-4 py-2.5 text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600 rounded-lg transition-colors"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    {contactLabel}
+                  </Link>
+                </div>
+              </div>
               <Link
                 href="/app"
-                className="mx-4 mt-3 py-2.5 bg-blue-600 text-white text-base font-semibold rounded-lg text-center hover:bg-blue-700 transition-colors"
+                className="mx-4 mt-2 py-3 bg-blue-600 text-white text-base font-semibold rounded-lg text-center hover:bg-blue-700 transition-colors"
                 onClick={() => setMobileOpen(false)}
               >
                 {appLabel}

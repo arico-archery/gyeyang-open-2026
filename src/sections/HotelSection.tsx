@@ -112,7 +112,7 @@ export default function HotelSection() {
   const { t } = useI18n();
   const HOTELS = getHotels(t);
   return (
-    <section id="hotel" className="py-20 lg:py-28 bg-white">
+    <section id="hotel" className="py-20 lg:py-28 bg-white scroll-mt-24">
       <div className="max-w-4xl mx-auto px-4">
         <div className="section-tag mb-9">
           <span className="tag-num">04</span>

@@ -5,7 +5,7 @@ import { useI18n } from "@/lib/i18n/context";
 export default function VisaSection() {
   const { t } = useI18n();
   return (
-    <section id="visa" className="py-20 lg:py-28 bg-white">
+    <section id="visa" className="py-20 lg:py-28 bg-white scroll-mt-24">
       <div className="max-w-4xl mx-auto px-4">
         <div className="section-tag mb-9">
           <span className="tag-num">03</span>

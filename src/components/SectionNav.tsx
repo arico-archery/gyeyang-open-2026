@@ -41,7 +41,8 @@ export default function SectionNav() {
 
   return (
     <nav className="section-nav sticky top-16 z-40 bg-white border-b border-gray-200">
-      <div className="grid grid-cols-6">
+      {/* Desktop: 6-col grid, Mobile: horizontal scroll to avoid label clipping */}
+      <div className="hidden md:grid grid-cols-6">
         {SECTIONS.map(({ id, key }, index) => (
           <button
             key={id}
@@ -58,6 +59,26 @@ export default function SectionNav() {
             <span className="text-sm font-medium">{t(key)}</span>
           </button>
         ))}
+      </div>
+      <div className="md:hidden overflow-x-auto scrollbar-hide">
+        <div className="flex min-w-max">
+          {SECTIONS.map(({ id, key }, index) => (
+            <button
+              key={id}
+              onClick={() => scrollTo(id)}
+              className={`flex flex-col items-center py-3 px-5 whitespace-nowrap transition-colors border-b-[3px] ${
+                active === id
+                  ? "text-blue-600 border-blue-600 bg-blue-50"
+                  : "text-gray-400 border-transparent hover:text-gray-600 hover:bg-gray-50"
+              }`}
+            >
+              <span className={`text-[10px] font-medium mb-0.5 ${active === id ? "text-blue-600" : "text-gray-300"}`}>
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <span className="text-sm font-medium">{t(key)}</span>
+            </button>
+          ))}
+        </div>
       </div>
     </nav>
   );

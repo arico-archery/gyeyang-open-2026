@@ -33,6 +33,7 @@ export default function Invitation() {
           />
         </div>
         <div className="flex justify-center mt-12">
+          {/* TODO: replace with 2026 invitation PDF re-uploaded under /public/downloads/ */}
           <a
             href="https://www.gyeyangopen.kr/downloads//2025%20GYEYANG%20OPEN_Invitation%20Package%20(EN).pdf"
             target="_blank"

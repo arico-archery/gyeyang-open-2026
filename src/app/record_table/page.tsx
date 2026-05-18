@@ -28,19 +28,25 @@ const MEN_RECORDS = [
   { event: "Team Matchplay (24)", olympic: "Park Kyung-mo et al. (KOR) Aug '08 China 227", world: "Im Dong-hyun et al. (KOR) Jul '07 Germany 231", asian: "Kim Woo-jin et al. (KOR) Nov '10 Guangzhou 229", asianChamp: "Rahul Banerjee et al. (IND) Sep '07 Xi'an 227", worldRecord: "Im Dong-hyun et al. (KOR) Oct '11 233", koreaRecord: "Jang Yong-ho et al. (KOR) Jun '13 232" },
 ];
 
-function RecordTable({ records }: { records: typeof WOMEN_RECORDS }) {
+function RecordTable({
+  records,
+  t,
+}: {
+  records: typeof WOMEN_RECORDS;
+  t: (key: string) => string;
+}) {
   return (
     <div className="overflow-x-auto">
       <table className="data-table text-xs">
         <thead>
           <tr>
-            <th>Event</th>
-            <th>Olympic Games</th>
-            <th>World Championships</th>
-            <th>Asian Games</th>
-            <th>Asian Championships</th>
-            <th>World Record</th>
-            <th>Korea Record</th>
+            <th>{t("recordTable.colEvent")}</th>
+            <th>{t("recordTable.colOlympic")}</th>
+            <th>{t("recordTable.colWorld")}</th>
+            <th>{t("recordTable.colAsian")}</th>
+            <th>{t("recordTable.colAsianChamp")}</th>
+            <th>{t("recordTable.colWorldRecord")}</th>
+            <th>{t("recordTable.colKoreaRecord")}</th>
           </tr>
         </thead>
         <tbody>
@@ -66,21 +72,24 @@ export default function RecordTablePage() {
   return (
     <div className="py-12">
       <div className="max-w-7xl mx-auto px-4">
-        <h1 className="text-3xl lg:text-4xl font-bold text-center text-gray-900 mb-12">
-          Archery World Records
+        <h1 className="text-3xl lg:text-4xl font-bold text-center text-gray-900 mb-2">
+          {t("recordTable.pageTitle")}
         </h1>
+        <p className="text-center text-sm text-gray-400 mb-12">
+          {t("recordTable.asOf")} {t("recordTable.recordsDate")}
+        </p>
 
         {/* Women's Records */}
         <h2 className="text-xl font-bold text-gray-900 mb-4 border-l-4 border-primary pl-4">
-          Recurve Women (Mar 25, 2025)
+          {t("recordTable.sectionWomen")}
         </h2>
-        <RecordTable records={WOMEN_RECORDS} />
+        <RecordTable records={WOMEN_RECORDS} t={t} />
 
         {/* Men's Records */}
         <h2 className="text-xl font-bold text-gray-900 mt-16 mb-4 border-l-4 border-primary pl-4">
-          Recurve Men (Mar 25, 2025)
+          {t("recordTable.sectionMen")}
         </h2>
-        <RecordTable records={MEN_RECORDS} />
+        <RecordTable records={MEN_RECORDS} t={t} />
       </div>
     </div>
   );

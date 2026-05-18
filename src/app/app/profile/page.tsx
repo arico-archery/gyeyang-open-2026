@@ -62,7 +62,7 @@ export default function ProfilePage() {
     );
   }
 
-  const qrUrl = `https://gyeyang-open.vercel.app/app/athlete/${profile.qr_token || profile.id}`;
+  const qrUrl = `https://www.gyeyangopen.com/app/athlete/${profile.qr_token || profile.id}`;
 
   if (qrFullScreen) {
     return (

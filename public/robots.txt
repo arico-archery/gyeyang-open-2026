@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.gyeyangopen.kr/sitemap.xml
+Sitemap: https://www.gyeyangopen.com/sitemap.xml

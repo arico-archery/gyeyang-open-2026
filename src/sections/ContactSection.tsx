@@ -48,10 +48,10 @@ export default function ContactSection() {
             <li>
               <span className="font-bold">{t("contact.website")}</span>{" "}
               <a
-                href="https://www.gyeyangopen.kr"
+                href="https://www.gyeyangopen.com"
                 className="underline hover:text-blue-200"
               >
-                www.gyeyangopen.kr
+                www.gyeyangopen.com
               </a>
             </li>
             <li>

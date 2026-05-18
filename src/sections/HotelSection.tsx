@@ -195,6 +195,7 @@ export default function HotelSection() {
         </div>
 
         {/* Download Buttons */}
+        {/* TODO: replace .kr-hosted ZIP/XLSX with assets re-uploaded to .com (or to /public/downloads/) */}
         <div className="mt-8 flex flex-wrap gap-4 justify-center">
           <a
             href="https://www.gyeyangopen.kr/additional_information.zip"

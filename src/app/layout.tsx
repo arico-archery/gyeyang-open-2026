@@ -19,20 +19,21 @@ export const metadata: Metadata = {
     "World Archery",
   ],
   authors: [{ name: "Gyeyang District Office" }],
+  metadataBase: new URL("https://www.gyeyangopen.com"),
   openGraph: {
     type: "website",
     locale: "en_US",
     alternateLocale: "ko_KR",
-    url: "https://www.gyeyangopen.kr",
+    url: "https://www.gyeyangopen.com",
     siteName: "GYEYANG OPEN",
     title: "2026 GYEYANG OPEN - International Archery Tournament",
     description:
       "Official website of the 2026 Gyeyang District Mayor Cup International Archery Tournament.",
     images: [
       {
-        url: "/images/poster.png",
-        width: 470,
-        height: 665,
+        url: "/images/poster_2026.jpg",
+        width: 1200,
+        height: 1697,
         alt: "2026 GYEYANG OPEN Poster",
       },
     ],
@@ -42,7 +43,7 @@ export const metadata: Metadata = {
     title: "2026 GYEYANG OPEN - International Archery Tournament",
     description:
       "Official website of the 2026 Gyeyang District Mayor Cup International Archery Tournament.",
-    images: ["/images/poster.png"],
+    images: ["/images/poster_2026.jpg"],
   },
   robots: {
     index: true,
@@ -78,30 +79,41 @@ export default function RootLayout({
               name: "2026 GYEYANG OPEN - International Archery Tournament",
               description:
                 "Gyeyang District Mayor Cup International Archery Tournament",
-              startDate: "2026-07-10",
-              endDate: "2026-07-12",
+              startDate: "2026-05-13",
+              endDate: "2026-05-18",
               eventStatus: "https://schema.org/EventScheduled",
               eventAttendanceMode:
                 "https://schema.org/OfflineEventAttendanceMode",
-              location: {
-                "@type": "Place",
-                name: "Gyeyang Asiad Archery Field",
-                address: {
-                  "@type": "PostalAddress",
-                  streetAddress: "106-21 Jakjeonseoun-dong",
-                  addressLocality: "Incheon",
-                  addressRegion: "Gyeyang-gu",
-                  addressCountry: "KR",
+              location: [
+                {
+                  "@type": "Place",
+                  name: "Gyeyang Asiad Archery Field",
+                  address: {
+                    "@type": "PostalAddress",
+                    addressLocality: "Incheon",
+                    addressRegion: "Gyeyang-gu",
+                    addressCountry: "KR",
+                  },
                 },
-              },
+                {
+                  "@type": "Place",
+                  name: "Gyeyang Araon Suhyangwon",
+                  address: {
+                    "@type": "PostalAddress",
+                    addressLocality: "Incheon",
+                    addressRegion: "Gyeyang-gu",
+                    addressCountry: "KR",
+                  },
+                },
+              ],
               organizer: {
                 "@type": "Organization",
                 name: "Gyeyang District Office",
-                url: "https://www.gyeyangopen.kr",
+                url: "https://www.gyeyangopen.com",
               },
               sport: "Archery",
-              image: "https://www.gyeyangopen.kr/images/poster.png",
-              url: "https://www.gyeyangopen.kr",
+              image: "https://www.gyeyangopen.com/images/poster_2026.jpg",
+              url: "https://www.gyeyangopen.com",
             }),
           }}
         />

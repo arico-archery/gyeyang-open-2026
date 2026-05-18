@@ -61,7 +61,7 @@ export default function RentCarSection() {
 
           <div className="mt-6 space-y-2 text-gray-600 text-sm">
             <p>{t("rentcar.inquiry")} <a href="mailto:gyeyangopen@gmail.com" className="text-primary underline">gyeyangopen@gmail.com</a></p>
-            <p>{t("rentcar.referWebsite")} <a href="https://www.gyeyangopen.kr" target="_blank" rel="noopener noreferrer" className="text-primary underline">www.gyeyangopen.kr</a></p>
+            <p>{t("rentcar.referWebsite")} <a href="https://www.gyeyangopen.com" target="_blank" rel="noopener noreferrer" className="text-primary underline">www.gyeyangopen.com</a></p>
             <p>{t("rentcar.privateVehicle")}</p>
           </div>
         </div>

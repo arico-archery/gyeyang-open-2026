@@ -5,8 +5,31 @@ import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
 import { useI18n } from "@/lib/i18n/context";
 import { useAuth } from "@/lib/supabase/auth-context";
+import { supabase } from "@/lib/supabase/client";
 import { isSuperAdmin } from "@/lib/super-admin";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+interface LiveStatus {
+  registration: { status: string; event_type: string; category: string } | null;
+  target: { target_number: number; target_position: string | null; session: number | null } | null;
+  attendedToday: boolean;
+}
+
+const REG_STATUS_LABELS: Record<string, Record<string, string>> = {
+  submitted: { ko: "접수됨", en: "Submitted" },
+  reviewing: { ko: "검토중", en: "Reviewing" },
+  approved: { ko: "승인", en: "Approved" },
+  confirmed: { ko: "확정", en: "Confirmed" },
+  rejected: { ko: "반려", en: "Rejected" },
+};
+
+const REG_STATUS_COLOR: Record<string, string> = {
+  submitted: "bg-yellow-100 text-yellow-700",
+  reviewing: "bg-blue-100 text-blue-700",
+  approved: "bg-green-100 text-green-700",
+  confirmed: "bg-emerald-100 text-emerald-700",
+  rejected: "bg-red-100 text-red-700",
+};
 
 const CATEGORY_LABELS: Record<string, Record<string, string>> = {
   recurve_men: { ko: "남자 리커브", en: "Recurve Men" },
@@ -27,8 +50,43 @@ export default function ProfilePage() {
   const { user, profile, loading, signOut } = useAuth();
   const router = useRouter();
   const [qrFullScreen, setQrFullScreen] = useState(false);
+  const [status, setStatus] = useState<LiveStatus | null>(null);
 
   const t = (ko: string, en: string) => (locale === "ko" ? ko : en);
+
+  useEffect(() => {
+    if (!user) return;
+    async function load(userId: string) {
+      const today = new Date().toISOString().split("T")[0];
+      const [regRes, targetRes, attRes] = await Promise.all([
+        supabase
+          .from("registrations")
+          .select("status, event_type, category")
+          .eq("athlete_id", userId)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+        supabase
+          .from("target_assignments")
+          .select("target_number, target_position, session")
+          .eq("athlete_id", userId)
+          .limit(1)
+          .maybeSingle(),
+        supabase
+          .from("attendance")
+          .select("id")
+          .eq("athlete_id", userId)
+          .eq("check_date", today)
+          .maybeSingle(),
+      ]);
+      setStatus({
+        registration: regRes.data ?? null,
+        target: targetRes.data ?? null,
+        attendedToday: !!attRes.data,
+      });
+    }
+    load(user.id);
+  }, [user]);
 
   if (loading) {
     return (
@@ -118,6 +176,53 @@ export default function ProfilePage() {
           )}
         </div>
       </div>
+
+      {/* Live status card — registration / target / attendance */}
+      {status && (status.registration || status.target || status.attendedToday) && (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 mb-4">
+          <h3 className="text-sm font-bold text-gray-700 mb-3">{t("현재 상태", "Current Status")}</h3>
+          <div className="space-y-3">
+            {status.registration && (
+              <div className="flex items-center justify-between">
+                <div className="flex flex-col">
+                  <span className="text-xs text-gray-400">{t("참가 신청", "Registration")}</span>
+                  <span className="text-sm text-gray-700">
+                    {CATEGORY_LABELS[status.registration.category]?.[locale] || status.registration.category}
+                  </span>
+                </div>
+                <span className={`px-2.5 py-1 rounded-full text-[10px] font-semibold ${
+                  REG_STATUS_COLOR[status.registration.status] || "bg-gray-100 text-gray-600"
+                }`}>
+                  {REG_STATUS_LABELS[status.registration.status]?.[locale] || status.registration.status}
+                </span>
+              </div>
+            )}
+            {status.target && (
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-gray-400">{t("타겟 배정", "Target")}</span>
+                <span className="text-sm font-mono font-bold text-blue-600">
+                  {status.target.target_number}
+                  {status.target.target_position || ""}
+                  {status.target.session ? ` · S${status.target.session}` : ""}
+                </span>
+              </div>
+            )}
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-gray-400">{t("오늘 출석", "Today's Attendance")}</span>
+              {status.attendedToday ? (
+                <span className="inline-flex items-center gap-1 text-xs font-semibold text-green-600">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                  </svg>
+                  {t("확인됨", "Checked in")}
+                </span>
+              ) : (
+                <span className="text-xs text-gray-400">{t("미체크", "Not yet")}</span>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 mb-4">
         <h3 className="text-sm font-bold text-gray-700 mb-3">{t("내 QR 코드", "My QR Code")}</h3>

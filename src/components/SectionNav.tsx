@@ -41,41 +41,36 @@ export default function SectionNav() {
 
   return (
     <nav className="section-nav sticky top-[72px] z-40 bg-white/95 border-b border-slate-200 backdrop-blur-sm">
-      {/* Desktop: 6-col grid, Mobile: horizontal scroll to avoid label clipping */}
-      <div className="hidden md:grid grid-cols-6">
-        {SECTIONS.map(({ id, key }, index) => (
+      {/* Desktop: centered single row, no numbers — clean */}
+      <div className="hidden md:flex justify-center max-w-7xl mx-auto">
+        {SECTIONS.map(({ id, key }) => (
           <button
             key={id}
             onClick={() => scrollTo(id)}
-            className={`flex flex-col items-center py-4 transition-colors border-b-[3px] ${
+            className={`px-7 py-3.5 text-[14px] font-semibold transition-colors border-b-2 ${
               active === id
-                ? "text-blue-600 border-blue-600 bg-blue-50"
-                : "text-slate-500 border-transparent hover:text-slate-900 hover:bg-slate-50"
+                ? "text-blue-600 border-blue-600"
+                : "text-slate-500 border-transparent hover:text-slate-900"
             }`}
           >
-            <span className={`text-xs font-bold mb-1 ${active === id ? "text-blue-600" : "text-slate-400"}`}>
-              {String(index + 1).padStart(2, "0")}
-            </span>
-            <span className="text-sm font-semibold">{t(key)}</span>
+            {t(key)}
           </button>
         ))}
       </div>
+      {/* Mobile: horizontal scroll */}
       <div className="md:hidden overflow-x-auto scrollbar-hide">
         <div className="flex min-w-max">
-          {SECTIONS.map(({ id, key }, index) => (
+          {SECTIONS.map(({ id, key }) => (
             <button
               key={id}
               onClick={() => scrollTo(id)}
-              className={`flex flex-col items-center py-3 px-5 whitespace-nowrap transition-colors border-b-[3px] ${
+              className={`px-5 py-3 text-[13px] font-semibold whitespace-nowrap transition-colors border-b-2 ${
                 active === id
-                  ? "text-blue-600 border-blue-600 bg-blue-50"
-                  : "text-slate-500 border-transparent hover:text-slate-900 hover:bg-slate-50"
+                  ? "text-blue-600 border-blue-600"
+                  : "text-slate-500 border-transparent hover:text-slate-900"
               }`}
             >
-              <span className={`text-[10px] font-bold mb-0.5 ${active === id ? "text-blue-600" : "text-slate-400"}`}>
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <span className="text-sm font-semibold">{t(key)}</span>
+              {t(key)}
             </button>
           ))}
         </div>

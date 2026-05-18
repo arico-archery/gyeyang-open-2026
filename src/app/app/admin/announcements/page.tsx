@@ -25,6 +25,8 @@ export default function AdminAnnouncementsPage() {
   const [content, setContent] = useState("");
   const [contentEn, setContentEn] = useState("");
   const [priority, setPriority] = useState<AnnouncementPriority>("normal");
+  const [sendPush, setSendPush] = useState(false);
+  const [pushResult, setPushResult] = useState<string>("");
 
   const t = (ko: string, en: string) => (locale === "ko" ? ko : en);
 
@@ -48,18 +50,39 @@ export default function AdminAnnouncementsPage() {
   function openNew() {
     setEditingId(null);
     setTitle(""); setTitleEn(""); setContent(""); setContentEn(""); setPriority("normal");
+    setSendPush(false); setPushResult("");
     setView("form");
   }
 
   function openEdit(a: Announcement) {
     setEditingId(a.id);
     setTitle(a.title); setTitleEn(a.title_en || ""); setContent(a.content); setContentEn(a.content_en || ""); setPriority(a.priority);
+    setSendPush(false); setPushResult("");
     setView("form");
+  }
+
+  async function broadcastPush() {
+    // Fetch all user ids — RLS allows admin via service-role inside Edge Function; here we just collect.
+    const { data: users } = await supabase.from("profiles").select("id");
+    const userIds = (users ?? []).map((u: { id: string }) => u.id);
+    if (userIds.length === 0) return { sent: 0, failed: 0, total: 0 };
+
+    const { data, error } = await supabase.functions.invoke("send-push", {
+      body: {
+        userIds,
+        title: title || (locale === "ko" ? "새 공지" : "New announcement"),
+        body: content.slice(0, 120),
+        url: "/app/announcements",
+      },
+    });
+    if (error) throw error;
+    return data as { sent: number; failed: number; total: number };
   }
 
   async function handleSave() {
     if (!title.trim() || !content.trim() || !user) return;
     setSaving(true);
+    setPushResult("");
 
     if (editingId) {
       await supabase.from("announcements").update({
@@ -71,8 +94,25 @@ export default function AdminAnnouncementsPage() {
       });
     }
 
+    // Optional: send push notification after saving a new announcement.
+    if (!editingId && sendPush) {
+      try {
+        const result = await broadcastPush();
+        setPushResult(
+          t(
+            `푸시 발송 완료 — 성공 ${result.sent}건 / 실패 ${result.failed}건 / 대상 ${result.total}건`,
+            `Push sent — ${result.sent} ok / ${result.failed} failed / ${result.total} subs`
+          )
+        );
+      } catch (err) {
+        setPushResult(t("푸시 발송 실패: ", "Push failed: ") + String((err as Error).message));
+      }
+    }
+
     setSaving(false);
-    setView("list");
+    if (!pushResult) {
+      setView("list");
+    }
     fetchAnnouncements();
   }
 
@@ -131,6 +171,38 @@ export default function AdminAnnouncementsPage() {
               <option value="urgent">{t("긴급", "Urgent")}</option>
             </select>
           </div>
+
+          {!editingId && (
+            <label className="flex items-start gap-3 p-3 bg-blue-50 border border-blue-200 rounded-xl cursor-pointer">
+              <input
+                type="checkbox"
+                checked={sendPush}
+                onChange={(e) => setSendPush(e.target.checked)}
+                className="mt-0.5 w-4 h-4 accent-blue-600"
+              />
+              <span className="text-sm text-blue-900">
+                <span className="font-semibold">{t("푸시 알림 보내기", "Send push notification")}</span>
+                <span className="block text-xs text-blue-700 mt-0.5">
+                  {t(
+                    "저장과 동시에 모든 사용자에게 푸시 알림을 발송합니다.",
+                    "Broadcasts a push notification to all users on save."
+                  )}
+                </span>
+              </span>
+            </label>
+          )}
+
+          {pushResult && (
+            <div className="p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-700">
+              {pushResult}
+              <button
+                onClick={() => { setPushResult(""); setView("list"); }}
+                className="ml-2 text-blue-600 font-medium"
+              >
+                {t("목록으로", "Back to list")}
+              </button>
+            </div>
+          )}
 
           <button
             onClick={handleSave}

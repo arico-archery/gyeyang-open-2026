@@ -14,10 +14,9 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
 }
 
 export async function registerServiceWorker(): Promise<ServiceWorkerRegistration | null> {
-  if (!("serviceWorker" in navigator)) return null;
+  if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) return null;
   try {
-    const registration = await navigator.serviceWorker.register("/sw.js");
-    return registration;
+    return await navigator.serviceWorker.register("/sw.js");
   } catch (error) {
     console.error("SW registration failed:", error);
     return null;
@@ -25,6 +24,7 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
 }
 
 export async function subscribeToPush(userId: string): Promise<boolean> {
+  if (typeof window === "undefined") return false;
   if (!("PushManager" in window) || !VAPID_PUBLIC_KEY) return false;
 
   try {
@@ -35,15 +35,21 @@ export async function subscribeToPush(userId: string): Promise<boolean> {
       applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY).buffer as ArrayBuffer,
     });
 
-    // Save subscription to Supabase
+    const json = subscription.toJSON();
+    const p256dh = json.keys?.p256dh;
+    const authKey = json.keys?.auth;
+
+    if (!p256dh || !authKey) return false;
+
     const { error } = await supabase.from("push_subscriptions").upsert(
       {
         user_id: userId,
         endpoint: subscription.endpoint,
-        keys: JSON.stringify(subscription.toJSON().keys),
-        created_at: new Date().toISOString(),
+        p256dh,
+        auth: authKey,
+        user_agent: navigator.userAgent,
       },
-      { onConflict: "user_id" }
+      { onConflict: "user_id,endpoint" }
     );
 
     return !error;
@@ -54,15 +60,21 @@ export async function subscribeToPush(userId: string): Promise<boolean> {
 }
 
 export async function unsubscribeFromPush(userId: string): Promise<boolean> {
+  if (typeof window === "undefined") return false;
   try {
     const registration = await navigator.serviceWorker.ready;
     const subscription = await registration.pushManager.getSubscription();
 
     if (subscription) {
+      await supabase
+        .from("push_subscriptions")
+        .delete()
+        .eq("user_id", userId)
+        .eq("endpoint", subscription.endpoint);
       await subscription.unsubscribe();
+    } else {
+      await supabase.from("push_subscriptions").delete().eq("user_id", userId);
     }
-
-    await supabase.from("push_subscriptions").delete().eq("user_id", userId);
     return true;
   } catch (error) {
     console.error("Push unsubscribe failed:", error);
@@ -71,7 +83,7 @@ export async function unsubscribeFromPush(userId: string): Promise<boolean> {
 }
 
 export async function isPushSubscribed(): Promise<boolean> {
-  if (!("PushManager" in window)) return false;
+  if (typeof window === "undefined" || !("PushManager" in window)) return false;
   try {
     const registration = await navigator.serviceWorker.ready;
     const subscription = await registration.pushManager.getSubscription();
@@ -82,6 +94,6 @@ export async function isPushSubscribed(): Promise<boolean> {
 }
 
 export async function requestNotificationPermission(): Promise<NotificationPermission> {
-  if (!("Notification" in window)) return "denied";
+  if (typeof window === "undefined" || !("Notification" in window)) return "denied";
   return await Notification.requestPermission();
 }

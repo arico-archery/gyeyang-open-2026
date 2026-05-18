@@ -9,6 +9,8 @@ export const ko = {
     scoreTarget: "점수 & 타겟",
     archive2025: "2025 아카이브",
     archive2026: "2026 아카이브",
+    gallery: "갤러리",
+    more: "더보기",
   },
   sectionNav: {
     schedule: "일정",
@@ -468,6 +470,16 @@ export const ko = {
     contactEmail: "gyeyangopen@gmail.com",
     contactWebsite: "www.gyeyangopen.com",
     footer: "© 2026 GYEYANG OPEN. All rights reserved.",
+  },
+  gallery: {
+    pageTitle: "갤러리",
+    pageSubtitle: "대회 홍보영상, 공식 포스터, 대회 하이라이트",
+    promoSectionTitle: "홍보영상",
+    promoSectionDesc: "2026 GYEYANG OPEN — 세계 최고의 양궁 선수들이 인천에 모입니다",
+    postersSectionTitle: "공식 포스터",
+    postersComingSoon: "대회 사진은 추후 업데이트됩니다",
+    photosSectionTitle: "대회 사진",
+    photosDesc: "2026 대회 하이라이트 사진은 추후 공개됩니다.",
   },
   recordTable: {
     pageTitle: "양궁 세계 기록",

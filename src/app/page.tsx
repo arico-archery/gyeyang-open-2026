@@ -1,6 +1,5 @@
 import Hero from "@/sections/Hero";
 import Invitation from "@/sections/Invitation";
-import SectionNav from "@/components/SectionNav";
 import ScheduleSection from "@/sections/ScheduleSection";
 import RegistrationSection from "@/sections/RegistrationSection";
 import VisaSection from "@/sections/VisaSection";
@@ -13,7 +12,6 @@ export default function Home() {
     <>
       <Hero />
       <Invitation />
-      <SectionNav />
       <ScheduleSection />
       <RegistrationSection />
       <VisaSection />

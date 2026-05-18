@@ -9,6 +9,8 @@ export const en = {
     scoreTarget: "Score & Target",
     archive2025: "2025 Archive",
     archive2026: "2026 Archive",
+    gallery: "Gallery",
+    more: "More",
   },
   sectionNav: {
     schedule: "Schedule",
@@ -468,6 +470,16 @@ export const en = {
     contactEmail: "gyeyangopen@gmail.com",
     contactWebsite: "www.gyeyangopen.com",
     footer: "© 2026 GYEYANG OPEN. All rights reserved.",
+  },
+  gallery: {
+    pageTitle: "Gallery",
+    pageSubtitle: "Promotional video, official posters, and tournament highlights",
+    promoSectionTitle: "Promotional Video",
+    promoSectionDesc: "2026 GYEYANG OPEN — World-class archers gather in Incheon",
+    postersSectionTitle: "Official Posters",
+    postersComingSoon: "Tournament photos coming soon",
+    photosSectionTitle: "Tournament Photos",
+    photosDesc: "Highlights from the 2026 tournament — coming soon.",
   },
   recordTable: {
     pageTitle: "Archery World Records",

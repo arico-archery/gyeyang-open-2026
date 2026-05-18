@@ -11,17 +11,21 @@ export default function Header() {
   const [moreOpen, setMoreOpen] = useState(false);
   const { locale, setLocale, t } = useI18n();
 
-  // Primary nav — core paths visible on desktop
+  // Primary nav — sections of the home page (anchors) + dedicated pages
   const PRIMARY_ITEMS = [
-    { label: t("nav.schedule"), href: "/schedule" },
-    { label: t("nav.registration"), href: "/registration" },
-    { label: t("nav.scoreTarget"), href: "/scoreboard" },
-    { label: t("nav.guideMap"), href: "/guide_map" },
-    { label: t("nav.contact"), href: "/contact" },
+    { label: t("nav.schedule"), href: "/#schedule" },
+    { label: t("nav.registration"), href: "/#registration" },
+    { label: t("sectionNav.visa"), href: "/#visa" },
+    { label: t("sectionNav.hotel"), href: "/#hotel" },
+    { label: t("sectionNav.rentcar"), href: "/#rent-car" },
+    { label: t("nav.gallery"), href: "/gallery" },
+    { label: t("nav.contact"), href: "/#contact" },
   ];
 
   // Secondary nav — under "More" dropdown
   const SECONDARY_ITEMS = [
+    { label: t("nav.scoreTarget"), href: "/scoreboard" },
+    { label: t("nav.guideMap"), href: "/guide_map" },
     { label: t("nav.archeryRecord"), href: "/record_table" },
     { label: t("nav.practiceSchedule"), href: "/practice_schedule" },
     { label: t("nav.archive2026"), href: "/archive/2026" },
@@ -29,7 +33,7 @@ export default function Header() {
   ];
 
   const ALL_ITEMS = [...PRIMARY_ITEMS, ...SECONDARY_ITEMS];
-  const moreLabel = locale === "ko" ? "더보기" : "More";
+  const moreLabel = t("nav.more");
   const appLabel = locale === "ko" ? "참가자 앱" : "Athlete App";
 
   return (
@@ -45,12 +49,12 @@ export default function Header() {
             />
           </Link>
 
-          <nav className="hidden lg:flex items-center gap-7">
+          <nav className="hidden lg:flex items-center gap-5 xl:gap-6">
             {PRIMARY_ITEMS.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-[15px] font-medium text-slate-700 hover:text-blue-600 transition-colors"
+                className="text-[14.5px] font-medium text-slate-700 hover:text-blue-600 transition-colors whitespace-nowrap"
               >
                 {item.label}
               </Link>
@@ -60,7 +64,7 @@ export default function Header() {
             <div className="relative">
               <button
                 onClick={() => setMoreOpen(!moreOpen)}
-                className="flex items-center gap-1 text-[15px] font-medium text-slate-700 hover:text-blue-600 transition-colors"
+                className="flex items-center gap-1 text-[14.5px] font-medium text-slate-700 hover:text-blue-600 transition-colors"
                 aria-expanded={moreOpen}
               >
                 {moreLabel}

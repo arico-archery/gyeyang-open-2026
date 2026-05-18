@@ -5,12 +5,9 @@ import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n/context";
 import { getDDay, EVENT_START_ISO, EVENT_END_ISO } from "@/lib/event";
 
-const YOUTUBE_ID = "1OV5pCmHZYg";
-
 export default function Hero() {
   const { t, locale } = useI18n();
   const [dDay, setDDay] = useState<{ label: string; inEvent: boolean; ended: boolean } | null>(null);
-  const [videoOpen, setVideoOpen] = useState(false);
 
   useEffect(() => {
     setDDay(getDDay());
@@ -110,42 +107,6 @@ export default function Hero() {
         </div>
       </section>
 
-      {/* VIDEO — own section, full-width feel but bounded */}
-      <section className="bg-slate-50 py-16">
-        <div className="max-w-4xl mx-auto px-6 lg:px-8">
-          <div className="w-full aspect-video bg-slate-900 rounded-xl overflow-hidden relative shadow-lg">
-            {videoOpen ? (
-              <iframe
-                className="absolute inset-0 w-full h-full"
-                src={`https://www.youtube.com/embed/${YOUTUBE_ID}?autoplay=1`}
-                title="GYEYANG OPEN highlights"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            ) : (
-              <button
-                type="button"
-                onClick={() => setVideoOpen(true)}
-                className="absolute inset-0 w-full h-full group"
-                aria-label={t("hero.playVideo")}
-              >
-                <Image
-                  src={`https://i.ytimg.com/vi/${YOUTUBE_ID}/hqdefault.jpg`}
-                  alt=""
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 896px"
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center">
-                  <span className="w-16 h-16 rounded-full bg-red-600/95 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                    <svg className="w-8 h-8 text-white ml-1" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
-                  </span>
-                </div>
-              </button>
-            )}
-          </div>
-        </div>
-      </section>
     </>
   );
 }

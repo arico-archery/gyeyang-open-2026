@@ -4,17 +4,23 @@ import { useI18n } from "@/lib/i18n/context";
 
 import Image from "next/image";
 
-export default function ContactSection() {
+interface ContactSectionProps {
+  hideHeader?: boolean;
+}
+
+export default function ContactSection({ hideHeader }: ContactSectionProps = {}) {
   const { t } = useI18n();
   return (
-    <section id="contact" className="py-16 lg:py-24 bg-white">
+    <section id="contact" className="py-16 lg:py-20 bg-white scroll-mt-24">
       <div className="max-w-4xl mx-auto px-4">
-        <div className="section-tag mb-8">
-          <span className="tag-num">06</span>
-          <span>{t("contact.sectionTag")}</span>
-        </div>
+        {!hideHeader && (
+          <div className="section-tag mb-9">
+            <span className="tag-num">06</span>
+            <span>{t("contact.sectionTag")}</span>
+          </div>
+        )}
 
-        <div className="bg-blue-600 rounded-3xl p-8 lg:p-12 text-white relative overflow-hidden">
+        <div className="bg-blue-600 rounded-3xl p-10 lg:p-14 text-white relative overflow-hidden">
           {/* Background decoration */}
           <div className="absolute top-4 right-4 opacity-20">
             <div className="grid grid-cols-4 gap-2">
@@ -27,37 +33,44 @@ export default function ContactSection() {
             </div>
           </div>
 
-          <h3 className="text-2xl font-bold mb-6">{t("contact.heading")}</h3>
+          <h3 className="text-3xl font-bold mb-8 tracking-tight">{t("contact.heading")}</h3>
 
-          <ul className="space-y-3 text-lg">
-            <li>
-              <span className="font-bold">{t("contact.name")}</span> Vivian
-            </li>
-            <li>
-              <span className="font-bold">{t("contact.whatsapp")}</span> +82-10-2124-0016 {t("contact.whatsappNote")}
-            </li>
-            <li>
-              <span className="font-bold">{t("contact.email")}</span>{" "}
-              <a
-                href="mailto:gyeyangopen@gmail.com"
-                className="underline hover:text-blue-200"
-              >
-                gyeyangopen@gmail.com
-              </a>
-            </li>
-            <li>
-              <span className="font-bold">{t("contact.website")}</span>{" "}
-              <a
-                href="https://www.gyeyangopen.com"
-                className="underline hover:text-blue-200"
-              >
-                www.gyeyangopen.com
-              </a>
-            </li>
-            <li>
-              <span className="font-bold">{t("contact.language")}</span> {t("contact.languageVal")}
-            </li>
-          </ul>
+          <dl className="space-y-5 text-[17px] leading-relaxed relative">
+            <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
+              <dt className="font-bold w-32 shrink-0 text-blue-100">{t("contact.name")}</dt>
+              <dd>Vivian</dd>
+            </div>
+            <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
+              <dt className="font-bold w-32 shrink-0 text-blue-100">{t("contact.whatsapp")}</dt>
+              <dd>+82-10-2124-0016 <span className="text-blue-200 text-[14px]">{t("contact.whatsappNote")}</span></dd>
+            </div>
+            <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
+              <dt className="font-bold w-32 shrink-0 text-blue-100">{t("contact.email")}</dt>
+              <dd>
+                <a
+                  href="mailto:gyeyangopen@gmail.com"
+                  className="underline underline-offset-4 hover:text-blue-200"
+                >
+                  gyeyangopen@gmail.com
+                </a>
+              </dd>
+            </div>
+            <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
+              <dt className="font-bold w-32 shrink-0 text-blue-100">{t("contact.website")}</dt>
+              <dd>
+                <a
+                  href="https://www.gyeyangopen.com"
+                  className="underline underline-offset-4 hover:text-blue-200"
+                >
+                  www.gyeyangopen.com
+                </a>
+              </dd>
+            </div>
+            <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
+              <dt className="font-bold w-32 shrink-0 text-blue-100">{t("contact.language")}</dt>
+              <dd>{t("contact.languageVal")}</dd>
+            </div>
+          </dl>
 
           {/* QR Code */}
           <div className="mt-8 bg-white rounded-xl p-6 text-center max-w-xs">

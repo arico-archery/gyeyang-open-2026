@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>시안 D — 가독성 개선 (현재 디자인 유지) | 2026 GYEYANG OPEN</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --navy: #0c4a6e;
+    /* 가독성 — 본문 컬러를 한 단계 진하게 */
+    --text-1: #0f172a;   /* 본문 강조 (이전 #1f2937 → 더 진하게) */
+    --text-2: #334155;   /* 본문 (이전 #6b7280 → 한 단계 진하게) */
+    --text-3: #475569;   /* 보조 (이전 #9ca3af → 두 단계 진하게) */
+    --text-4: #64748b;   /* 라벨 (이전 #d1d5db 같은 흐린 회색 대체) */
+    --line: #e2e8f0;
+    --line-strong: #cbd5e1;
+  }
+
+  /* 본문 기본 — Inter, 줄간격↑, 색 진하게 */
+  body {
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    color: var(--text-1);
+    background: #ffffff;
+    /* 한글 줄간격 — leading-relaxed보다 한 단계 더 */
+    line-height: 1.75;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Heading 위계 — 더 크고 굵게, 자간 정리 */
+  h1, h2, h3, h4 { color: var(--text-1); letter-spacing: -0.015em; }
+  h1 { font-weight: 800; }
+  h2 { font-weight: 700; }
+  h3 { font-weight: 600; }
+
+  /* 본문 단락 — 가독성 핵심 */
+  .body-text { color: var(--text-2); line-height: 1.85; font-size: 16px; }
+  .body-text-lg { color: var(--text-2); line-height: 1.85; font-size: 17px; }
+
+  /* 라벨/캡션 — 너무 흐리지 않게 */
+  .label { color: var(--text-3); font-size: 13px; font-weight: 500; }
+  .caption { color: var(--text-3); font-size: 13px; }
+
+  /* 강조 링크 — 색만 바꾸는 게 아니라 underline까지 */
+  .link {
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1.5px;
+  }
+  .link:hover { color: var(--primary-dark); }
+
+  /* Section tag */
+  .section-tag {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 8px 18px;
+    border: 1.5px solid var(--primary);
+    border-radius: 9999px;
+    color: var(--primary);
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .section-tag .tag-num { font-weight: 800; font-size: 15px; }
+
+  /* CTA 버튼 — 명확하게 */
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 14px 32px;
+    background: var(--primary);
+    color: white;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 16px;
+    transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 1px 2px rgba(37, 99, 235, 0.15);
+  }
+  .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25); }
+
+  .btn-secondary {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 14px 32px;
+    background: white;
+    color: var(--text-1);
+    border: 1.5px solid var(--line-strong);
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 16px;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
+
+  /* 카드 — 여백 ↑ */
+  .info-card {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 36px;          /* 32 → 36 */
+    margin-bottom: 24px;
+  }
+
+  /* 표 — 셀 패딩↑, 헤더 강하게 */
+  .data-table { width: 100%; border-collapse: collapse; }
+  .data-table th {
+    background: #f8fafc;
+    padding: 16px 18px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text-1);
+    border-bottom: 2px solid var(--line-strong);
+    letter-spacing: 0.01em;
+  }
+  .data-table td {
+    padding: 18px;
+    border-bottom: 1px solid var(--line);
+    font-size: 15px;
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+  .data-table tbody tr:hover { background: #f8fafc; }
+
+  /* Schedule table — 더 강한 시간 컬럼 */
+  .schedule-table { width: 100%; border-collapse: collapse; }
+  .schedule-table th {
+    background: #fffbeb;
+    padding: 14px 18px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 13px;
+    color: #92400e;
+    border-bottom: 2px solid #fde68a;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+  .schedule-table td {
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--line);
+    font-size: 15px;
+    color: var(--text-1);
+    line-height: 1.6;
+  }
+  .schedule-table td:first-child {
+    width: 150px;
+    font-weight: 600;
+    color: var(--text-2);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* 리스트 - bullet 명확히, 줄간격↑ */
+  .clean-list { list-style: none; padding: 0; }
+  .clean-list li {
+    position: relative;
+    padding-left: 22px;
+    margin-bottom: 12px;
+    color: var(--text-2);
+    line-height: 1.7;
+  }
+  .clean-list li::before {
+    content: ""; position: absolute; left: 0; top: 11px;
+    width: 6px; height: 6px;
+    background: var(--primary);
+    border-radius: 999px;
+  }
+
+  /* Inline code/value */
+  .value-mono {
+    font-family: ui-monospace, 'Cascadia Code', Menlo, monospace;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-1);
+  }
+</style>
+</head>
+<body>
+
+<!-- Preview banner -->
+<div class="bg-yellow-100 border-b border-yellow-300 text-yellow-900 text-center text-xs py-2 px-4">
+  📐 시안 D — 가독성 개선 (현재 디자인·폰트·로고 유지, 대비/간격/위계만 조정) ·
+  <a href="/preview/sport-modern.html" class="underline font-semibold">A</a> ·
+  <a href="/preview/traditional.html" class="underline font-semibold">B</a> ·
+  <a href="/preview/mixed.html" class="underline font-semibold">C</a> ·
+  <a href="/" class="underline font-semibold">현재</a>
+</div>
+
+<!-- Header (현재 사이트와 동일 구조, 패딩/대비만 조정) -->
+<header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-6 sm:px-8 h-[72px] flex items-center justify-between">
+    <a href="/" class="flex items-center gap-3 shrink-0">
+      <img src="/images/logo.png" alt="GYEYANG OPEN Logo" width="48" height="53" class="h-12 w-auto" />
+    </a>
+    <nav class="hidden lg:flex items-center gap-8">
+      <a href="#" class="text-[15px] font-medium text-slate-700 hover:text-blue-600 transition-colors">일정</a>
+      <a href="#" class="text-[15px] font-medium text-slate-700 hover:text-blue-600 transition-colors">참가 신청</a>
+      <a href="#" class="text-[15px] font-medium text-slate-700 hover:text-blue-600 transition-colors">문의</a>
+      <a href="#" class="text-[15px] font-medium text-slate-700 hover:text-blue-600 transition-colors">양궁 기록</a>
+      <a href="#" class="text-[15px] font-medium text-slate-700 hover:text-blue-600 transition-colors">연습 일정</a>
+      <a href="#" class="text-[15px] font-medium text-slate-700 hover:text-blue-600 transition-colors">안내도</a>
+      <a href="#" class="text-[15px] font-medium text-slate-700 hover:text-blue-600 transition-colors">점수 & 타겟</a>
+    </nav>
+    <div class="flex items-center gap-3">
+      <button class="px-3 py-2 text-sm font-semibold text-slate-700 hover:text-blue-600 transition-colors border border-slate-300 rounded-md">
+        KO / EN
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Hero (현재와 동일 레이아웃, 글자 크기/간격↑) -->
+<section class="relative bg-white overflow-hidden">
+  <div class="absolute -top-20 -bottom-12 left-0 right-1/2 z-0 bg-blue-600 rounded-br-[5rem] hidden lg:block">
+    <div class="absolute inset-0 overflow-hidden opacity-20"></div>
+  </div>
+  <div class="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 py-16 lg:py-24">
+    <div class="grid lg:grid-cols-2 gap-12 items-center">
+      <div class="flex justify-center lg:justify-end">
+        <img src="/images/poster_2026.jpg" alt="2026 GYEYANG OPEN Invitation Poster" class="rounded-xl shadow-xl w-64 md:w-80 lg:w-[470px] h-auto" />
+      </div>
+      <div class="flex flex-col items-start gap-7">
+        <!-- D-Day 배지 — 더 명확하게 -->
+        <div class="inline-flex items-center gap-3">
+          <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-gray-100 text-gray-700">D+7</span>
+          <span class="text-base font-semibold text-slate-600">대회 종료</span>
+        </div>
+
+        <!-- 타이틀 — 사이즈↑, 자간 정리 -->
+        <h1 class="text-3xl sm:text-5xl lg:text-[64px] font-extrabold text-slate-900 leading-[1.1] tracking-tight">
+          2026 GYEYANG OPEN<br>
+          <span class="text-slate-700 text-2xl sm:text-3xl lg:text-4xl font-bold">국제양궁대회</span>
+        </h1>
+
+        <!-- 일정/장소 — 본문 사이즈 명확 -->
+        <div class="space-y-2">
+          <p class="text-xl font-semibold text-slate-900">2026년 5월 13일 (수) ~ 18일 (월)</p>
+          <p class="text-base text-slate-600">인천 계양 · 아시아드양궁장 / 아라온 수향원</p>
+        </div>
+
+        <!-- CTA — 명확한 hierarchy -->
+        <div class="flex flex-wrap gap-3 mt-2">
+          <a href="#" class="btn-primary">최종 결과 보기 →</a>
+          <a href="#" class="btn-secondary">참가선수 앱</a>
+        </div>
+
+        <!-- SNS — 클릭 영역 충분히, 라벨 텍스트 추가 -->
+        <div class="flex items-center gap-2 pt-2">
+          <span class="caption mr-2">공식 SNS</span>
+          <a href="#" class="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition-colors" aria-label="Facebook">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="#" class="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center text-slate-600 hover:bg-pink-50 hover:text-pink-600 transition-colors" aria-label="Instagram">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+          </a>
+          <a href="#" class="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center text-slate-600 hover:bg-red-50 hover:text-red-600 transition-colors" aria-label="YouTube">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 초대장 — 본문 사이즈↑, 줄간격↑ -->
+<section class="bg-slate-50 py-24">
+  <div class="max-w-3xl mx-auto px-6">
+    <h2 class="text-3xl lg:text-4xl font-bold text-slate-900 text-center mb-12 tracking-tight">
+      2026 GYEYANG OPEN 초대장
+    </h2>
+    <div class="space-y-6">
+      <p class="text-lg font-semibold text-slate-900">사랑하는 세계양궁연맹 가족 여러분</p>
+      <p class="body-text-lg">저는 2026년 5월 13일부터 18일까지 대한민국 인천에서 개최되는 2026 계양구청장배 국제양궁대회(2026 GYEYANG OPEN) 조직위원회(LOC) 위원장으로서, 선수 여러분을 초대하게 되어 매우 기쁘게 생각합니다.</p>
+      <p class="body-text-lg">인천 계양구는 국제 스포츠 이벤트를 성공적으로 개최할 수 있는 최상의 인프라와 자연환경을 갖춘 도시이며 1996년에 계양구청 양궁팀을 처음 창단하고 올해로 30년을 맞이하였습니다.</p>
+      <p class="body-text-lg">우리 계양은 그 중심에서 '세계 스포츠 교류의 역사적인 이정표'를 만들어 낼 것입니다. 이를 위해 저희 조직위원회는 참가 선수들과 관계자들이 최고의 환경에서 경기에 집중할 수 있도록 철저히 준비하겠습니다.</p>
+    </div>
+    <div class="mt-12 text-right">
+      <p class="text-base font-semibold text-slate-900">2026 계양오픈 조직위원회 위원장</p>
+      <p class="mt-1 text-xl font-bold text-slate-800">윤 환</p>
+    </div>
+    <div class="flex justify-center mt-12">
+      <a href="#" class="btn-primary">초대장 다운로드 (PDF) →</a>
+    </div>
+  </div>
+</section>
+
+<!-- Section Nav (sticky) -->
+<nav class="sticky top-[72px] z-40 bg-white/95 border-b border-slate-200 backdrop-blur-sm">
+  <div class="max-w-7xl mx-auto grid grid-cols-6">
+    <a href="#schedule" class="flex flex-col items-center py-4 transition-colors border-b-[3px] text-blue-600 border-blue-600 bg-blue-50">
+      <span class="text-xs font-bold mb-1 text-blue-600">01</span>
+      <span class="text-sm font-semibold">일정</span>
+    </a>
+    <a href="#reg" class="flex flex-col items-center py-4 transition-colors border-b-[3px] border-transparent text-slate-500 hover:text-slate-900 hover:bg-slate-50">
+      <span class="text-xs font-bold mb-1 text-slate-400">02</span>
+      <span class="text-sm font-semibold">참가 신청</span>
+    </a>
+    <a href="#visa" class="flex flex-col items-center py-4 transition-colors border-b-[3px] border-transparent text-slate-500 hover:text-slate-900 hover:bg-slate-50">
+      <span class="text-xs font-bold mb-1 text-slate-400">03</span>
+      <span class="text-sm font-semibold">비자</span>
+    </a>
+    <a href="#hotel" class="flex flex-col items-center py-4 transition-colors border-b-[3px] border-transparent text-slate-500 hover:text-slate-900 hover:bg-slate-50">
+      <span class="text-xs font-bold mb-1 text-slate-400">04</span>
+      <span class="text-sm font-semibold">숙소</span>
+    </a>
+    <a href="#car" class="flex flex-col items-center py-4 transition-colors border-b-[3px] border-transparent text-slate-500 hover:text-slate-900 hover:bg-slate-50">
+      <span class="text-xs font-bold mb-1 text-slate-400">05</span>
+      <span class="text-sm font-semibold">렌터카</span>
+    </a>
+    <a href="#contact" class="flex flex-col items-center py-4 transition-colors border-b-[3px] border-transparent text-slate-500 hover:text-slate-900 hover:bg-slate-50">
+      <span class="text-xs font-bold mb-1 text-slate-400">06</span>
+      <span class="text-sm font-semibold">문의</span>
+    </a>
+  </div>
+</nav>
+
+<!-- Schedule -->
+<section id="schedule" class="py-20 lg:py-28 bg-white">
+  <div class="max-w-7xl mx-auto px-6 sm:px-8">
+    <div class="text-center mb-12">
+      <a href="#" class="btn-primary">전체 일정 다운로드 (PDF)</a>
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-12 lg:gap-20">
+      <!-- Left column -->
+      <div class="lg:w-2/5 shrink-0">
+        <div class="section-tag mb-7">
+          <span class="tag-num">01</span>
+          <span>Schedule</span>
+        </div>
+        <h2 class="text-4xl lg:text-5xl font-light text-slate-900 mb-4 tracking-tight leading-tight">
+          대회 일정
+        </h2>
+        <p class="text-lg text-slate-600">
+          2026년 5월 13일 (수) ~ 18일 (월)
+        </p>
+        <p class="text-sm text-slate-500 mt-2">계양아시아드양궁장 · 계양아라온 수향원</p>
+      </div>
+
+      <!-- Right column - Day cards -->
+      <div class="lg:w-3/5 space-y-14">
+        <!-- Day 1 -->
+        <div>
+          <h3 class="text-xl font-bold text-slate-900 text-center mb-2">1일차 · 2026년 5월 13일 (수)</h3>
+          <p class="text-base font-semibold text-slate-700 text-center mb-7">공식 연습 / 개회식 / 팀 대표자 회의</p>
+          <table class="schedule-table">
+            <thead>
+              <tr><th class="w-36">시간</th><th>내용</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>13:00</td><td>경기장 개장</td></tr>
+              <tr><td>13:30 – 13:50</td><td>대표자 회의 (팀 관계자, 사격통제관, 심판, 기록관)</td></tr>
+              <tr><td>13:50 – 14:40</td><td>남자부 공식 연습 & 장비 검사</td></tr>
+              <tr><td>14:40 – 15:40</td><td>여자부 공식 연습 & 장비 검사</td></tr>
+              <tr><td>16:30 – 17:20</td><td><strong>개회식</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Day 2 -->
+        <div>
+          <h3 class="text-xl font-bold text-slate-900 text-center mb-2">2일차 · 2026년 5월 14일 (목)</h3>
+          <p class="text-base font-semibold text-slate-700 text-center mb-7">남녀 예선 라운드</p>
+          <table class="schedule-table">
+            <thead>
+              <tr><th class="w-36">시간</th><th>내용</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>09:00 – 11:30</td><td>남자 리커브 예선 (ABC)</td></tr>
+              <tr><td>11:30 – 14:00</td><td>점심 휴식</td></tr>
+              <tr><td>14:30 – 16:30</td><td>여자 리커브 예선 (ABC)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Registration -->
+<section id="reg" class="py-20 lg:py-28 bg-slate-50">
+  <div class="max-w-4xl mx-auto px-6">
+    <div class="section-tag mb-9">
+      <span class="tag-num">02</span>
+      <span>참가 신청</span>
+    </div>
+
+    <!-- Important Dates -->
+    <div class="info-card">
+      <h3 class="text-2xl font-bold text-slate-900 mb-6">주요 일정</h3>
+      <ul class="clean-list text-[15px]">
+        <li><strong class="text-slate-900">등록 시작:</strong> 2026년 3월 5일</li>
+        <li><strong class="text-slate-900">최종 신청 마감:</strong> 2026년 4월 30일</li>
+        <li><strong class="text-slate-900">참가비 납부:</strong> 2026년 4월 30일</li>
+        <li><strong class="text-slate-900">환불 취소 마감:</strong> 2026년 4월 30일 <span class="text-slate-500">(마감 이후 환불 불가)</span></li>
+        <li><strong class="text-slate-900">비자 지원 요청:</strong> 2026년 4월 15일</li>
+      </ul>
+    </div>
+
+    <!-- Athlete Registration -->
+    <div class="info-card">
+      <h3 class="text-2xl font-bold text-slate-900 mb-5">선수 등록</h3>
+      <p class="body-text mb-4">
+        모든 등록은 세계양궁연맹 등록 온라인 시스템인 <strong class="text-slate-900">OPEN WAREOS</strong>를 통해 완료해야 합니다.
+        이 시스템은 대회의 전체 등록 절차를 처리합니다.
+      </p>
+      <p class="body-text mb-4">
+        소속 클럽과 카테고리를 선택하여 선수를 등록하세요. 이 대회는 국가대표가 아닌 선수들에게도 개방되어 있으며,
+        개인 등록은 OPEN WAREOS를 통해 처리됩니다.
+      </p>
+      <div class="bg-blue-50 border-l-4 border-blue-600 px-5 py-4 my-5 rounded-r-lg">
+        <p class="text-[15px] text-slate-700">
+          <strong class="text-blue-700">※ 안내:</strong> 단체전에 등록하는 선수는 등록 시 클럽 라이선스의 전자 사본을 제출해야 합니다.
+        </p>
+      </div>
+      <p class="body-text mb-6">
+        최대 해외 참가 인원: 선착순 <strong class="text-slate-900">400명</strong> · 개인 클럽 선수 등록 가능
+      </p>
+      <p class="caption mb-7">
+        OPEN WAREOS 기술 문의: <a class="link" href="#">wareos@archery.sport</a><br>
+        LOC 문의: <a class="link" href="#">gyeyangopen@gmail.com</a>
+      </p>
+      <a href="#" class="btn-primary">OPEN WAREOS 바로가기 →</a>
+    </div>
+
+    <!-- Entry Fee — 명확한 표 -->
+    <div class="info-card">
+      <h3 class="text-2xl font-bold text-slate-900 mb-6">참가비</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>구분</th>
+            <th class="text-right">참가비 (USD)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>개인 선수</td>
+            <td class="text-right value-mono">$70 / 1인</td>
+          </tr>
+          <tr>
+            <td>임원 · 코치</td>
+            <td class="text-right value-mono">$30 / 1인</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Bank Info — 라벨/값 명확하게 -->
+    <div class="info-card">
+      <h3 class="text-2xl font-bold text-slate-900 mb-6">은행 정보</h3>
+      <dl class="grid sm:grid-cols-2 gap-x-8 gap-y-5">
+        <div>
+          <dt class="label uppercase tracking-wider mb-1">계좌명</dt>
+          <dd class="text-[15px] font-semibold text-slate-900">THE INCHEON GYEYANG SPORTS COUNCIL</dd>
+        </div>
+        <div>
+          <dt class="label uppercase tracking-wider mb-1">은행</dt>
+          <dd class="text-[15px] font-semibold text-slate-900">SHINHAN BANK · 신한은행</dd>
+        </div>
+        <div>
+          <dt class="label uppercase tracking-wider mb-1">계좌번호</dt>
+          <dd class="value-mono text-[15px]">100-031-429439</dd>
+        </div>
+        <div>
+          <dt class="label uppercase tracking-wider mb-1">SWIFT 코드</dt>
+          <dd class="value-mono text-[15px]">SHBKKRSE</dd>
+        </div>
+        <div class="sm:col-span-2">
+          <dt class="label uppercase tracking-wider mb-1">은행 주소</dt>
+          <dd class="text-[15px] text-slate-700">88, Gyesan-ro, Gyeyang-gu, Incheon, Republic of Korea</dd>
+        </div>
+      </dl>
+      <div class="bg-amber-50 border-l-4 border-amber-500 px-5 py-4 mt-6 rounded-r-lg">
+        <p class="text-[15px] text-slate-800">
+          <strong class="text-amber-700">※ 안내:</strong> 모든 납부는 USD로 이루어져야 합니다. 신용카드는 사용할 수 없으며, 모든 은행 수수료는 참가자 부담입니다.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact -->
+<section id="contact" class="py-20 lg:py-28 bg-white">
+  <div class="max-w-3xl mx-auto px-6">
+    <div class="flex justify-center mb-9">
+      <div class="section-tag">
+        <span class="tag-num">06</span>
+        <span>Contact us</span>
+      </div>
+    </div>
+
+    <div class="bg-blue-600 rounded-3xl p-10 lg:p-14 text-white">
+      <h3 class="text-3xl font-bold mb-8">LOC CONTACT</h3>
+      <dl class="space-y-5 text-[17px]">
+        <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
+          <dt class="font-bold w-28 shrink-0 text-blue-100">이름 · Name</dt>
+          <dd>Vivian</dd>
+        </div>
+        <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
+          <dt class="font-bold w-28 shrink-0 text-blue-100">WhatsApp</dt>
+          <dd>+82-10-2124-0016 <span class="text-blue-200 text-sm">(문자 메시지만 가능)</span></dd>
+        </div>
+        <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
+          <dt class="font-bold w-28 shrink-0 text-blue-100">Email</dt>
+          <dd><a href="mailto:gyeyangopen@gmail.com" class="underline underline-offset-4 hover:text-blue-200">gyeyangopen@gmail.com</a></dd>
+        </div>
+        <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
+          <dt class="font-bold w-28 shrink-0 text-blue-100">Website</dt>
+          <dd><a href="#" class="underline underline-offset-4 hover:text-blue-200">www.gyeyangopen.com</a></dd>
+        </div>
+        <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
+          <dt class="font-bold w-28 shrink-0 text-blue-100">Language</dt>
+          <dd>한국어 · English</dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<!-- Footer with sponsors (현재 로고 유지) -->
+<footer class="bg-slate-50 border-t border-slate-200 py-12">
+  <div class="max-w-7xl mx-auto px-6">
+    <p class="text-center text-xs uppercase tracking-[0.3em] text-slate-500 font-semibold mb-8">주최 · 후원 · HOSTS & SPONSORS</p>
+    <div class="flex flex-wrap justify-center items-center gap-x-10 gap-y-5 mb-6">
+      <img src="/images/sponsor_001.jpg" alt="Incheon Gyeyang-gu" class="h-12 w-auto object-contain" />
+      <img src="/images/sponsor_002.jpg" alt="World Archery Asia" class="h-12 w-auto object-contain" />
+      <img src="/images/sponsor_003.jpg" alt="Korea Archery Association" class="h-12 w-auto object-contain" />
+      <img src="/images/sponsor_004.jpg" alt="Gyeyang Sports Council" class="h-12 w-auto object-contain" />
+    </div>
+    <div class="flex flex-wrap justify-center items-center gap-x-10 gap-y-5 mb-10">
+      <img src="/images/sponsor_005.jpg" alt="MCST" class="h-12 w-auto object-contain" />
+      <img src="/images/sponsor_006.jpg" alt="Incheon Metropolitan City" class="h-12 w-auto object-contain" />
+      <img src="/images/sponsor_007.jpg" alt="Incheon Archery Association" class="h-12 w-auto object-contain" />
+    </div>
+    <div class="text-center space-y-2 pt-6 border-t border-slate-200">
+      <div class="flex items-center justify-center gap-4 text-sm">
+        <a href="#" class="link">2026 아카이브</a>
+        <span class="text-slate-300">·</span>
+        <a href="#" class="link">2025 아카이브</a>
+      </div>
+      <p class="text-sm text-slate-500">© 2026 GYEYANG OPEN. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

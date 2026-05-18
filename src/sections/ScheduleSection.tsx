@@ -108,7 +108,11 @@ function getScheduleData(t: (key: string) => string) {
   ];
 }
 
-export default function ScheduleSection() {
+interface ScheduleSectionProps {
+  hideHeader?: boolean;
+}
+
+export default function ScheduleSection({ hideHeader }: ScheduleSectionProps = {}) {
   const { t } = useI18n();
   const SCHEDULE_DATA = getScheduleData(t);
 
@@ -142,7 +146,7 @@ export default function ScheduleSection() {
       event.desc === t("schedule.day5E11"));
 
   return (
-    <section id="schedule" className="py-16 lg:py-24 bg-white">
+    <section id="schedule" className="py-20 lg:py-28 bg-white scroll-mt-24">
       <div className="max-w-7xl mx-auto px-4">
         {/* Download button */}
         <div className="text-center mb-12">
@@ -152,17 +156,26 @@ export default function ScheduleSection() {
         </div>
 
         {/* 2-column layout: left title + right schedule */}
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-16">
+        <div className="flex flex-col lg:flex-row gap-10 lg:gap-20">
           {/* Left column - Section info */}
           <div className="lg:w-2/5 shrink-0">
-            <div className="section-tag mb-6">
-              <span className="tag-num">01</span>
-              <span>{t("sectionNav.schedule")}</span>
-            </div>
-            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-3">{t("schedule.title")}</h2>
-            <p className="text-base text-gray-400">
-              {t("schedule.period")}
-            </p>
+            {!hideHeader && (
+              <>
+                <div className="section-tag mb-7">
+                  <span className="tag-num">01</span>
+                  <span>{t("sectionNav.schedule")}</span>
+                </div>
+                <h2 className="text-4xl lg:text-5xl font-light text-slate-900 mb-4 tracking-tight leading-tight">{t("schedule.title")}</h2>
+                <p className="text-lg text-slate-600 font-medium">
+                  {t("schedule.period")}
+                </p>
+              </>
+            )}
+            {hideHeader && (
+              <p className="text-lg text-slate-600 font-medium">
+                {t("schedule.period")}
+              </p>
+            )}
 
             {/* Decorative poster images with scroll fade-in */}
             <div className="hidden lg:flex flex-col gap-12 mt-10">
@@ -185,11 +198,11 @@ export default function ScheduleSection() {
           </div>
 
           {/* Right column - Schedule tables */}
-          <div className="lg:w-3/5 space-y-16">
+          <div className="lg:w-3/5 space-y-14">
             {SCHEDULE_DATA.map((day, i) => (
               <div key={i}>
-                <h3 className="text-xl font-bold text-center mb-2">{day.date}</h3>
-                <p className="text-base font-semibold text-center mb-6">{day.title}</p>
+                <h3 className="text-xl lg:text-2xl font-bold text-slate-900 text-center mb-2 tracking-tight">{day.date}</h3>
+                <p className="text-base font-semibold text-slate-700 text-center mb-7">{day.title}</p>
 
                 <table className="schedule-table">
                   <thead>

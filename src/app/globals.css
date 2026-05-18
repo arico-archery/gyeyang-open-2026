@@ -9,6 +9,14 @@
   --color-blue-bg: #eff6ff;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-heading: "Cabinet Grotesk", ui-sans-serif, system-ui, sans-serif;
+
+  /* Readability tokens — text colors with stronger contrast (WCAG AA+) */
+  --color-text-1: #0f172a;   /* primary text (slate-900) */
+  --color-text-2: #334155;   /* body text (slate-700) — was #6b7280 */
+  --color-text-3: #475569;   /* secondary (slate-600) — was #9ca3af */
+  --color-text-4: #64748b;   /* meta/caption (slate-500) — was #d1d5db */
+  --color-line: #e2e8f0;
+  --color-line-strong: #cbd5e1;
 }
 
 html {
@@ -17,9 +25,12 @@ html {
 
 body {
   background: #ffffff;
-  color: #0a0a0a;
+  color: var(--color-text-1);
   font-family: var(--font-sans);
-  line-height: 1.7;
+  /* Higher line-height for Korean readability */
+  line-height: 1.75;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3, h4 {
@@ -143,9 +154,9 @@ h1, h2, h3, h4 {
 /* ========== INFO CARD ========== */
 .info-card {
   background: white;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-line);
   border-radius: 16px;
-  padding: 32px;
+  padding: 36px;
   margin-bottom: 24px;
 }
 
@@ -157,19 +168,21 @@ h1, h2, h3, h4 {
 
 .data-table th {
   background: #f8fafc;
-  padding: 14px 16px;
+  padding: 16px 18px;
   text-align: left;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 14px;
-  color: #374151;
-  border-bottom: 2px solid #e5e7eb;
+  color: var(--color-text-1);
+  border-bottom: 2px solid var(--color-line-strong);
+  letter-spacing: 0.01em;
 }
 
 .data-table td {
-  padding: 14px 16px;
-  border-bottom: 1px solid #f1f5f9;
-  font-size: 14px;
-  color: #374151;
+  padding: 18px;
+  border-bottom: 1px solid var(--color-line);
+  font-size: 15px;
+  color: var(--color-text-2);
+  line-height: 1.6;
 }
 
 .data-table tbody tr:hover {
@@ -213,27 +226,31 @@ h1, h2, h3, h4 {
 
 .schedule-table th {
   background: #fffbeb;
-  padding: 10px 16px;
+  padding: 14px 18px;
   text-align: left;
-  font-weight: 600;
-  font-size: 14px;
+  font-weight: 700;
+  font-size: 13px;
   color: #92400e;
   border-bottom: 2px solid #fde68a;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 .schedule-table td {
-  padding: 12px 16px;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--color-line);
   font-size: 15px;
-  color: #1f2937;
+  color: var(--color-text-1);
   vertical-align: top;
+  line-height: 1.6;
 }
 
 .schedule-table td:first-child {
-  width: 130px;
-  font-weight: 500;
-  color: #6b7280;
+  width: 150px;
+  font-weight: 600;
+  color: var(--color-text-2);
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 /* ========== INVITATION ========== */
@@ -429,4 +446,96 @@ h1, h2, h3, h4 {
   footer .flex-wrap img {
     height: 28px !important;
   }
+}
+
+/* ========== READABILITY HELPERS ========== */
+/* Body text with comfortable line-height for Korean */
+.body-text {
+  color: var(--color-text-2);
+  line-height: 1.85;
+  font-size: 16px;
+}
+.body-text-lg {
+  color: var(--color-text-2);
+  line-height: 1.85;
+  font-size: 17px;
+}
+
+/* Clean bulleted list with stronger contrast */
+.clean-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.clean-list li {
+  position: relative;
+  padding-left: 22px;
+  margin-bottom: 12px;
+  color: var(--color-text-2);
+  line-height: 1.7;
+  font-size: 15px;
+}
+.clean-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 11px;
+  width: 6px;
+  height: 6px;
+  background: var(--color-primary);
+  border-radius: 999px;
+}
+.clean-list li strong {
+  color: var(--color-text-1);
+  font-weight: 600;
+}
+
+/* Callout box (info/warning) — replaces faint ※ caveats */
+.callout {
+  padding: 16px 20px;
+  border-left-width: 4px;
+  border-left-style: solid;
+  border-radius: 0 8px 8px 0;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--color-text-1);
+  margin: 20px 0;
+}
+.callout-info {
+  background: #eff6ff;
+  border-left-color: #2563eb;
+}
+.callout-info strong { color: #1d4ed8; font-weight: 700; }
+.callout-warning {
+  background: #fffbeb;
+  border-left-color: #f59e0b;
+}
+.callout-warning strong { color: #b45309; font-weight: 700; }
+
+/* Strong link with underline (better than color-only) */
+.link {
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+}
+.link:hover { color: var(--color-primary-dark); }
+
+/* Monospace numeric value */
+.value-mono {
+  font-family: ui-monospace, "Cascadia Code", Menlo, Monaco, Consolas, monospace;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-1);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Section label — small caps style for "Hosts · Sponsors" etc. */
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--color-text-3);
 }

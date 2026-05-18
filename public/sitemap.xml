@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://www.gyeyangopen.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://www.gyeyangopen.com/invitation</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://www.gyeyangopen.com/schedule</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://www.gyeyangopen.com/registration</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.gyeyangopen.com/visa</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.gyeyangopen.com/hotel</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.gyeyangopen.com/rent-car</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.gyeyangopen.com/contact</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.gyeyangopen.com/record_table</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
   <url><loc>https://www.gyeyangopen.com/practice_schedule</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
   <url><loc>https://www.gyeyangopen.com/guide_map</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
   <url><loc>https://www.gyeyangopen.com/scoreboard</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.gyeyangopen.com/gallery</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.gyeyangopen.com/archive/2025</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>
   <url><loc>https://www.gyeyangopen.com/archive/2026</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.gyeyangopen.com/app</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>

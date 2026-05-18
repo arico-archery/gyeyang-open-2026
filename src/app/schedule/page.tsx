@@ -1,6 +1,7 @@
 "use client";
 
 import { useI18n } from "@/lib/i18n/context";
+import PageHeader from "@/components/PageHeader";
 
 function getSchedulePageData(t: (key: string) => string) {
   return [
@@ -104,33 +105,24 @@ export default function SchedulePage() {
     desc === t("schedule.day1E5");
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Page Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-5xl mx-auto px-4 py-10 lg:py-14">
-          <div className="section-tag mb-5">
-            <span className="tag-num">01</span>
-            <span>{t("sectionNav.schedule")}</span>
-          </div>
-          <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
-            {t("schedule.title")}
-          </h1>
-          <p className="text-lg text-gray-500">{t("schedule.period")}</p>
-          <div className="mt-6">
-            <a
-              href="https://www.ianseo.net/TourData/2026/28161/SCHEDULE.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-download btn-download-sm"
-            >
-              {t("schedule.downloadDetailed")}
-            </a>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen bg-slate-50">
+      <PageHeader
+        kicker={t("nav.groupAbout")}
+        title={t("pageHeader.scheduleTitle")}
+        subtitle={t("pageHeader.scheduleSubtitle")}
+      />
 
-      {/* Schedule Content */}
       <div className="max-w-5xl mx-auto px-4 py-10">
+        <div className="mb-8 text-center">
+          <a
+            href="https://www.ianseo.net/TourData/2026/28161/SCHEDULE.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-download btn-download-sm"
+          >
+            {t("schedule.downloadDetailed")}
+          </a>
+        </div>
         <div className="space-y-8">
           {SCHEDULE_DATA.map((day, i) => (
             <div key={i} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">

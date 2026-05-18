@@ -1,14 +1,19 @@
-import RegistrationSection from "@/sections/RegistrationSection";
+"use client";
 
-export const metadata = {
-  title: "Registration - 2026 GYEYANG OPEN",
-  description: "Registration information for the 2026 GYEYANG OPEN International Archery Tournament",
-};
+import RegistrationSection from "@/sections/RegistrationSection";
+import PageHeader from "@/components/PageHeader";
+import { useI18n } from "@/lib/i18n/context";
 
 export default function RegistrationPage() {
+  const { t } = useI18n();
   return (
-    <div className="py-8">
-      <RegistrationSection />
-    </div>
+    <>
+      <PageHeader
+        kicker={t("nav.groupParticipate")}
+        title={t("pageHeader.registrationTitle")}
+        subtitle={t("pageHeader.registrationSubtitle")}
+      />
+      <RegistrationSection hideHeader />
+    </>
   );
 }

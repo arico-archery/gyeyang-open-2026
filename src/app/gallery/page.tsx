@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useI18n } from "@/lib/i18n/context";
+import PhotoGallery from "@/components/PhotoGallery";
 
 const YOUTUBE_ID = "1OV5pCmHZYg";
 
@@ -106,7 +107,7 @@ export default function GalleryPage() {
         </div>
       </section>
 
-      {/* Tournament photos placeholder */}
+      {/* Tournament photos (SmugMug) */}
       <section className="py-16 lg:py-24">
         <div className="max-w-5xl mx-auto px-6 lg:px-8">
           <div className="mb-8">
@@ -116,14 +117,7 @@ export default function GalleryPage() {
             <p className="text-slate-600">{t("gallery.photosDesc")}</p>
           </div>
 
-          <div className="bg-slate-50 rounded-2xl border-2 border-dashed border-slate-300 py-20 text-center">
-            <svg className="w-12 h-12 text-slate-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <p className="text-slate-500 text-sm">
-              {t("gallery.postersComingSoon")}
-            </p>
-          </div>
+          <PhotoGallery />
         </div>
       </section>
     </div>

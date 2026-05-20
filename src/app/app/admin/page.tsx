@@ -20,8 +20,29 @@ export default function AdminPage() {
   const { locale } = useI18n();
   const { user, profile, loading } = useAuth();
   const [stats, setStats] = useState<Stats>({ totalRegistrations: 0, pendingRegistrations: 0, totalAnnouncements: 0, pendingInquiries: 0, todayAttendance: 0, totalAthletes: 0 });
+  const [refreshState, setRefreshState] = useState<"idle" | "loading" | "ok" | "error">("idle");
 
   const t = (ko: string, en: string) => (locale === "ko" ? ko : en);
+
+  async function refreshPhotos() {
+    setRefreshState("loading");
+    try {
+      const { data: sess } = await supabase.auth.getSession();
+      const token = sess.session?.access_token;
+      if (!token) throw new Error("not signed in");
+      const res = await fetch("/api/photos/revalidate", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      setRefreshState("ok");
+      setTimeout(() => setRefreshState("idle"), 3000);
+    } catch (e) {
+      console.error("refreshPhotos failed:", e);
+      setRefreshState("error");
+      setTimeout(() => setRefreshState("idle"), 3000);
+    }
+  }
 
   useEffect(() => {
     async function fetchStats() {
@@ -129,6 +150,49 @@ export default function AdminPage() {
           </div>
         </div>
       </Link>
+
+      {/* Quick actions */}
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 mb-4">
+        <h2 className="text-sm font-bold text-gray-900 mb-3">
+          {t("빠른 작업", "Quick Actions")}
+        </h2>
+        <button
+          type="button"
+          onClick={refreshPhotos}
+          disabled={refreshState === "loading"}
+          className="w-full flex items-center justify-between px-3 py-2.5 bg-blue-50 border border-blue-100 rounded-lg text-sm font-medium text-blue-700 hover:bg-blue-100 transition-colors disabled:opacity-60"
+        >
+          <span className="flex items-center gap-2">
+            <span className="text-base">📷</span>
+            {refreshState === "loading"
+              ? t("새로고침 중...", "Refreshing...")
+              : refreshState === "ok"
+              ? t("✓ 사진 캐시 갱신 완료", "✓ Photo cache refreshed")
+              : refreshState === "error"
+              ? t("✗ 갱신 실패 (관리자 권한 확인)", "✗ Refresh failed (check admin role)")
+              : t("SmugMug 사진 캐시 새로고침", "Refresh SmugMug photo cache")}
+          </span>
+          <svg
+            className="w-4 h-4 text-blue-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            />
+          </svg>
+        </button>
+        <p className="text-[11px] text-gray-500 mt-2 leading-relaxed">
+          {t(
+            "기본적으로 1시간마다 자동 갱신됩니다. 즉시 반영이 필요할 때만 누르세요.",
+            "Photos auto-refresh hourly. Only press this if you need an instant update."
+          )}
+        </p>
+      </div>
 
       {/* Menu */}
       <div className="space-y-3">

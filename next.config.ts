@@ -11,6 +11,9 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "www.gyeyangopen.com" },
       { protocol: "https", hostname: "www.gyeyangopen.kr" },
       { protocol: "https", hostname: "i.ytimg.com" },
+      // SmugMug-hosted images for /gallery and /app/photos
+      { protocol: "https", hostname: "photos.smugmug.com" },
+      { protocol: "https", hostname: "media.arico.group" },
     ],
   },
 };

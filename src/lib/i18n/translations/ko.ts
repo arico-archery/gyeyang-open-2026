@@ -504,7 +504,7 @@ export const ko = {
     scoreboardTitle: "최종 결과",
     scoreboardDesc: "ianseo에서 전체 결과 보기",
     scoreboardLink: "ianseo에서 2026 결과 보기",
-    ianseoUrl: "https://info.ianseo.net/26IGYO/",
+    ianseoUrl: "https://www.ianseo.net/Details.php?toId=28161",
     venuesTitle: "경기장",
     venueQual: "예선 — 계양아시아드양궁장",
     venueFinal: "결승 — 계양아라온 수향원",

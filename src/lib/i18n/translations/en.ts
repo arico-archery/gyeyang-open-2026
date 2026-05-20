@@ -504,7 +504,7 @@ export const en = {
     scoreboardTitle: "Final Results",
     scoreboardDesc: "View full results on ianseo",
     scoreboardLink: "View 2026 Results on ianseo",
-    ianseoUrl: "https://info.ianseo.net/26IGYO/",
+    ianseoUrl: "https://www.ianseo.net/Details.php?toId=28161",
     venuesTitle: "Venues",
     venueQual: "Qualification — Gyeyang Asiad Archery Field",
     venueFinal: "Finals — Gyeyang Araon Suhyangwon",

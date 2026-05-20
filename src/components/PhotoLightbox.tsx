@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import type { Photo } from "@/app/api/photos/route";
 import { useI18n } from "@/lib/i18n/context";
 
@@ -142,27 +141,29 @@ export default function PhotoLightbox({
 
       {/* Image */}
       <div
-        className="flex-1 flex items-center justify-center px-4 pb-4 relative"
+        className="flex-1 relative min-h-0 px-4 pb-4"
         onClick={(e) => e.stopPropagation()}
       >
         {!loaded && (
-          <div className="absolute inset-0 flex items-center justify-center">
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div className="w-10 h-10 border-4 border-white/30 border-t-white rounded-full animate-spin" />
           </div>
         )}
-        <Image
+        {/* Plain <img> + w-full h-full + object-contain reliably scales the
+            photo to fill the available area while preserving aspect ratio.
+            (next/image with explicit width/height in a flex container kept
+            collapsing to its intrinsic display size.) */}
+        <img
           key={photo.imageKey}
           src={photo.lightbox}
           alt={photo.caption || photo.fileName}
-          width={photo.width}
-          height={photo.height}
-          sizes="100vw"
-          className={`max-h-full max-w-full w-auto h-auto object-contain transition-opacity ${
+          className={`block w-full h-full object-contain transition-opacity duration-200 ${
             loaded ? "opacity-100" : "opacity-0"
           }`}
           onLoad={() => setLoaded(true)}
-          priority
-          unoptimized
+          loading="eager"
+          decoding="async"
+          draggable={false}
         />
 
         {/* Prev/Next overlays */}
@@ -170,7 +171,7 @@ export default function PhotoLightbox({
           <button
             type="button"
             onClick={prev}
-            className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"
+            className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center z-10"
             aria-label={t("이전", "Previous")}
           >
             <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -182,7 +183,7 @@ export default function PhotoLightbox({
           <button
             type="button"
             onClick={next}
-            className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"
+            className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center z-10"
             aria-label={t("다음", "Next")}
           >
             <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

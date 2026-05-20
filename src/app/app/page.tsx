@@ -84,6 +84,46 @@ export default function AppHome() {
         </div>
       </div>
 
+      {/* Thank-you card — post-event message */}
+      <div className="bg-white rounded-2xl border border-blue-100 shadow-sm p-5 mb-4">
+        <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-blue-600 mb-2">
+          {t("감사의 말씀", "Thank You")}
+        </p>
+        <h2 className="text-base font-bold text-slate-900 leading-snug mb-3">
+          {t(
+            "함께해 주신 모든 분들께 감사드립니다",
+            "Thank you to everyone who made this tournament possible"
+          )}
+        </h2>
+        <div className="space-y-3 text-sm text-slate-700 leading-relaxed">
+          <div>
+            <p className="text-[11px] font-bold tracking-wider uppercase text-slate-500 mb-1">
+              {t("참가 선수 여러분께", "To Our Athletes")}
+            </p>
+            <p>
+              {t(
+                "한 발 한 발에 담아주신 열정과 도전 정신이 이번 대회를 더없이 빛나게 했습니다. 다음 무대에서의 빛나는 활약을 응원합니다.",
+                "The passion and competitive spirit you brought to every arrow made this tournament truly memorable. We wish you continued success."
+              )}
+            </p>
+          </div>
+          <div>
+            <p className="text-[11px] font-bold tracking-wider uppercase text-slate-500 mb-1">
+              {t("관계자·자원봉사자·후원사 여러분께", "To Our Staff, Volunteers, and Sponsors")}
+            </p>
+            <p>
+              {t(
+                "보이지 않는 곳에서의 노고가 있었기에 「2026 GYEYANG OPEN」이 세계 양궁인들의 마음에 오래 남는 무대가 될 수 있었습니다. 깊이 감사드립니다.",
+                "Behind every smooth moment was your effort — thanks to you, this tournament will remain in the hearts of the global archery community."
+              )}
+            </p>
+          </div>
+        </div>
+        <p className="mt-4 pt-3 border-t border-slate-100 text-right text-xs text-slate-500 font-medium">
+          — {t("2026 계양오픈 조직위원회 일동", "The 2026 GYEYANG OPEN Organizing Committee")}
+        </p>
+      </div>
+
       {/* Quick Menu */}
       <div className="grid grid-cols-4 gap-3 mb-4">
         <Link href="/app/schedule" className="flex flex-col items-center gap-1.5 bg-white rounded-xl border border-gray-100 py-3 shadow-sm hover:shadow transition-shadow">

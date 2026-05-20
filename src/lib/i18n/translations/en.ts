@@ -24,6 +24,15 @@ export const en = {
     rentcar: "Rent Car",
     contact: "Contact",
   },
+  thanks: {
+    kicker: "A Message of Thanks",
+    title: "Thank you to everyone who made this tournament possible",
+    athletesLabel: "To Our Athletes",
+    athletesBody: "Our sincere thanks to every archer who joined the 2026 GYEYANG OPEN. The passion and competitive spirit you brought to every arrow made this tournament truly memorable. We wish you a safe journey home and continued success in your next chapter.",
+    staffLabel: "To Our Staff, Volunteers, and Sponsors",
+    staffBody: "We deeply appreciate the dedication of every official, volunteer, and sponsor who supported the tournament, as well as the citizens who cheered us on. Behind every smooth moment was your effort — and thanks to you, the 2026 GYEYANG OPEN will remain in the hearts of the global archery community.",
+    signature: "The 2026 GYEYANG OPEN Organizing Committee",
+  },
   pageHeader: {
     invitationTitle: "Invitation",
     invitationSubtitle: "Welcome letter from the Chairperson of the Organizing Committee",

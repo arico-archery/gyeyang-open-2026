@@ -530,7 +530,7 @@ export const ko = {
     postersSectionTitle: "공식 포스터",
     postersComingSoon: "대회 사진은 추후 업데이트됩니다",
     photosSectionTitle: "대회 사진",
-    photosDesc: "현장에서 촬영된 사진들을 시간순으로 정리했습니다. 썸네일을 누르면 큰 화면으로 볼 수 있고, 원하는 사진은 바로 다운로드할 수 있습니다.",
+    photosDesc: "세계 양궁인들이 함께한 6일간의 모든 장면. 진지한 눈빛부터 환호의 순간까지, 2026 GYEYANG OPEN을 사진으로 다시 만나보세요.",
   },
   recordTable: {
     pageTitle: "양궁 세계 기록",

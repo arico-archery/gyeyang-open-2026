@@ -530,7 +530,7 @@ export const en = {
     postersSectionTitle: "Official Posters",
     postersComingSoon: "Tournament photos coming soon",
     photosSectionTitle: "Tournament Photos",
-    photosDesc: "On-site photos in chronological order. Tap a thumbnail to view in full screen, or download any photo directly.",
+    photosDesc: "Six days that brought the global archery community together. From every focused gaze to every cheer — relive the 2026 GYEYANG OPEN through photos.",
   },
   recordTable: {
     pageTitle: "Archery World Records",

@@ -530,7 +530,7 @@ export const ko = {
     postersSectionTitle: "공식 포스터",
     postersComingSoon: "대회 사진은 추후 업데이트됩니다",
     photosSectionTitle: "대회 사진",
-    photosDesc: "2026 대회 하이라이트 사진은 추후 공개됩니다.",
+    photosDesc: "현장에서 촬영된 사진들을 시간순으로 정리했습니다. 썸네일을 누르면 큰 화면으로 볼 수 있고, SmugMug에서 원본 다운로드도 가능합니다.",
   },
   recordTable: {
     pageTitle: "양궁 세계 기록",

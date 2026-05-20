@@ -125,7 +125,7 @@ export default function AppHome() {
       </div>
 
       {/* Quick Menu */}
-      <div className="grid grid-cols-4 gap-3 mb-4">
+      <div className="grid grid-cols-5 gap-2 mb-4">
         <Link href="/app/schedule" className="flex flex-col items-center gap-1.5 bg-white rounded-xl border border-gray-100 py-3 shadow-sm hover:shadow transition-shadow">
           <span className="text-2xl">📅</span>
           <span className="text-[11px] font-medium text-gray-700">{t("일정", "Schedule")}</span>
@@ -134,13 +134,17 @@ export default function AppHome() {
           <span className="text-2xl">🏆</span>
           <span className="text-[11px] font-medium text-gray-700">{t("점수", "Scores")}</span>
         </Link>
+        <Link href="/app/participants" className="flex flex-col items-center gap-1.5 bg-white rounded-xl border border-gray-100 py-3 shadow-sm hover:shadow transition-shadow">
+          <span className="text-2xl">👥</span>
+          <span className="text-[11px] font-medium text-gray-700">{t("선수", "Athletes")}</span>
+        </Link>
+        <Link href="/app/photos" className="flex flex-col items-center gap-1.5 bg-white rounded-xl border border-gray-100 py-3 shadow-sm hover:shadow transition-shadow">
+          <span className="text-2xl">📷</span>
+          <span className="text-[11px] font-medium text-gray-700">{t("사진", "Photos")}</span>
+        </Link>
         <Link href="/app/nearby" className="flex flex-col items-center gap-1.5 bg-white rounded-xl border border-gray-100 py-3 shadow-sm hover:shadow transition-shadow">
           <span className="text-2xl">📍</span>
           <span className="text-[11px] font-medium text-gray-700">{t("주변", "Nearby")}</span>
-        </Link>
-        <Link href="/app/participants" className="flex flex-col items-center gap-1.5 bg-white rounded-xl border border-gray-100 py-3 shadow-sm hover:shadow transition-shadow">
-          <span className="text-2xl">👥</span>
-          <span className="text-[11px] font-medium text-gray-700">{t("참가자 명단", "Participants")}</span>
         </Link>
       </div>
 

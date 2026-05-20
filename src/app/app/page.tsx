@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n/context";
 import { useAuth } from "@/lib/supabase/auth-context";
@@ -16,11 +17,20 @@ interface Announcement {
   priority: "normal" | "important" | "urgent";
 }
 
+interface RecentPhoto {
+  imageKey: string;
+  small: string;
+  caption: string;
+  fileName: string;
+}
+
 export default function AppHome() {
   const { locale, setLocale } = useI18n();
   const { user, profile } = useAuth();
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [dDay, setDDay] = useState("");
+  const [recentPhotos, setRecentPhotos] = useState<RecentPhoto[]>([]);
+  const [totalPhotos, setTotalPhotos] = useState(0);
 
   const t = (ko: string, en: string) => (locale === "ko" ? ko : en);
 
@@ -36,6 +46,23 @@ export default function AppHome() {
       .limit(3)
       .then(({ data }) => {
         if (data) setAnnouncements(data);
+      });
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/photos")
+      .then((r) => r.json())
+      .then((d) => {
+        if (!d?.albums) return;
+        // Flatten all photos, take first 6 (newest first per SmugMug sort)
+        const all: RecentPhoto[] = d.albums.flatMap(
+          (a: { images: RecentPhoto[] }) => a.images
+        );
+        setRecentPhotos(all.slice(0, 6));
+        setTotalPhotos(d.totalImages ?? 0);
+      })
+      .catch(() => {
+        // silent fail — preview card hidden if fetch fails
       });
   }, []);
 
@@ -147,6 +174,43 @@ export default function AppHome() {
           <span className="text-[11px] font-medium text-gray-700">{t("주변", "Nearby")}</span>
         </Link>
       </div>
+
+      {/* Recent Photos preview */}
+      {recentPhotos.length > 0 && (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-4">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-bold text-gray-900">
+              {t("최근 사진", "Recent Photos")}
+              <span className="ml-1.5 text-[11px] text-gray-400 font-medium">
+                {totalPhotos}
+              </span>
+            </h2>
+            <Link href="/app/photos" className="text-xs text-blue-600 font-medium">
+              {t("전체보기", "View All")}
+            </Link>
+          </div>
+          <Link href="/app/photos" className="block">
+            <div className="grid grid-cols-3 gap-1.5">
+              {recentPhotos.map((p) => (
+                <div
+                  key={p.imageKey}
+                  className="relative aspect-square overflow-hidden rounded-lg bg-slate-100"
+                >
+                  <Image
+                    src={p.small}
+                    alt={p.caption || p.fileName}
+                    fill
+                    sizes="33vw"
+                    className="object-cover"
+                    loading="lazy"
+                    unoptimized
+                  />
+                </div>
+              ))}
+            </div>
+          </Link>
+        </div>
+      )}
 
       {/* Announcements */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-4">

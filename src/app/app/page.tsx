@@ -138,9 +138,9 @@ export default function AppHome() {
           <span className="text-2xl">📍</span>
           <span className="text-[11px] font-medium text-gray-700">{t("주변", "Nearby")}</span>
         </Link>
-        <Link href="/app/registration" className="flex flex-col items-center gap-1.5 bg-white rounded-xl border border-gray-100 py-3 shadow-sm hover:shadow transition-shadow">
-          <span className="text-2xl">📝</span>
-          <span className="text-[11px] font-medium text-gray-700">{t("참가신청", "Register")}</span>
+        <Link href="/app/participants" className="flex flex-col items-center gap-1.5 bg-white rounded-xl border border-gray-100 py-3 shadow-sm hover:shadow transition-shadow">
+          <span className="text-2xl">👥</span>
+          <span className="text-[11px] font-medium text-gray-700">{t("참가자 명단", "Participants")}</span>
         </Link>
       </div>
 

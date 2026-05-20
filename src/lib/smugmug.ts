@@ -118,25 +118,37 @@ export async function listImagesInAlbum(
  * Derive a different-sized image URL from a SmugMug thumbnail URL.
  *
  * SmugMug URL pattern:
- *   https://photos.smugmug.com/<path>/i-<key>/0/<SIZE>/<filename>-<SIZE>.jpg
+ *   https://photos.smugmug.com/<path>/i-<key>/<rev>/<SIZE>/<filename>-<SIZE>.jpg
  *
- * Replace `<SIZE>` segment with one of: Ti Th S M L XL X2 X3 X4 X5 O.
+ * `<rev>` is the image revision number. The ThumbnailUrl returned by the
+ * AlbumImages API uses `/0/` (initial revision), but when album permissions
+ * change (e.g., enabling AllowDownloads), the LARGER sizes (X4/X5/5K/4K) only
+ * exist at revision `/1/` and respond 0 bytes from `/0/`. So we always swap
+ * to `/1/` here — works for every size from Ti through 5K.
  *
- *   Th = ~150px (default thumbnail returned by API)
- *   M  = ~600px (mobile lightbox)
- *   XL = ~1024px (desktop grid hi-DPI)
- *   X2 = ~1280px (desktop lightbox)
- *   X3 = ~1600px (4K display)
+ * Available SIZE codes (longest side, px):
+ *   Ti 100 · Th 150 · S 400 · M 600 · L 800 · XL 1024
+ *   X2 1280 · X3 1600 · X4 2048 · X5 2560 · 5K 5120
  */
 export function resizeSmugUrl(thumbnailUrl: string, size: SmugSize): string {
-  if (size === "Th") return thumbnailUrl;
-  // Match: /0/Th/...-Th.<ext>
+  // Match: /<rev>/Th/...-Th.<ext>   (rev is digit(s), usually 0 or 1)
   return thumbnailUrl
-    .replace(/\/0\/Th\//, `/0/${size}/`)
+    .replace(/\/\d+\/Th\//, `/1/${size}/`)
     .replace(/-Th\.(jpg|jpeg|png)$/i, `-${size}.$1`);
 }
 
-export type SmugSize = "Ti" | "Th" | "S" | "M" | "L" | "XL" | "X2" | "X3" | "X4" | "X5";
+export type SmugSize =
+  | "Ti"
+  | "Th"
+  | "S"
+  | "M"
+  | "L"
+  | "XL"
+  | "X2"
+  | "X3"
+  | "X4"
+  | "X5"
+  | "5K";
 
 /** Strip leading "01_", "02_" sort-order prefix from album names. */
 export function cleanAlbumName(name: string): string {

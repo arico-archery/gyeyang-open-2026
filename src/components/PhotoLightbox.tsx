@@ -151,11 +151,14 @@ export default function PhotoLightbox({
         )}
         {/* Plain <img> + w-full h-full + object-contain reliably scales the
             photo to fill the available area while preserving aspect ratio.
-            Uses X3 (1600px) which stays sharp on most desktop & laptop
-            displays — X4/X5 aren't served for this album. */}
+            srcset offers X3 (1600px) as default and X4 (2048px) for hi-DPI
+            displays / 4K monitors — the browser picks based on device pixel
+            ratio and viewport width. */}
         <img
           key={photo.imageKey}
           src={photo.lightbox}
+          srcSet={`${photo.lightbox} 1600w, ${photo.lightboxHiDpi} 2048w`}
+          sizes="100vw"
           alt={photo.caption || photo.fileName}
           className={`block w-full h-full object-contain transition-opacity duration-200 ${
             loaded ? "opacity-100" : "opacity-0"

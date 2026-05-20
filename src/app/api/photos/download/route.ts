@@ -14,10 +14,12 @@ const ALLOWED_HOST = "photos.smugmug.com";
 const MAX_FILENAME = 200;
 
 function sanitizeFilename(raw: string): string {
-  // Strip path separators and control chars; keep unicode letters/digits.
+  // Strip path separators and unsafe chars; KEEP spaces and unicode letters.
+  // Filename is double-quoted in Content-Disposition so spaces are valid.
   const cleaned = raw
     .replace(/[\\/\x00-\x1f<>:"|?*]+/g, "_")
-    .replace(/\s+/g, "_")
+    .replace(/\s+/g, " ") // collapse multiple whitespace → single space
+    .trim()
     .slice(0, MAX_FILENAME);
   return cleaned || "photo.jpg";
 }

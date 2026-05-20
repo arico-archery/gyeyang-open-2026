@@ -49,10 +49,7 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
-  icons: {
-    icon: "/images/logo.png",
-    apple: "/images/logo.png",
-  },
+  // Icons are auto-resolved from src/app/icon.png, favicon.ico, apple-icon.png
 };
 
 export default function RootLayout({

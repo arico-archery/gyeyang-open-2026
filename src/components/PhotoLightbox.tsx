@@ -94,36 +94,26 @@ export default function PhotoLightbox({
         <span className="text-sm tabular-nums opacity-80">
           {index + 1} / {photos.length}
         </span>
-        <div className="flex items-center gap-3">
-          <a
-            href={photo.webUri}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs sm:text-sm bg-white/10 hover:bg-white/20 transition-colors px-3 py-1.5 rounded-lg"
+        <button
+          type="button"
+          onClick={onClose}
+          className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"
+          aria-label={t("닫기", "Close")}
+        >
+          <svg
+            className="w-5 h-5 text-white"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
           >
-            {t("SmugMug에서 보기", "View on SmugMug")} ↗
-          </a>
-          <button
-            type="button"
-            onClick={onClose}
-            className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"
-            aria-label={t("닫기", "Close")}
-          >
-            <svg
-              className="w-5 h-5 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-        </div>
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
       </div>
 
       {/* Image */}

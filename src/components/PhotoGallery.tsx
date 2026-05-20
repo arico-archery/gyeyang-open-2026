@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n/context";
 import PhotoLightbox from "./PhotoLightbox";
 import type { Photo, PhotoAlbum } from "@/app/api/photos/route";
@@ -21,9 +21,12 @@ interface Props {
   className?: string;
 }
 
+const PAGE_SIZE = 12;
+
 /**
  * Tabbed photo grid backed by /api/photos (SmugMug-hosted).
  * Used both on /gallery (full site) and /app/photos (participant app).
+ * Shows PAGE_SIZE photos per page with prev/next pagination.
  */
 export default function PhotoGallery({ compact = false, className }: Props) {
   const { locale } = useI18n();
@@ -34,6 +37,8 @@ export default function PhotoGallery({ compact = false, className }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [activeAlbum, setActiveAlbum] = useState<string>("all");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [page, setPage] = useState(1);
+  const gridTopRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -61,6 +66,25 @@ export default function PhotoGallery({ compact = false, className }: Props) {
     if (activeAlbum === "all") return allPhotos;
     return data.albums.find((a) => a.albumKey === activeAlbum)?.images ?? [];
   }, [data, activeAlbum, allPhotos]);
+
+  // Reset to page 1 whenever the active tab changes.
+  useEffect(() => {
+    setPage(1);
+  }, [activeAlbum]);
+
+  const totalPages = Math.max(1, Math.ceil(photosShown.length / PAGE_SIZE));
+  const startIdx = (page - 1) * PAGE_SIZE;
+  const endIdx = Math.min(startIdx + PAGE_SIZE, photosShown.length);
+  const pagedPhotos = photosShown.slice(startIdx, endIdx);
+
+  function goToPage(p: number) {
+    const next = Math.max(1, Math.min(totalPages, p));
+    setPage(next);
+    // Scroll the grid into view (helpful when paging deep on long lists).
+    requestAnimationFrame(() => {
+      gridTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
 
   if (loading) {
     return (
@@ -148,12 +172,12 @@ export default function PhotoGallery({ compact = false, className }: Props) {
       )}
 
       {/* Grid */}
-      <div className={`grid ${gridCols} gap-2 sm:gap-3`}>
-        {photosShown.map((p, i) => (
+      <div ref={gridTopRef} className={`grid ${gridCols} gap-2 sm:gap-3 scroll-mt-4`}>
+        {pagedPhotos.map((p, i) => (
           <button
             key={p.imageKey}
             type="button"
-            onClick={() => setLightboxIndex(i)}
+            onClick={() => setLightboxIndex(startIdx + i)}
             className="group relative aspect-square overflow-hidden rounded-xl bg-slate-200 hover:shadow-lg transition-shadow"
             aria-label={t("사진 보기", "View photo")}
           >
@@ -170,18 +194,48 @@ export default function PhotoGallery({ compact = false, className }: Props) {
         ))}
       </div>
 
-      {/* Footer */}
-      <p className="mt-6 text-center text-xs text-slate-500">
-        {t("출처: SmugMug", "Source: SmugMug")} ·{" "}
-        <a
-          href="https://media.arico.group/Gyeyang-Open-Competition/2026-GyeyangOpen"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline hover:text-blue-600"
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <nav
+          className="mt-5 flex items-center justify-between gap-3"
+          aria-label={t("페이지 이동", "Pagination")}
         >
-          {t("전체 갤러리에서 다운로드", "Download from full gallery")}
-        </a>
-      </p>
+          <button
+            type="button"
+            onClick={() => goToPage(page - 1)}
+            disabled={page === 1}
+            className="inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            {t("이전", "Prev")}
+          </button>
+
+          <span className="text-sm text-slate-600 tabular-nums">
+            {t(
+              `${startIdx + 1}-${endIdx} / 전체 ${photosShown.length}장`,
+              `${startIdx + 1}–${endIdx} of ${photosShown.length}`
+            )}
+            <span className="mx-2 text-slate-300">·</span>
+            <span className="font-semibold text-slate-800">
+              {page} / {totalPages}
+            </span>
+          </span>
+
+          <button
+            type="button"
+            onClick={() => goToPage(page + 1)}
+            disabled={page === totalPages}
+            className="inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            {t("다음", "Next")}
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </nav>
+      )}
 
       {/* Lightbox */}
       {lightboxIndex !== null && (
@@ -189,7 +243,14 @@ export default function PhotoGallery({ compact = false, className }: Props) {
           photos={photosShown}
           index={lightboxIndex}
           onClose={() => setLightboxIndex(null)}
-          onNavigate={setLightboxIndex}
+          onNavigate={(newIndex) => {
+            setLightboxIndex(newIndex);
+            // Keep the grid in sync — when arrows cross a page boundary,
+            // jump the grid to the page containing the current photo
+            // so closing the lightbox lands the user on the right page.
+            const newPage = Math.floor(newIndex / PAGE_SIZE) + 1;
+            if (newPage !== page) setPage(newPage);
+          }}
         />
       )}
     </div>

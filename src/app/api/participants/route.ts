@@ -1,14 +1,24 @@
 import { NextResponse } from "next/server";
+import bibMapping from "@/lib/data/bib-mapping.json";
 
 // Source: ianseo participant list (ordered by target) for 2026 Gyeyang Open
 const SOURCE = "https://www.ianseo.net/TourData/2026/28161/ENS.php";
 
 export interface Participant {
   target: string;        // e.g. "1A", "12C"
+  bib: string;           // e.g. "19827" (from PDF; "" if unknown)
   name: string;          // e.g. "SONG Injun"
   affiliation: string;   // club or country line, e.g. "KAFAC - KOREA ARMED FORCES…"
   event: string;         // e.g. "Recurve Men"
 }
+
+// `bibMapping.byEventTarget` is keyed by "<event>|<target>" — primary lookup.
+// `bibMapping.byNameClub` is keyed by "<NAME UPPERCASE>|<CLUB_CODE>" — fallback.
+const BIB_BY_EVENT_TARGET = (bibMapping as {
+  byEventTarget: Record<string, string>;
+}).byEventTarget;
+const BIB_BY_NAME_CLUB = (bibMapping as { byNameClub: Record<string, string> })
+  .byNameClub;
 
 function cleanText(s: string): string {
   return s
@@ -42,7 +52,13 @@ function parseParticipants(html: string): Participant[] {
     if (!target || !name) continue;
     // Target format like "1A", "12C" — skip rows that obviously aren't athletes.
     if (!/^\d+[A-D]?$/i.test(target)) continue;
-    out.push({ target, name, affiliation, event });
+    const clubCode = (affiliation.split(" - ")[0] || "").trim();
+    const nameKey = (name.toUpperCase() + "|" + clubCode).replace(/\s+/g, " ").trim();
+    const bib =
+      BIB_BY_EVENT_TARGET[`${event}|${target}`] ||
+      BIB_BY_NAME_CLUB[nameKey] ||
+      "";
+    out.push({ target, bib, name, affiliation, event });
   }
   return out;
 }

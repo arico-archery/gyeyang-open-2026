@@ -28,11 +28,12 @@ export interface Photo {
   fileName: string;
   takenAt: string;
   uploadedAt: string;
-  webUri: string;          // SmugMug page for "원본 보기"
+  webUri: string;          // SmugMug page (used for proxy fallback)
   thumb: string;           // ~150px grid thumbnail (Th)
   small: string;           // ~400px mobile grid (S)
   large: string;           // ~1024px desktop grid hi-DPI (XL)
   lightbox: string;        // ~1280px lightbox (X2)
+  download: string;        // ~1600px source URL for downloads (X3)
 }
 
 interface PhotosResponse {
@@ -56,6 +57,7 @@ function toPhoto(img: SmugImage): Photo {
     small: resizeSmugUrl(img.ThumbnailUrl, "S"),
     large: resizeSmugUrl(img.ThumbnailUrl, "XL"),
     lightbox: resizeSmugUrl(img.ThumbnailUrl, "X2"),
+    download: resizeSmugUrl(img.ThumbnailUrl, "X3"),
   };
 }
 

@@ -530,7 +530,7 @@ export const en = {
     postersSectionTitle: "Official Posters",
     postersComingSoon: "Tournament photos coming soon",
     photosSectionTitle: "Tournament Photos",
-    photosDesc: "On-site photos in chronological order. Tap a thumbnail to view in full screen, or download originals from SmugMug.",
+    photosDesc: "On-site photos in chronological order. Tap a thumbnail to view in full screen, or download any photo directly.",
   },
   recordTable: {
     pageTitle: "Archery World Records",

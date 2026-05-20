@@ -71,6 +71,36 @@ function sortAlbums(a: SmugAlbum, b: SmugAlbum): number {
   return a.Name.localeCompare(b.Name);
 }
 
+/** Extract image extension from original SmugMug filename, normalized. */
+function extFromOriginal(name: string): string {
+  const dot = name.lastIndexOf(".");
+  if (dot === -1) return "jpg";
+  const ext = name.slice(dot + 1).toLowerCase();
+  if (ext === "jpeg") return "jpg";
+  if (/^(jpg|png|gif|webp)$/.test(ext)) return ext;
+  return "jpg";
+}
+
+/**
+ * Rename every photo's filename to "Gyeyang Photo NN.<ext>" in the order
+ * albums are listed (album sort) and photos within each album (SmugMug sort).
+ * Original SmugMug filenames (e.g. KakaoTalk_20260519_*.jpg) are replaced
+ * before the data ever reaches the client, so downloads use the new name.
+ *
+ * Padding width is auto-tuned: at least 2 digits, more if needed.
+ */
+function applyDisplayFilenames(albums: PhotoAlbum[], total: number): void {
+  const pad = Math.max(2, String(total).length);
+  let n = 0;
+  for (const album of albums) {
+    for (const photo of album.images) {
+      n++;
+      const ext = extFromOriginal(photo.fileName);
+      photo.fileName = `Gyeyang Photo ${String(n).padStart(pad, "0")}.${ext}`;
+    }
+  }
+}
+
 export async function GET() {
   try {
     const albums = (await listAlbumsInFolder()).sort(sortAlbums);
@@ -95,6 +125,9 @@ export async function GET() {
       (sum, a) => sum + a.images.length,
       0
     );
+
+    // Rename photos to "Gyeyang Photo 01.jpg, 02.jpg, …" before returning.
+    applyDisplayFilenames(albumsWithImages, totalImages);
 
     const body: PhotosResponse = {
       fetchedAt: new Date().toISOString(),

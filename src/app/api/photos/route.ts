@@ -32,8 +32,8 @@ export interface Photo {
   thumb: string;           // ~150px grid thumbnail (Th)
   small: string;           // ~400px mobile grid (S)
   large: string;           // ~1024px desktop grid hi-DPI (XL)
-  lightbox: string;        // ~1280px lightbox (X2)
-  download: string;        // ~1600px source URL for downloads (X3)
+  lightbox: string;        // ~1600px lightbox (X3) — sharp on most displays
+  download: string;        // ~1600px source URL for downloads (X3, same URL)
 }
 
 interface PhotosResponse {
@@ -56,7 +56,7 @@ function toPhoto(img: SmugImage): Photo {
     thumb: img.ThumbnailUrl,
     small: resizeSmugUrl(img.ThumbnailUrl, "S"),
     large: resizeSmugUrl(img.ThumbnailUrl, "XL"),
-    lightbox: resizeSmugUrl(img.ThumbnailUrl, "X2"),
+    lightbox: resizeSmugUrl(img.ThumbnailUrl, "X3"),
     download: resizeSmugUrl(img.ThumbnailUrl, "X3"),
   };
 }

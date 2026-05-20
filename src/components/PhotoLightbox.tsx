@@ -151,8 +151,8 @@ export default function PhotoLightbox({
         )}
         {/* Plain <img> + w-full h-full + object-contain reliably scales the
             photo to fill the available area while preserving aspect ratio.
-            (next/image with explicit width/height in a flex container kept
-            collapsing to its intrinsic display size.) */}
+            Uses X3 (1600px) which stays sharp on most desktop & laptop
+            displays — X4/X5 aren't served for this album. */}
         <img
           key={photo.imageKey}
           src={photo.lightbox}

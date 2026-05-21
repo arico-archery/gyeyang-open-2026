@@ -2,6 +2,7 @@
 
 import HotelSection from "@/sections/HotelSection";
 import PageHeader from "@/components/PageHeader";
+import SeasonEndedBanner from "@/components/SeasonEndedBanner";
 import { useI18n } from "@/lib/i18n/context";
 
 export default function HotelPage() {
@@ -13,6 +14,7 @@ export default function HotelPage() {
         title={t("pageHeader.hotelTitle")}
         subtitle={t("pageHeader.hotelSubtitle")}
       />
+      <SeasonEndedBanner />
       <HotelSection hideHeader />
     </>
   );

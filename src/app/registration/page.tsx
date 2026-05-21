@@ -2,6 +2,7 @@
 
 import RegistrationSection from "@/sections/RegistrationSection";
 import PageHeader from "@/components/PageHeader";
+import SeasonEndedBanner from "@/components/SeasonEndedBanner";
 import { useI18n } from "@/lib/i18n/context";
 
 export default function RegistrationPage() {
@@ -13,6 +14,7 @@ export default function RegistrationPage() {
         title={t("pageHeader.registrationTitle")}
         subtitle={t("pageHeader.registrationSubtitle")}
       />
+      <SeasonEndedBanner />
       <RegistrationSection hideHeader />
     </>
   );

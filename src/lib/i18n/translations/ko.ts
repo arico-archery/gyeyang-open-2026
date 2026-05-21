@@ -510,6 +510,8 @@ export const ko = {
     day5Title: "결승 & 시상식 (KBS / SBS 중계)",
     day6Date: "2026년 5월 18일 (월)",
     day6Title: "외국인 개인전 & 문화 체험",
+    medalistsTitle: "메달리스트",
+    medalistsSubtitle: "리커브 남녀 개인·단체전과 외국인 개인전의 시상대 입상자입니다. 양궁 종목 특성상 동메달은 두 명이 수상합니다.",
     scoreboardTitle: "최종 결과",
     scoreboardDesc: "ianseo에서 전체 결과 보기",
     scoreboardLink: "ianseo에서 2026 결과 보기",

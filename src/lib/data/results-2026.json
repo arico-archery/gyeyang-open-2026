@@ -1,0 +1,209 @@
+{
+  "tournamentId": "2026/28161",
+  "source": "https://www.ianseo.net/TourData/2026/28161/",
+  "detailsUrl": "https://www.ianseo.net/Details.php?toId=28161",
+  "fetchedAt": "2026-05-21T06:14:07.729Z",
+  "eventName": "2026 GYEYANG OPEN",
+  "eventDates": "2026-05-13 ~ 2026-05-18",
+  "venue": {
+    "qual": "계양아시아드양궁장",
+    "finals": "계양아라온 수향원"
+  },
+  "events": [
+    {
+      "code": "IFRM",
+      "title": "리커브 남자 (개인)",
+      "titleEn": "Recurve Men (Individual)",
+      "scope": "national",
+      "isTeam": false,
+      "url": "https://www.ianseo.net/TourData/2026/28161/IFRM.php",
+      "medalists": [
+        {
+          "position": 1,
+          "name": "KIM Jongho",
+          "clubCode": "GYEYANG",
+          "clubFull": "Gyeyang"
+        },
+        {
+          "position": 2,
+          "name": "LEE Seonjae",
+          "clubCode": "KAFAC",
+          "clubFull": "Korea Armed Forces Athletic Co"
+        },
+        {
+          "position": 3,
+          "name": "LEE Woo Seok",
+          "clubCode": "KOR",
+          "clubFull": "Korea"
+        },
+        {
+          "position": 3,
+          "name": "NAM Yubin",
+          "clubCode": "STEEL",
+          "clubFull": "Hyundai Steel"
+        }
+      ],
+      "totalEntries": 32
+    },
+    {
+      "code": "IFRW",
+      "title": "리커브 여자 (개인)",
+      "titleEn": "Recurve Women (Individual)",
+      "scope": "national",
+      "isTeam": false,
+      "url": "https://www.ianseo.net/TourData/2026/28161/IFRW.php",
+      "medalists": [
+        {
+          "position": 1,
+          "name": "RYOO Sujung",
+          "clubCode": "HDS",
+          "clubFull": "Hyundai Department Store"
+        },
+        {
+          "position": 2,
+          "name": "JANG Minhee",
+          "clubCode": "ICH",
+          "clubFull": "Incheon city hall"
+        },
+        {
+          "position": 3,
+          "name": "JANG Mi",
+          "clubCode": "KHU",
+          "clubFull": "Kyung Hee University"
+        },
+        {
+          "position": 3,
+          "name": "KIM Ian",
+          "clubCode": "HDS",
+          "clubFull": "Hyundai Department Store"
+        }
+      ],
+      "totalEntries": 32
+    },
+    {
+      "code": "TFRM",
+      "title": "리커브 남자 (단체)",
+      "titleEn": "Recurve Men (Team)",
+      "scope": "national",
+      "isTeam": true,
+      "url": "https://www.ianseo.net/TourData/2026/28161/TFRM.php",
+      "medalists": [
+        {
+          "position": 1,
+          "name": "KOR - Korea",
+          "country": "KIM Je Deok KIM Woojin LEE Woo Seok"
+        },
+        {
+          "position": 2,
+          "name": "SEC - Seoul City",
+          "country": "LEE Seungshin PARK Juyoung SEO Junhyeok"
+        },
+        {
+          "position": 3,
+          "name": "KAFAC - Korea Armed Forces Athletic Co",
+          "country": "CHOI Hyuntaek MOON Kyunho SEO Mingi"
+        },
+        {
+          "position": 3,
+          "name": "KOLON - Kolon X10 Boy'z archery team",
+          "country": "CHOI Geon Tae KIM Seonwoo KIM Yeachan"
+        }
+      ],
+      "totalEntries": 32
+    },
+    {
+      "code": "TFRW",
+      "title": "리커브 여자 (단체)",
+      "titleEn": "Recurve Women (Team)",
+      "scope": "national",
+      "isTeam": true,
+      "url": "https://www.ianseo.net/TourData/2026/28161/TFRW.php",
+      "medalists": [
+        {
+          "position": 1,
+          "name": "HDS - Hyundai Department Store",
+          "country": "JO Areum KIM Ian RYOO Sujung"
+        },
+        {
+          "position": 2,
+          "name": "KOR - Korea",
+          "country": "KANG Chae Young LEE Yunji OH Yejin"
+        },
+        {
+          "position": 3,
+          "name": "KART - Korea National Reserve Team",
+          "country": "KANG Minjin LEE Juye YU Seulha"
+        },
+        {
+          "position": 3,
+          "name": "KHU - Kyung Hee University",
+          "country": "JANG Mi KIM Migang YEOM Hyejeong"
+        }
+      ],
+      "totalEntries": 30
+    },
+    {
+      "code": "IFFRM",
+      "title": "리커브 남자 (외국인 개인)",
+      "titleEn": "Recurve Men (Foreign Individual)",
+      "scope": "foreign",
+      "isTeam": false,
+      "url": "https://www.ianseo.net/TourData/2026/28161/IFFRM.php",
+      "medalists": [
+        {
+          "position": 1,
+          "name": "CARVALHO LOPES D'ALMEIDA Marcus Vinicius",
+          "clubCode": "JET 6",
+          "clubFull": "JET 6 - Global jet-6 team"
+        },
+        {
+          "position": 2,
+          "name": "ENRIQUEZ Jorge",
+          "clubCode": "COL",
+          "clubFull": "Colombia"
+        },
+        {
+          "position": 3,
+          "name": "TANG Chih-Chun",
+          "clubCode": "CTAA",
+          "clubFull": "Chinese Taipei Archery Associa"
+        }
+      ],
+      "totalEntries": 32
+    },
+    {
+      "code": "IFFRW",
+      "title": "리커브 여자 (외국인 개인)",
+      "titleEn": "Recurve Women (Foreign Individual)",
+      "scope": "foreign",
+      "isTeam": false,
+      "url": "https://www.ianseo.net/TourData/2026/28161/IFFRW.php",
+      "medalists": [
+        {
+          "position": 1,
+          "name": "SONODA Waka",
+          "clubCode": "DENSO",
+          "clubFull": "Denso Solution Corporation"
+        },
+        {
+          "position": 2,
+          "name": "FONG You Jhu",
+          "clubCode": "CTAA",
+          "clubFull": "Chinese Taipei Archery Associa"
+        },
+        {
+          "position": 3,
+          "name": "LIN Chia Yu",
+          "clubCode": "CTAA",
+          "clubFull": "Chinese Taipei Archery Associa"
+        }
+      ],
+      "totalEntries": 32
+    }
+  ],
+  "summary": {
+    "eventCount": 6,
+    "individualEventCount": 4,
+    "teamEventCount": 2
+  }
+}

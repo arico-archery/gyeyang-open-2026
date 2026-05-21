@@ -26,8 +26,10 @@ export default function Header() {
     {
       label: t("nav.groupAbout"),
       items: [
-        { label: t("nav.invitation"), href: "/invitation" },
+        // Post-event ordering: Schedule first (most-revisited reference),
+        // then the rest. Practice Schedule stays last (lowest relevance).
         { label: t("nav.schedule"), href: "/schedule" },
+        { label: t("nav.invitation"), href: "/invitation" },
         { label: t("nav.guideMap"), href: "/guide_map" },
         { label: t("nav.practiceSchedule"), href: "/practice_schedule" },
       ],
@@ -35,6 +37,8 @@ export default function Header() {
     {
       label: t("nav.groupParticipate"),
       items: [
+        // Pages are preserved for reference + SEO. Each page now shows a
+        // SeasonEndedBanner at the top making the post-event status clear.
         { label: t("nav.registration"), href: "/registration" },
         { label: t("sectionNav.visa"), href: "/visa" },
         { label: t("sectionNav.hotel"), href: "/hotel" },
@@ -44,10 +48,11 @@ export default function Header() {
     {
       label: t("nav.groupResults"),
       items: [
+        // 2026 archive first — primary destination after the event.
+        { label: t("nav.archive2026"), href: "/archive/2026" },
+        { label: t("nav.gallery"), href: "/gallery" },
         { label: t("nav.scoreTarget"), href: "/scoreboard" },
         { label: t("nav.archeryRecord"), href: "/record_table" },
-        { label: t("nav.gallery"), href: "/gallery" },
-        { label: t("nav.archive2026"), href: "/archive/2026" },
         { label: t("nav.archive2025"), href: "/archive/2025" },
       ],
     },

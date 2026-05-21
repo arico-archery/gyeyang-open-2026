@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     template: "%s | GYEYANG OPEN",
   },
   description:
-    "Official website of the 2026 Gyeyang District Mayor Cup International Archery Tournament (GYEYANG OPEN), held at Gyeyang Asiad Archery Field in Incheon, South Korea.",
+    "Official website of the GYEYANG OPEN International Archery Tournament, held in Incheon, South Korea. View 2026 medalists, tournament photos, and updates on the 2027 edition.",
   keywords: [
     "Gyeyang Open",
     "archery tournament",
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     siteName: "GYEYANG OPEN",
     title: "2026 GYEYANG OPEN - International Archery Tournament",
     description:
-      "Official website of the 2026 Gyeyang District Mayor Cup International Archery Tournament.",
+      "Official website of the GYEYANG OPEN. 2026 medalists, photos, and 2027 updates.",
     images: [
       {
         url: "/images/poster_2026.jpg",
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "2026 GYEYANG OPEN - International Archery Tournament",
     description:
-      "Official website of the 2026 Gyeyang District Mayor Cup International Archery Tournament.",
+      "Official website of the GYEYANG OPEN. 2026 medalists, photos, and 2027 updates.",
     images: ["/images/poster_2026.jpg"],
   },
   robots: {

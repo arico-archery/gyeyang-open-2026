@@ -65,11 +65,13 @@ export const ko = {
     rentcar: "교통",
     rentcarDesc: "렌터카 및 택시",
     gallery: "갤러리",
-    galleryDesc: "홍보영상 · 포스터",
+    galleryDesc: "대회 사진 · 홍보영상 · 포스터",
     scoreboard: "점수 & 타겟",
     scoreboardDesc: "실시간 점수 · 결과",
     contact: "문의",
     contactDesc: "LOC 연락처",
+    archive2026: "2026 결과 아카이브",
+    archive2026Desc: "메달리스트 · 종합 결과",
   },
   hero: {
     date: "2026년 5월 13일 (수)",
@@ -78,8 +80,12 @@ export const ko = {
     ended: "대회 종료",
     applyNow: "참가 신청",
     viewResults: "결과 보기",
+    viewGallery: "갤러리 보기",
     openApp: "참가선수 앱",
     playVideo: "대회 홍보 영상 재생",
+    nextEditionLabel: "다음 대회 안내",
+    nextEditionBody:
+      "함께해 주신 모든 분들께 감사드립니다. 2027 GYEYANG OPEN의 일정과 참가 안내는 확정되는 대로 본 페이지에 공개됩니다.",
   },
   invitation: {
     title: "2026 GYEYANG OPEN 초대장",

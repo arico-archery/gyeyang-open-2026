@@ -4,6 +4,29 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useI18n } from "@/lib/i18n/context";
+import resultsData from "@/lib/data/results-2026.json";
+
+interface Medalist {
+  position: number;
+  name: string;
+  clubCode?: string;
+  clubFull?: string;
+  country?: string;
+}
+interface EventResult {
+  code: string;
+  title: string;
+  titleEn: string;
+  scope: string;
+  isTeam: boolean;
+  url: string;
+  medalists: Medalist[];
+}
+const RESULTS = resultsData as {
+  events: EventResult[];
+  fetchedAt: string;
+  eventName: string;
+};
 
 /* ── Result types ── */
 interface Athlete { pos: string; name: string; country: string; score?: string; }
@@ -19,6 +42,70 @@ function Medal({ pos }: { pos: string }) {
   if (pos === "2") return <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-300 text-white text-xs font-bold shadow-sm">2</span>;
   if (pos === "3") return <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-600 text-white text-xs font-bold shadow-sm">3</span>;
   return <span className="inline-flex items-center justify-center w-6 h-6 text-xs font-medium text-gray-400">{pos}</span>;
+}
+
+function MedalIcon({ position }: { position: number }) {
+  // Use emoji for visual distinctiveness in the highlights section
+  const e = position === 1 ? "🥇" : position === 2 ? "🥈" : "🥉";
+  return <span className="text-xl leading-none">{e}</span>;
+}
+
+/** Top-of-page medalists highlight grid, sourced from the static
+ *  results-2026.json snapshot — never depends on ianseo being up. */
+function MedalistsHighlight({ locale }: { locale: "ko" | "en" }) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {RESULTS.events.map((ev) => (
+        <div
+          key={ev.code}
+          className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
+        >
+          <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-4 py-3">
+            <h3 className="text-white font-semibold text-sm">
+              {locale === "ko" ? ev.title : ev.titleEn}
+            </h3>
+          </div>
+          <div className="divide-y divide-gray-100">
+            {ev.medalists.length === 0 ? (
+              <div className="px-4 py-4 text-center text-xs text-gray-400">—</div>
+            ) : (
+              ev.medalists.map((m, i) => (
+                <div
+                  key={`${ev.code}-${i}`}
+                  className="flex items-center gap-3 px-4 py-3"
+                >
+                  <MedalIcon position={m.position} />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm text-gray-900 truncate">
+                      {m.name}
+                    </p>
+                    {ev.isTeam ? (
+                      <p className="text-[11px] text-gray-500 truncate">
+                        {m.country || m.clubFull || m.clubCode}
+                      </p>
+                    ) : (
+                      m.clubCode && (
+                        <p className="text-[11px] text-gray-500 truncate">
+                          <span className="font-semibold text-purple-600 mr-1">
+                            {m.clubCode}
+                          </span>
+                          {m.clubFull && (
+                            <span className="text-gray-400">
+                              · {m.clubFull}
+                            </span>
+                          )}
+                        </p>
+                      )
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 function shortCountry(c: string) {
@@ -173,7 +260,7 @@ function ResultsSummary2026({ data, t }: { data: ResultsData; t: (k: string) => 
 }
 
 export default function Archive2026Page() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [results, setResults] = useState<ResultsData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -281,6 +368,22 @@ export default function Archive2026Page() {
               {t("archive2026.venueFinal")}
             </div>
           </div>
+        </section>
+
+        {/* Medalists highlight (always available — sourced from snapshot) */}
+        <section className="mb-16">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-yellow-100 flex items-center justify-center">
+              <span className="text-xl">🏆</span>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900">
+              {t("archive2026.medalistsTitle")}
+            </h2>
+          </div>
+          <p className="text-gray-600 mb-6">
+            {t("archive2026.medalistsSubtitle")}
+          </p>
+          <MedalistsHighlight locale={locale as "ko" | "en"} />
         </section>
 
         {/* Scoreboard / Results */}

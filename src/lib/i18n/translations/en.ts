@@ -510,6 +510,8 @@ export const en = {
     day5Title: "Finals & Award Ceremony (KBS / SBS Live)",
     day6Date: "May 18, 2026 (Mon)",
     day6Title: "Foreign Individual & Cultural Experience",
+    medalistsTitle: "Medalists",
+    medalistsSubtitle: "Podium finishers in Recurve Men & Women (Individual & Team) and Foreign Individual events. Archery convention awards two bronze medals.",
     scoreboardTitle: "Final Results",
     scoreboardDesc: "View full results on ianseo",
     scoreboardLink: "View 2026 Results on ianseo",

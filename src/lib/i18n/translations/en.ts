@@ -65,11 +65,13 @@ export const en = {
     rentcar: "Transport",
     rentcarDesc: "Car rental & taxi",
     gallery: "Gallery",
-    galleryDesc: "Promotional video & posters",
+    galleryDesc: "Tournament photos · video · posters",
     scoreboard: "Scoreboard",
     scoreboardDesc: "Live scores & target",
     contact: "Contact",
     contactDesc: "Get in touch with LOC",
+    archive2026: "2026 Results",
+    archive2026Desc: "Medalists & full results",
   },
   hero: {
     date: "May 13, 2026 (Wed)",
@@ -78,8 +80,12 @@ export const en = {
     ended: "Tournament ended",
     applyNow: "Apply Now",
     viewResults: "View Results",
+    viewGallery: "View Gallery",
     openApp: "Open Athletes App",
     playVideo: "Play tournament highlight video",
+    nextEditionLabel: "Next Edition",
+    nextEditionBody:
+      "Thank you to everyone who made this tournament possible. Details on the 2027 GYEYANG OPEN — schedule, registration, and more — will be announced here as soon as they are confirmed.",
   },
   invitation: {
     title: "Invitation to the 2026 GYEYANG OPEN",

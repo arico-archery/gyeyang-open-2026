@@ -76,18 +76,43 @@ export default function Hero() {
               {/* CTA buttons */}
               <div className="flex flex-wrap gap-3">
                 {dDay?.ended ? (
-                  <a href="/archive/2026" className="btn-download btn-download-sm">
-                    {t("hero.viewResults")}
-                  </a>
+                  <>
+                    <a href="/archive/2026" className="btn-download btn-download-sm">
+                      {t("hero.viewResults")}
+                    </a>
+                    <a
+                      href="/gallery"
+                      className="btn-download btn-download-sm bg-slate-900 hover:bg-slate-700"
+                    >
+                      {t("hero.viewGallery")}
+                    </a>
+                  </>
                 ) : (
-                  <a href="/registration" className="btn-download btn-download-sm">
-                    {t("hero.applyNow")}
-                  </a>
+                  <>
+                    <a href="/registration" className="btn-download btn-download-sm">
+                      {t("hero.applyNow")}
+                    </a>
+                    <a
+                      href="/app"
+                      className="btn-download btn-download-sm bg-slate-900 hover:bg-slate-700"
+                    >
+                      {t("hero.openApp")}
+                    </a>
+                  </>
                 )}
-                <a href="/app" className="btn-download btn-download-sm bg-slate-900 hover:bg-slate-700">
-                  {t("hero.openApp")}
-                </a>
               </div>
+
+              {/* Post-event note — small banner with thanks + next year's notice */}
+              {dDay?.ended && (
+                <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3.5 -mt-3">
+                  <p className="text-[11px] font-bold tracking-[0.18em] uppercase text-blue-700 mb-1.5">
+                    {t("hero.nextEditionLabel")}
+                  </p>
+                  <p className="text-sm text-slate-700 leading-relaxed">
+                    {t("hero.nextEditionBody")}
+                  </p>
+                </div>
+              )}
 
               {/* Social — small, secondary */}
               <div className="flex items-center gap-2 pt-2 border-t border-slate-100">

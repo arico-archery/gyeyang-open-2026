@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n/context";
+import { useInlineT } from "@/lib/i18n/inline";
 import { useAuth } from "@/lib/supabase/auth-context";
 import { supabase } from "@/lib/supabase/client";
 import { isSuperAdmin } from "@/lib/super-admin";
@@ -39,7 +40,7 @@ export default function AdminUsersPage() {
   const [deleteTarget, setDeleteTarget] = useState<UserProfile | null>(null);
   const [deleting, setDeleting] = useState(false);
 
-  const t = (ko: string, en: string) => (locale === "ko" ? ko : en);
+  const t = useInlineT();
 
   const superAdmin = isSuperAdmin(user?.email);
 

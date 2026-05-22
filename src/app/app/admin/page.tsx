@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useI18n } from "@/lib/i18n/context";
+import { useInlineT } from "@/lib/i18n/inline";
 import { useAuth } from "@/lib/supabase/auth-context";
 import { supabase } from "@/lib/supabase/client";
 import { isSuperAdmin } from "@/lib/super-admin";
@@ -17,12 +17,11 @@ interface Stats {
 }
 
 export default function AdminPage() {
-  const { locale } = useI18n();
   const { user, profile, loading } = useAuth();
   const [stats, setStats] = useState<Stats>({ totalRegistrations: 0, pendingRegistrations: 0, totalAnnouncements: 0, pendingInquiries: 0, todayAttendance: 0, totalAthletes: 0 });
   const [refreshState, setRefreshState] = useState<"idle" | "loading" | "ok" | "error">("idle");
 
-  const t = (ko: string, en: string) => (locale === "ko" ? ko : en);
+  const t = useInlineT();
 
   async function refreshPhotos() {
     setRefreshState("loading");

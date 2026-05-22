@@ -3,21 +3,22 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n/context";
+import { useInlineT } from "@/lib/i18n/inline";
 import { useAuth } from "@/lib/supabase/auth-context";
 import { supabase } from "@/lib/supabase/client";
 import type { UserRole } from "@/lib/supabase/types";
 import { COUNTRIES } from "@/lib/countries";
 
-const ROLES: { value: UserRole; ko: string; en: string }[] = [
-  { value: "athlete", ko: "선수", en: "Athlete" },
-  { value: "coach", ko: "코치", en: "Coach" },
+const ROLES: { value: UserRole; ko: string; en: string; zh: string }[] = [
+  { value: "athlete", ko: "선수", en: "Athlete", zh: "选手" },
+  { value: "coach", ko: "코치", en: "Coach", zh: "教练" },
 ];
 
 const CATEGORIES = [
-  { value: "recurve_men", ko: "남자 리커브", en: "Recurve Men" },
-  { value: "recurve_women", ko: "여자 리커브", en: "Recurve Women" },
-  { value: "compound_men", ko: "남자 컴파운드", en: "Compound Men" },
-  { value: "compound_women", ko: "여자 컴파운드", en: "Compound Women" },
+  { value: "recurve_men", ko: "남자 리커브", en: "Recurve Men", zh: "反曲弓男子" },
+  { value: "recurve_women", ko: "여자 리커브", en: "Recurve Women", zh: "反曲弓女子" },
+  { value: "compound_men", ko: "남자 컴파운드", en: "Compound Men", zh: "复合弓男子" },
+  { value: "compound_women", ko: "여자 컴파운드", en: "Compound Women", zh: "复合弓女子" },
 ];
 
 export default function ProfileEditPage() {
@@ -35,7 +36,7 @@ export default function ProfileEditPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
-  const t = (ko: string, en: string) => (locale === "ko" ? ko : en);
+  const t = useInlineT();
 
   useEffect(() => {
     if (profile) {
@@ -92,7 +93,7 @@ export default function ProfileEditPage() {
     setSaving(false);
   };
 
-  const roleLabel = profile.role === "judge" ? t("심판", "Judge") : t("관리자", "Admin");
+  const roleLabel = profile.role === "judge" ? t("심판", "Judge", "裁判") : t("관리자", "Admin", "管理员");
   const roleLocked = profile.role === "judge" || profile.role === "admin";
 
   return (
@@ -103,7 +104,7 @@ export default function ProfileEditPage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <h1 className="text-xl font-bold text-gray-900">{t("프로필 수정", "Edit Profile")}</h1>
+        <h1 className="text-xl font-bold text-gray-900">{t("프로필 수정", "Edit Profile", "编辑个人资料")}</h1>
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
@@ -112,18 +113,18 @@ export default function ProfileEditPage() {
         )}
         {success && (
           <div className="bg-green-50 text-green-600 text-sm rounded-lg px-4 py-3 mb-4">
-            {t("저장되었습니다!", "Saved successfully!")}
+            {t("저장되었습니다!", "Saved successfully!", "保存成功!")}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t("역할", "Role")}</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("역할", "Role", "身份")}</label>
             {roleLocked ? (
               <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-600">
                 {roleLabel}
                 <span className="text-xs text-gray-400 ml-2">
-                  {t("(관리자에 의해 설정됨)", "(Set by admin)")}
+                  {t("(관리자에 의해 설정됨)", "(Set by admin)", "(由管理员设置)")}
                 </span>
               </div>
             ) : (
@@ -138,7 +139,7 @@ export default function ProfileEditPage() {
                         : "bg-white text-gray-700 border-gray-200 hover:border-blue-300"
                     )}
                   >
-                    {locale === "ko" ? r.ko : r.en}
+                    {locale === "ko" ? r.ko : locale === "zh" ? r.zh : r.en}
                   </button>
                 ))}
               </div>
@@ -146,7 +147,7 @@ export default function ProfileEditPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t("이름", "Name")}</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("이름", "Name", "姓名")}</label>
             <input
               type="text" value={fullName} onChange={(e) => setFullName(e.target.value)}
               className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -155,7 +156,7 @@ export default function ProfileEditPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t("영문 이름", "Name (English)")}</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("영문 이름", "Name (English)", "英文姓名")}</label>
             <input
               type="text" value={fullNameEn} onChange={(e) => setFullNameEn(e.target.value)}
               className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -163,7 +164,7 @@ export default function ProfileEditPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t("국적", "Nationality")}</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("국적", "Nationality", "国籍")}</label>
             <select
               value={nationality} onChange={(e) => setNationality(e.target.value)}
               className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
@@ -178,7 +179,7 @@ export default function ProfileEditPage() {
 
           {role === "athlete" && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("종목", "Event")}</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("종목", "Event", "项目")}</label>
               <div className="grid grid-cols-2 gap-2">
                 {CATEGORIES.map((c) => (
                   <button
@@ -190,7 +191,7 @@ export default function ProfileEditPage() {
                         : "bg-white text-gray-700 border-gray-200 hover:border-blue-300"
                     )}
                   >
-                    {locale === "ko" ? c.ko : c.en}
+                    {locale === "ko" ? c.ko : locale === "zh" ? c.zh : c.en}
                   </button>
                 ))}
               </div>
@@ -198,7 +199,7 @@ export default function ProfileEditPage() {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{t("소속", "Team/Club")}</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("소속", "Team/Club", "所属团队")}</label>
             <input
               type="text" value={team} onChange={(e) => setTeam(e.target.value)}
               className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -209,7 +210,7 @@ export default function ProfileEditPage() {
             type="submit" disabled={saving}
             className="w-full py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 mt-2"
           >
-            {saving ? t("저장 중...", "Saving...") : t("저장하기", "Save")}
+            {saving ? t("저장 중...", "Saving...", "保存中...") : t("저장하기", "Save", "保存")}
           </button>
         </form>
       </div>

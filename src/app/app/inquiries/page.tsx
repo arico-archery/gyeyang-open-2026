@@ -3,23 +3,24 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n/context";
+import { useInlineT } from "@/lib/i18n/inline";
 import { useAuth } from "@/lib/supabase/auth-context";
 import { supabase } from "@/lib/supabase/client";
 import type { Inquiry, InquiryStatus } from "@/lib/supabase/types";
 
-const STATUS_MAP: Record<InquiryStatus, { ko: string; en: string; color: string }> = {
-  pending: { ko: "대기중", en: "Pending", color: "bg-yellow-100 text-yellow-700" },
-  replied: { ko: "답변완료", en: "Replied", color: "bg-green-100 text-green-700" },
-  closed: { ko: "종료", en: "Closed", color: "bg-gray-100 text-gray-600" },
+const STATUS_MAP: Record<InquiryStatus, { ko: string; en: string; zh: string; color: string }> = {
+  pending: { ko: "대기중", en: "Pending", zh: "等待中", color: "bg-yellow-100 text-yellow-700" },
+  replied: { ko: "답변완료", en: "Replied", zh: "已回复", color: "bg-green-100 text-green-700" },
+  closed: { ko: "종료", en: "Closed", zh: "已关闭", color: "bg-gray-100 text-gray-600" },
 };
 
-const CATEGORY_OPTIONS: { value: string; ko: string; en: string }[] = [
-  { value: "general", ko: "일반", en: "General" },
-  { value: "registration", ko: "참가신청", en: "Registration" },
-  { value: "visa", ko: "비자", en: "Visa" },
-  { value: "lodging", ko: "숙소", en: "Lodging" },
-  { value: "transport", ko: "교통", en: "Transport" },
-  { value: "other", ko: "기타", en: "Other" },
+const CATEGORY_OPTIONS: { value: string; ko: string; en: string; zh: string }[] = [
+  { value: "general", ko: "일반", en: "General", zh: "一般" },
+  { value: "registration", ko: "참가신청", en: "Registration", zh: "报名" },
+  { value: "visa", ko: "비자", en: "Visa", zh: "签证" },
+  { value: "lodging", ko: "숙소", en: "Lodging", zh: "住宿" },
+  { value: "transport", ko: "교통", en: "Transport", zh: "交通" },
+  { value: "other", ko: "기타", en: "Other", zh: "其他" },
 ];
 
 export default function InquiriesPage() {
@@ -39,7 +40,7 @@ export default function InquiriesPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  const t = (ko: string, en: string) => (locale === "ko" ? ko : en);
+  const t = useInlineT();
 
   useEffect(() => {
     if (user) fetchInquiries();
@@ -81,15 +82,18 @@ export default function InquiriesPage() {
     setSubmitting(false);
   };
 
+  const localized = <T extends { ko: string; en: string; zh: string }>(m: T) =>
+    locale === "ko" ? m.ko : locale === "zh" ? m.zh : m.en;
+
   const statusLabel = (s: string) => {
     const m = STATUS_MAP[s as InquiryStatus];
-    return m ? (locale === "ko" ? m.ko : m.en) : s;
+    return m ? localized(m) : s;
   };
   const statusColor = (s: string) =>
     STATUS_MAP[s as InquiryStatus]?.color || "bg-gray-100 text-gray-600";
   const categoryLabel = (c: string) => {
     const m = CATEGORY_OPTIONS.find((x) => x.value === c);
-    return m ? (locale === "ko" ? m.ko : m.en) : c;
+    return m ? localized(m) : c;
   };
 
   if (authLoading || loading) {
@@ -117,7 +121,7 @@ export default function InquiriesPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <h1 className="text-xl font-bold text-gray-900">{t("문의 상세", "Inquiry Detail")}</h1>
+          <h1 className="text-xl font-bold text-gray-900">{t("문의 상세", "Inquiry Detail", "咨询详情")}</h1>
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
@@ -139,7 +143,7 @@ export default function InquiriesPage() {
           {selected.reply && (
             <div className="bg-blue-50 rounded-xl p-4">
               <p className="text-xs font-semibold text-blue-600 mb-2">
-                {t("관리자 답변", "Admin Reply")}
+                {t("관리자 답변", "Admin Reply", "管理员回复")}
                 {selected.replied_at && (
                   <span className="text-gray-400 font-normal ml-2">
                     {new Date(selected.replied_at).toLocaleDateString()}
@@ -152,7 +156,7 @@ export default function InquiriesPage() {
 
           {!selected.reply && selected.status === "pending" && (
             <p className="text-sm text-gray-400 text-center">
-              {t("답변 대기 중입니다", "Waiting for a reply")}
+              {t("답변 대기 중입니다", "Waiting for a reply", "等待回复中")}
             </p>
           )}
         </div>
@@ -170,7 +174,7 @@ export default function InquiriesPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <h1 className="text-xl font-bold text-gray-900">{t("문의하기", "New Inquiry")}</h1>
+          <h1 className="text-xl font-bold text-gray-900">{t("문의하기", "New Inquiry", "提交咨询")}</h1>
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
@@ -180,34 +184,34 @@ export default function InquiriesPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("카테고리", "Category")}</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("카테고리", "Category", "类别")}</label>
               <select
                 value={category} onChange={(e) => setCategory(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 {CATEGORY_OPTIONS.map((c) => (
                   <option key={c.value} value={c.value}>
-                    {locale === "ko" ? c.ko : c.en}
+                    {localized(c)}
                   </option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("제목", "Subject")}</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("제목", "Subject", "主题")}</label>
               <input
                 type="text" value={subject} onChange={(e) => setSubject(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder={t("문의 제목을 입력하세요", "Enter subject")}
+                placeholder={t("문의 제목을 입력하세요", "Enter subject", "请输入咨询主题")}
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">{t("내용", "Message")}</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t("내용", "Message", "内容")}</label>
               <textarea
                 value={message} onChange={(e) => setMessage(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                 rows={6}
-                placeholder={t("문의 내용을 작성하세요", "Write your message")}
+                placeholder={t("문의 내용을 작성하세요", "Write your message", "请填写咨询内容")}
                 required
               />
             </div>
@@ -215,7 +219,7 @@ export default function InquiriesPage() {
               type="submit" disabled={submitting}
               className="w-full py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50"
             >
-              {submitting ? t("제출 중...", "Submitting...") : t("문의 제출", "Submit")}
+              {submitting ? t("제출 중...", "Submitting...", "提交中...") : t("문의 제출", "Submit", "提交咨询")}
             </button>
           </form>
         </div>
@@ -232,19 +236,19 @@ export default function InquiriesPage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <h1 className="text-xl font-bold text-gray-900">{t("문의 내역", "My Inquiries")}</h1>
+        <h1 className="text-xl font-bold text-gray-900">{t("문의 내역", "My Inquiries", "我的咨询")}</h1>
       </div>
 
       <button
         onClick={() => setShowForm(true)}
         className="w-full mb-4 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors"
       >
-        {t("새 문의 작성", "New Inquiry")}
+        {t("새 문의 작성", "New Inquiry", "新建咨询")}
       </button>
 
       {inquiries.length === 0 ? (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 text-center">
-          <p className="text-sm text-gray-400">{t("문의 내역이 없습니다", "No inquiries yet")}</p>
+          <p className="text-sm text-gray-400">{t("문의 내역이 없습니다", "No inquiries yet", "暂无咨询记录")}</p>
         </div>
       ) : (
         <div className="space-y-3">

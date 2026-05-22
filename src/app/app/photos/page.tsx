@@ -2,11 +2,10 @@
 
 import Link from "next/link";
 import PhotoGallery from "@/components/PhotoGallery";
-import { useI18n } from "@/lib/i18n/context";
+import { useInlineT } from "@/lib/i18n/inline";
 
 export default function AppPhotosPage() {
-  const { locale } = useI18n();
-  const t = (ko: string, en: string) => (locale === "ko" ? ko : en);
+  const t = useInlineT();
 
   return (
     <div className="max-w-lg mx-auto px-4 pt-6 pb-24">
@@ -33,12 +32,13 @@ export default function AppPhotosPage() {
         </Link>
         <div>
           <h1 className="text-xl font-bold text-gray-900">
-            {t("사진", "Photos")}
+            {t("사진", "Photos", "图库")}
           </h1>
           <p className="text-xs text-gray-500">
             {t(
               "2026 GYEYANG OPEN · 현장 사진",
-              "2026 GYEYANG OPEN · on-site photos"
+              "2026 GYEYANG OPEN · on-site photos",
+              "2026 GYEYANG OPEN · 现场照片"
             )}
           </p>
         </div>

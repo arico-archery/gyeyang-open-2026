@@ -1,13 +1,14 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, ReactNode } from "react";
 import { en } from "./translations/en";
 import { ko } from "./translations/ko";
+import { zh } from "./translations/zh";
 
-export type Locale = "en" | "ko";
+export type Locale = "en" | "ko" | "zh";
 type Translations = typeof en;
 
-const dictionaries: Record<Locale, Translations> = { en, ko };
+const dictionaries: Record<Locale, Translations> = { en, ko, zh };
 
 interface I18nContextType {
   locale: Locale;
@@ -21,11 +22,15 @@ const I18nContext = createContext<I18nContextType>({
   t: (key) => key,
 });
 
+function isValidLocale(v: unknown): v is Locale {
+  return v === "ko" || v === "en" || v === "zh";
+}
+
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [locale, _setLocale] = useState<Locale>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("locale");
-      if (saved === "en" || saved === "ko") return saved;
+      if (isValidLocale(saved)) return saved;
     }
     return "ko";
   });
@@ -37,18 +42,23 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // Lookup with English fallback: zh.ts only defines the strings actually
+  // translated. Anything missing falls back to English (never a raw key).
   const t = useCallback(
     (key: string): string => {
       const keys = key.split(".");
-      let value: unknown = dictionaries[locale];
-      for (const k of keys) {
-        if (value && typeof value === "object") {
-          value = (value as Record<string, unknown>)[k];
-        } else {
-          return key;
+      const fromDict = (dict: Translations): string | undefined => {
+        let value: unknown = dict;
+        for (const k of keys) {
+          if (value && typeof value === "object") {
+            value = (value as Record<string, unknown>)[k];
+          } else {
+            return undefined;
+          }
         }
-      }
-      return typeof value === "string" ? value : key;
+        return typeof value === "string" ? value : undefined;
+      };
+      return fromDict(dictionaries[locale]) ?? fromDict(en) ?? key;
     },
     [locale]
   );

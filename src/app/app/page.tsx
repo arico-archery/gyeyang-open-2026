@@ -82,10 +82,15 @@ export default function AppHome() {
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setLocale(locale === "ko" ? "en" : "ko")}
+            onClick={() =>
+              setLocale(
+                locale === "ko" ? "en" : locale === "en" ? "zh" : "ko"
+              )
+            }
             className="px-2.5 py-1.5 bg-gray-100 rounded-lg text-xs font-semibold text-gray-600 hover:bg-gray-200 transition-colors"
+            aria-label="언어 전환"
           >
-            {locale === "ko" ? "EN" : "KO"}
+            {locale === "ko" ? "EN" : locale === "en" ? "中" : "KO"}
           </button>
           {user && profile && (
             <Link href="/app/profile">

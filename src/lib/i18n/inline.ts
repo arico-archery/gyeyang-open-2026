@@ -8,11 +8,11 @@ import { useI18n } from "./context";
  *
  * Usage:
  *   const t = useInlineT();
- *   t("닫기", "Close", "关闭")
+ *   t("닫기", "Close", "关闭", "閉じる")
  *
- * The `zh` argument is optional — if omitted (or empty), the Chinese
- * locale falls back to the English string so existing 2-arg call sites
- * keep working until they're individually upgraded.
+ * Both `zh` and `ja` arguments are optional — if omitted (or empty), the
+ * Chinese / Japanese locales fall back to the English string. This lets
+ * us add languages incrementally without touching every call site.
  *
  * This replaces the per-file inline:
  *   const t = (ko: string, en: string) => locale === "ko" ? ko : en;
@@ -20,9 +20,10 @@ import { useI18n } from "./context";
 export function useInlineT() {
   const { locale } = useI18n();
   return useCallback(
-    (ko: string, en: string, zh?: string): string => {
+    (ko: string, en: string, zh?: string, ja?: string): string => {
       if (locale === "ko") return ko;
       if (locale === "zh") return zh && zh.length > 0 ? zh : en;
+      if (locale === "ja") return ja && ja.length > 0 ? ja : en;
       return en;
     },
     [locale]

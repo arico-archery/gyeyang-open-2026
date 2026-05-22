@@ -4,11 +4,12 @@ import { createContext, useContext, useState, useCallback, ReactNode } from "rea
 import { en } from "./translations/en";
 import { ko } from "./translations/ko";
 import { zh } from "./translations/zh";
+import { ja } from "./translations/ja";
 
-export type Locale = "en" | "ko" | "zh";
+export type Locale = "en" | "ko" | "zh" | "ja";
 type Translations = typeof en;
 
-const dictionaries: Record<Locale, Translations> = { en, ko, zh };
+const dictionaries: Record<Locale, Translations> = { en, ko, zh, ja };
 
 interface I18nContextType {
   locale: Locale;
@@ -23,7 +24,7 @@ const I18nContext = createContext<I18nContextType>({
 });
 
 function isValidLocale(v: unknown): v is Locale {
-  return v === "ko" || v === "en" || v === "zh";
+  return v === "ko" || v === "en" || v === "zh" || v === "ja";
 }
 
 export function I18nProvider({ children }: { children: ReactNode }) {
@@ -42,7 +43,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Lookup with English fallback: zh.ts only defines the strings actually
+  // Lookup with English fallback: zh/ja only define the strings actually
   // translated. Anything missing falls back to English (never a raw key).
   const t = useCallback(
     (key: string): string => {

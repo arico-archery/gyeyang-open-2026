@@ -32,13 +32,14 @@ export default function AppPhotosPage() {
         </Link>
         <div>
           <h1 className="text-xl font-bold text-gray-900">
-            {t("사진", "Photos", "图库")}
+            {t("사진", "Photos", "图库", "ギャラリー")}
           </h1>
           <p className="text-xs text-gray-500">
             {t(
               "2026 GYEYANG OPEN · 현장 사진",
               "2026 GYEYANG OPEN · on-site photos",
-              "2026 GYEYANG OPEN · 现场照片"
+              "2026 GYEYANG OPEN · 现场照片",
+              "2026 GYEYANG OPEN · 現地写真"
             )}
           </p>
         </div>

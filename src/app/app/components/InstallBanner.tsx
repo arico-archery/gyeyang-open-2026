@@ -60,10 +60,10 @@ export default function InstallBanner() {
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-gray-900">
-            {t("홈 화면에 추가", "Add to Home Screen", "添加到主屏幕")}
+            {t("홈 화면에 추가", "Add to Home Screen", "添加到主屏幕", "ホーム画面に追加")}
           </p>
           <p className="text-xs text-gray-500 mt-0.5">
-            {t("앱처럼 빠르게 접속할 수 있습니다", "Access quickly like a native app", "可像应用一样快速访问")}
+            {t("앱처럼 빠르게 접속할 수 있습니다", "Access quickly like a native app", "可像应用一样快速访问", "アプリのように素早くアクセスできます")}
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
@@ -71,13 +71,13 @@ export default function InstallBanner() {
             onClick={handleDismiss}
             className="px-3 py-1.5 text-xs text-gray-500 font-medium"
           >
-            {t("닫기", "Later", "稍后")}
+            {t("닫기", "Later", "稍后", "後で")}
           </button>
           <button
             onClick={handleInstall}
             className="px-4 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-lg"
           >
-            {t("설치", "Install", "安装")}
+            {t("설치", "Install", "安装", "インストール")}
           </button>
         </div>
       </div>

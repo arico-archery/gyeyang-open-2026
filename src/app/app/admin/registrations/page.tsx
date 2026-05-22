@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n/context";
+import { useInlineT } from "@/lib/i18n/inline";
 import { useAuth } from "@/lib/supabase/auth-context";
 import { supabase } from "@/lib/supabase/client";
 import type { RegistrationStatus } from "@/lib/supabase/types";
@@ -29,7 +30,7 @@ export default function AdminRegistrationsPage() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<FilterStatus>("all");
 
-  const t = (ko: string, en: string) => (locale === "ko" ? ko : en);
+  const t = useInlineT();
 
   useEffect(() => {
     if (profile && profile.role !== "admin") router.push("/app");

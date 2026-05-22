@@ -3,16 +3,17 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n/context";
+import { useInlineT } from "@/lib/i18n/inline";
 import { useAuth } from "@/lib/supabase/auth-context";
 import { supabase } from "@/lib/supabase/client";
 import type { Schedule, TargetAssignment, ScheduleType } from "@/lib/supabase/types";
 
-const TYPE_LABELS: Record<ScheduleType, { ko: string; en: string; color: string }> = {
-  practice: { ko: "공식 연습", en: "Practice", color: "bg-green-100 text-green-700" },
-  qualification: { ko: "예선", en: "Qualification", color: "bg-blue-100 text-blue-700" },
-  elimination: { ko: "본선", en: "Elimination", color: "bg-purple-100 text-purple-700" },
-  ceremony: { ko: "시상식", en: "Ceremony", color: "bg-amber-100 text-amber-700" },
-  other: { ko: "기타", en: "Other", color: "bg-gray-100 text-gray-700" },
+const TYPE_LABELS: Record<ScheduleType, { ko: string; en: string; zh: string; color: string }> = {
+  practice: { ko: "공식 연습", en: "Practice", zh: "官方练习", color: "bg-green-100 text-green-700" },
+  qualification: { ko: "예선", en: "Qualification", zh: "预赛", color: "bg-blue-100 text-blue-700" },
+  elimination: { ko: "본선", en: "Elimination", zh: "淘汰赛", color: "bg-purple-100 text-purple-700" },
+  ceremony: { ko: "시상식", en: "Ceremony", zh: "颁奖典礼", color: "bg-amber-100 text-amber-700" },
+  other: { ko: "기타", en: "Other", zh: "其他", color: "bg-gray-100 text-gray-700" },
 };
 
 function formatTime(t: string | null): string {
@@ -32,7 +33,7 @@ export default function ScheduleDetailPage() {
   const [target, setTarget] = useState<TargetAssignment | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const t = (ko: string, en: string) => (locale === "ko" ? ko : en);
+  const t = useInlineT();
 
   useEffect(() => {
     fetchData();
@@ -74,7 +75,7 @@ export default function ScheduleDetailPage() {
   if (!schedule) {
     return (
       <div className="max-w-lg mx-auto px-4 pt-6">
-        <p className="text-center text-gray-500">{t("일정을 찾을 수 없습니다", "Schedule not found")}</p>
+        <p className="text-center text-gray-500">{t("일정을 찾을 수 없습니다", "Schedule not found", "找不到此赛程")}</p>
       </div>
     );
   }
@@ -97,7 +98,7 @@ export default function ScheduleDetailPage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <h1 className="text-xl font-bold text-gray-900">{t("일정 상세", "Schedule Detail")}</h1>
+        <h1 className="text-xl font-bold text-gray-900">{t("일정 상세", "Schedule Detail", "赛程详情")}</h1>
       </div>
 
       {/* Main Info */}
@@ -105,7 +106,7 @@ export default function ScheduleDetailPage() {
         <div className="flex items-start justify-between mb-3 gap-2">
           <h2 className="text-lg font-bold text-gray-900 flex-1">{title}</h2>
           <span className={`px-2.5 py-1 rounded-full text-[10px] font-semibold shrink-0 ${typeMeta.color}`}>
-            {locale === "ko" ? typeMeta.ko : typeMeta.en}
+            {locale === "ko" ? typeMeta.ko : locale === "zh" ? typeMeta.zh : typeMeta.en}
           </span>
         </div>
 
@@ -148,18 +149,18 @@ export default function ScheduleDetailPage() {
       {/* Target Assignment */}
       {target && (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-sm font-bold text-gray-700 mb-4">{t("내 타겟 배정", "My Target Assignment")}</h3>
+          <h3 className="text-sm font-bold text-gray-700 mb-4">{t("내 타겟 배정", "My Target Assignment", "我的靶位分配")}</h3>
           <div className="grid grid-cols-3 gap-3 text-center">
             <div className="bg-blue-50 rounded-xl p-4">
-              <p className="text-xs text-blue-500 mb-1">{t("사대", "Target")}</p>
+              <p className="text-xs text-blue-500 mb-1">{t("사대", "Target", "靶位")}</p>
               <p className="text-2xl font-bold text-blue-700">{target.target_number}</p>
             </div>
             <div className="bg-gray-50 rounded-xl p-4">
-              <p className="text-xs text-gray-500 mb-1">{t("위치", "Position")}</p>
+              <p className="text-xs text-gray-500 mb-1">{t("위치", "Position", "位置")}</p>
               <p className="text-2xl font-bold text-gray-700">{target.target_position || "-"}</p>
             </div>
             <div className="bg-gray-50 rounded-xl p-4">
-              <p className="text-xs text-gray-500 mb-1">{t("세션", "Session")}</p>
+              <p className="text-xs text-gray-500 mb-1">{t("세션", "Session", "时段")}</p>
               <p className="text-2xl font-bold text-gray-700">{target.session ?? "-"}</p>
             </div>
           </div>
@@ -168,7 +169,7 @@ export default function ScheduleDetailPage() {
 
       {!target && user && (
         <div className="bg-gray-50 rounded-2xl p-6 text-center">
-          <p className="text-sm text-gray-400">{t("아직 타겟이 배정되지 않았습니다", "Target not assigned yet")}</p>
+          <p className="text-sm text-gray-400">{t("아직 타겟이 배정되지 않았습니다", "Target not assigned yet", "尚未分配靶位")}</p>
         </div>
       )}
     </div>

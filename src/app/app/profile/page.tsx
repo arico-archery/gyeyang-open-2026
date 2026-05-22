@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
 import { useI18n } from "@/lib/i18n/context";
+import { useInlineT } from "@/lib/i18n/inline";
 import { useAuth } from "@/lib/supabase/auth-context";
 import { supabase } from "@/lib/supabase/client";
 import { isSuperAdmin } from "@/lib/super-admin";
@@ -16,11 +17,11 @@ interface LiveStatus {
 }
 
 const REG_STATUS_LABELS: Record<string, Record<string, string>> = {
-  submitted: { ko: "접수됨", en: "Submitted" },
-  reviewing: { ko: "검토중", en: "Reviewing" },
-  approved: { ko: "승인", en: "Approved" },
-  confirmed: { ko: "확정", en: "Confirmed" },
-  rejected: { ko: "반려", en: "Rejected" },
+  submitted: { ko: "접수됨", en: "Submitted", zh: "已提交" },
+  reviewing: { ko: "검토중", en: "Reviewing", zh: "审核中" },
+  approved: { ko: "승인", en: "Approved", zh: "已批准" },
+  confirmed: { ko: "확정", en: "Confirmed", zh: "已确认" },
+  rejected: { ko: "반려", en: "Rejected", zh: "已驳回" },
 };
 
 const REG_STATUS_COLOR: Record<string, string> = {
@@ -32,17 +33,17 @@ const REG_STATUS_COLOR: Record<string, string> = {
 };
 
 const CATEGORY_LABELS: Record<string, Record<string, string>> = {
-  recurve_men: { ko: "남자 리커브", en: "Recurve Men" },
-  recurve_women: { ko: "여자 리커브", en: "Recurve Women" },
-  compound_men: { ko: "남자 컴파운드", en: "Compound Men" },
-  compound_women: { ko: "여자 컴파운드", en: "Compound Women" },
+  recurve_men: { ko: "남자 리커브", en: "Recurve Men", zh: "反曲弓男子" },
+  recurve_women: { ko: "여자 리커브", en: "Recurve Women", zh: "反曲弓女子" },
+  compound_men: { ko: "남자 컴파운드", en: "Compound Men", zh: "复合弓男子" },
+  compound_women: { ko: "여자 컴파운드", en: "Compound Women", zh: "复合弓女子" },
 };
 
 const ROLE_LABELS: Record<string, Record<string, string>> = {
-  athlete: { ko: "선수", en: "Athlete" },
-  coach: { ko: "코치", en: "Coach" },
-  judge: { ko: "심판", en: "Judge" },
-  admin: { ko: "관리자", en: "Admin" },
+  athlete: { ko: "선수", en: "Athlete", zh: "选手" },
+  coach: { ko: "코치", en: "Coach", zh: "教练" },
+  judge: { ko: "심판", en: "Judge", zh: "裁判" },
+  admin: { ko: "관리자", en: "Admin", zh: "管理员" },
 };
 
 export default function ProfilePage() {
@@ -52,7 +53,7 @@ export default function ProfilePage() {
   const [qrFullScreen, setQrFullScreen] = useState(false);
   const [status, setStatus] = useState<LiveStatus | null>(null);
 
-  const t = (ko: string, en: string) => (locale === "ko" ? ko : en);
+  const t = useInlineT();
 
   useEffect(() => {
     if (!user) return;
@@ -99,7 +100,7 @@ export default function ProfilePage() {
   if (!user || !profile) {
     return (
       <div className="max-w-lg mx-auto px-4 pt-6">
-        <h1 className="text-xl font-bold text-gray-900 mb-4">{t("프로필", "Profile")}</h1>
+        <h1 className="text-xl font-bold text-gray-900 mb-4">{t("프로필", "Profile", "个人资料")}</h1>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 text-center">
           <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -107,13 +108,13 @@ export default function ProfilePage() {
             </svg>
           </div>
           <p className="text-sm text-gray-500 mb-4">
-            {t("로그인하여 프로필과 QR 코드를 확인하세요", "Sign in to view your profile and QR code")}
+            {t("로그인하여 프로필과 QR 코드를 확인하세요", "Sign in to view your profile and QR code", "请登录以查看您的个人资料和 QR 码")}
           </p>
           <Link
             href="/app/login"
             className="inline-block px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors"
           >
-            {t("로그인", "Sign In")}
+            {t("로그인", "Sign In", "登录")}
           </Link>
         </div>
       </div>
@@ -131,14 +132,14 @@ export default function ProfilePage() {
         <QRCodeSVG value={qrUrl} size={280} level="H" />
         <p className="mt-4 text-lg font-bold text-gray-900">{profile.full_name}</p>
         <p className="text-sm text-gray-500">{profile.nationality} · {ROLE_LABELS[profile.role]?.[locale]}</p>
-        <p className="mt-6 text-xs text-gray-400">{t("화면을 탭하면 닫힙니다", "Tap to close")}</p>
+        <p className="mt-6 text-xs text-gray-400">{t("화면을 탭하면 닫힙니다", "Tap to close", "点击屏幕关闭")}</p>
       </div>
     );
   }
 
   return (
     <div className="max-w-lg mx-auto px-4 pt-6 pb-24">
-      <h1 className="text-xl font-bold text-gray-900 mb-4">{t("프로필", "Profile")}</h1>
+      <h1 className="text-xl font-bold text-gray-900 mb-4">{t("프로필", "Profile", "个人资料")}</h1>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 mb-4">
         <div className="flex items-center gap-4 mb-4">
@@ -162,13 +163,13 @@ export default function ProfilePage() {
         <div className="space-y-2 text-sm">
           {profile.team && (
             <div className="flex gap-2">
-              <span className="text-gray-400 w-14 shrink-0">{t("소속", "Team")}</span>
+              <span className="text-gray-400 w-14 shrink-0">{t("소속", "Team", "团队")}</span>
               <span className="text-gray-700">{profile.team}</span>
             </div>
           )}
           {profile.category && (
             <div className="flex gap-2">
-              <span className="text-gray-400 w-14 shrink-0">{t("종목", "Event")}</span>
+              <span className="text-gray-400 w-14 shrink-0">{t("종목", "Event", "项目")}</span>
               <span className="text-gray-700">
                 {CATEGORY_LABELS[profile.category]?.[locale] || profile.category}
               </span>
@@ -180,12 +181,12 @@ export default function ProfilePage() {
       {/* Live status card — registration / target / attendance */}
       {status && (status.registration || status.target || status.attendedToday) && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 mb-4">
-          <h3 className="text-sm font-bold text-gray-700 mb-3">{t("현재 상태", "Current Status")}</h3>
+          <h3 className="text-sm font-bold text-gray-700 mb-3">{t("현재 상태", "Current Status", "当前状态")}</h3>
           <div className="space-y-3">
             {status.registration && (
               <div className="flex items-center justify-between">
                 <div className="flex flex-col">
-                  <span className="text-xs text-gray-400">{t("참가 신청", "Registration")}</span>
+                  <span className="text-xs text-gray-400">{t("참가 신청", "Registration", "报名")}</span>
                   <span className="text-sm text-gray-700">
                     {CATEGORY_LABELS[status.registration.category]?.[locale] || status.registration.category}
                   </span>
@@ -199,7 +200,7 @@ export default function ProfilePage() {
             )}
             {status.target && (
               <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-400">{t("타겟 배정", "Target")}</span>
+                <span className="text-xs text-gray-400">{t("타겟 배정", "Target", "靶位分配")}</span>
                 <span className="text-sm font-mono font-bold text-blue-600">
                   {status.target.target_number}
                   {status.target.target_position || ""}
@@ -208,16 +209,16 @@ export default function ProfilePage() {
               </div>
             )}
             <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-400">{t("오늘 출석", "Today's Attendance")}</span>
+              <span className="text-xs text-gray-400">{t("오늘 출석", "Today's Attendance", "今日出席")}</span>
               {status.attendedToday ? (
                 <span className="inline-flex items-center gap-1 text-xs font-semibold text-green-600">
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                   </svg>
-                  {t("확인됨", "Checked in")}
+                  {t("확인됨", "Checked in", "已签到")}
                 </span>
               ) : (
-                <span className="text-xs text-gray-400">{t("미체크", "Not yet")}</span>
+                <span className="text-xs text-gray-400">{t("미체크", "Not yet", "未签到")}</span>
               )}
             </div>
           </div>
@@ -225,7 +226,7 @@ export default function ProfilePage() {
       )}
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 mb-4">
-        <h3 className="text-sm font-bold text-gray-700 mb-3">{t("내 QR 코드", "My QR Code")}</h3>
+        <h3 className="text-sm font-bold text-gray-700 mb-3">{t("내 QR 코드", "My QR Code", "我的 QR 码")}</h3>
         <div className="flex flex-col items-center">
           <div className="p-4 bg-white border-2 border-gray-100 rounded-xl">
             <QRCodeSVG value={qrUrl} size={180} level="H" />
@@ -234,41 +235,41 @@ export default function ProfilePage() {
             onClick={() => setQrFullScreen(true)}
             className="mt-3 px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors"
           >
-            {t("전체화면으로 보기", "View Fullscreen")}
+            {t("전체화면으로 보기", "View Fullscreen", "全屏查看")}
           </button>
           <p className="text-[10px] text-gray-400 mt-2 text-center">
-            {t("심판/관리자가 스캔하여 정보를 확인합니다", "Judges/admins scan to verify your info")}
+            {t("심판/관리자가 스캔하여 정보를 확인합니다", "Judges/admins scan to verify your info", "裁判/管理员扫描以核对您的信息")}
           </p>
         </div>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-4">
         <Link href="/app/profile/edit" className="flex items-center justify-between px-4 py-3.5 border-b border-gray-50 hover:bg-gray-50 transition-colors">
-          <span className="text-sm text-gray-700">{t("프로필 수정", "Edit Profile")}</span>
+          <span className="text-sm text-gray-700">{t("프로필 수정", "Edit Profile", "编辑个人资料")}</span>
           <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </Link>
         <Link href="/app/registration" className="flex items-center justify-between px-4 py-3.5 border-b border-gray-50 hover:bg-gray-50 transition-colors">
-          <span className="text-sm text-gray-700">{t("참가 신청 현황", "Registration Status")}</span>
+          <span className="text-sm text-gray-700">{t("참가 신청 현황", "Registration Status", "报名状态")}</span>
           <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </Link>
         <Link href="/app/inquiries" className="flex items-center justify-between px-4 py-3.5 border-b border-gray-50 hover:bg-gray-50 transition-colors">
-          <span className="text-sm text-gray-700">{t("문의 내역", "My Inquiries")}</span>
+          <span className="text-sm text-gray-700">{t("문의 내역", "My Inquiries", "我的咨询")}</span>
           <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </Link>
         <Link href="/app/announcements" className="flex items-center justify-between px-4 py-3.5 border-b border-gray-50 hover:bg-gray-50 transition-colors">
-          <span className="text-sm text-gray-700">{t("공지사항", "Announcements")}</span>
+          <span className="text-sm text-gray-700">{t("공지사항", "Announcements", "公告")}</span>
           <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </Link>
         <Link href="/app/notifications" className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 transition-colors">
-          <span className="text-sm text-gray-700">{t("알림 설정", "Notification Settings")}</span>
+          <span className="text-sm text-gray-700">{t("알림 설정", "Notification Settings", "通知设置")}</span>
           <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
@@ -283,7 +284,7 @@ export default function ProfilePage() {
         >
           <div className="flex items-center gap-2">
             <span className="text-lg">⚙️</span>
-            <span className="text-sm font-medium text-amber-900">{t("관리자 대시보드", "Admin Dashboard")}</span>
+            <span className="text-sm font-medium text-amber-900">{t("관리자 대시보드", "Admin Dashboard", "管理员仪表板")}</span>
           </div>
           <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -295,7 +296,7 @@ export default function ProfilePage() {
         onClick={async () => { await signOut(); router.push("/app"); }}
         className="w-full py-3 text-red-500 text-sm font-medium hover:bg-red-50 rounded-xl transition-colors"
       >
-        {t("로그아웃", "Sign Out")}
+        {t("로그아웃", "Sign Out", "退出登录")}
       </button>
     </div>
   );

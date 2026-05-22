@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useI18n } from "@/lib/i18n/context";
+import { useInlineT } from "@/lib/i18n/inline";
 import { useAuth } from "@/lib/supabase/auth-context";
 import { supabase } from "@/lib/supabase/client";
 import type { Profile } from "@/lib/supabase/types";
@@ -32,17 +33,17 @@ interface ScannedData {
 }
 
 const ROLE_LABELS: Record<string, Record<string, string>> = {
-  athlete: { ko: "선수", en: "Athlete" },
-  coach: { ko: "코치", en: "Coach" },
-  judge: { ko: "심판", en: "Judge" },
-  admin: { ko: "관리자", en: "Admin" },
+  athlete: { ko: "선수", en: "Athlete", zh: "选手" },
+  coach: { ko: "코치", en: "Coach", zh: "教练" },
+  judge: { ko: "심판", en: "Judge", zh: "裁判" },
+  admin: { ko: "관리자", en: "Admin", zh: "管理员" },
 };
 
 const CATEGORY_LABELS: Record<string, Record<string, string>> = {
-  recurve_men: { ko: "남자 리커브", en: "Recurve Men" },
-  recurve_women: { ko: "여자 리커브", en: "Recurve Women" },
-  compound_men: { ko: "남자 컴파운드", en: "Compound Men" },
-  compound_women: { ko: "여자 컴파운드", en: "Compound Women" },
+  recurve_men: { ko: "남자 리커브", en: "Recurve Men", zh: "反曲弓男子" },
+  recurve_women: { ko: "여자 리커브", en: "Recurve Women", zh: "反曲弓女子" },
+  compound_men: { ko: "남자 컴파운드", en: "Compound Men", zh: "复合弓男子" },
+  compound_women: { ko: "여자 컴파운드", en: "Compound Women", zh: "复合弓女子" },
 };
 
 export default function ScanPage() {
@@ -58,7 +59,7 @@ export default function ScanPage() {
   const streamRef = useRef<MediaStream | null>(null);
   const animFrameRef = useRef<number | null>(null);
 
-  const t = (ko: string, en: string) => (locale === "ko" ? ko : en);
+  const t = useInlineT();
 
   const isAuthorized = myProfile?.role === "judge" || myProfile?.role === "admin";
   const isAdmin = myProfile?.role === "admin";

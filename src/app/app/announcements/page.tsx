@@ -3,13 +3,17 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n/context";
+import { useInlineT } from "@/lib/i18n/inline";
 import { supabase } from "@/lib/supabase/client";
 import type { Announcement, AnnouncementPriority } from "@/lib/supabase/types";
 
-const PRIORITY_STYLE: Record<AnnouncementPriority, { dot: string; badge: string; label_ko: string; label_en: string }> = {
-  normal: { dot: "", badge: "", label_ko: "", label_en: "" },
-  important: { dot: "bg-amber-500", badge: "bg-amber-100 text-amber-700", label_ko: "안내", label_en: "Notice" },
-  urgent: { dot: "bg-red-500", badge: "bg-red-100 text-red-600", label_ko: "긴급", label_en: "Urgent" },
+const PRIORITY_STYLE: Record<
+  AnnouncementPriority,
+  { dot: string; badge: string; label_ko: string; label_en: string; label_zh: string }
+> = {
+  normal: { dot: "", badge: "", label_ko: "", label_en: "", label_zh: "" },
+  important: { dot: "bg-amber-500", badge: "bg-amber-100 text-amber-700", label_ko: "안내", label_en: "Notice", label_zh: "通知" },
+  urgent: { dot: "bg-red-500", badge: "bg-red-100 text-red-600", label_ko: "긴급", label_en: "Urgent", label_zh: "紧急" },
 };
 
 export default function AnnouncementsPage() {
@@ -19,7 +23,7 @@ export default function AnnouncementsPage() {
   const [loading, setLoading] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  const t = (ko: string, en: string) => (locale === "ko" ? ko : en);
+  const t = useInlineT();
 
   useEffect(() => {
     fetchAnnouncements();
@@ -63,13 +67,13 @@ export default function AnnouncementsPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <h1 className="text-xl font-bold text-gray-900">{t("공지사항", "Announcement")}</h1>
+          <h1 className="text-xl font-bold text-gray-900">{t("공지사항", "Announcement", "公告")}</h1>
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
           {showBadge && (
             <span className={`inline-block px-2 py-0.5 ${style.badge} text-[10px] font-semibold rounded-md mb-2`}>
-              {t(style.label_ko, style.label_en)}
+              {t(style.label_ko, style.label_en, style.label_zh)}
             </span>
           )}
           <h2 className="text-lg font-bold text-gray-900 mb-2">{titleFor(selected)}</h2>
@@ -93,12 +97,12 @@ export default function AnnouncementsPage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <h1 className="text-xl font-bold text-gray-900">{t("공지사항", "Announcements")}</h1>
+        <h1 className="text-xl font-bold text-gray-900">{t("공지사항", "Announcements", "公告")}</h1>
       </div>
 
       {announcements.length === 0 ? (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 text-center">
-          <p className="text-sm text-gray-400">{t("등록된 공지사항이 없습니다", "No announcements yet")}</p>
+          <p className="text-sm text-gray-400">{t("등록된 공지사항이 없습니다", "No announcements yet", "暂无公告")}</p>
         </div>
       ) : (
         <div className="space-y-3">

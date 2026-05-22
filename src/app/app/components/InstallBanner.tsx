@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useI18n } from "@/lib/i18n/context";
+import { useInlineT } from "@/lib/i18n/inline";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -9,12 +9,11 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export default function InstallBanner() {
-  const { locale } = useI18n();
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [show, setShow] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
-  const t = (ko: string, en: string) => (locale === "ko" ? ko : en);
+  const t = useInlineT();
 
   useEffect(() => {
     // Check if already dismissed
@@ -61,10 +60,10 @@ export default function InstallBanner() {
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-gray-900">
-            {t("홈 화면에 추가", "Add to Home Screen")}
+            {t("홈 화면에 추가", "Add to Home Screen", "添加到主屏幕")}
           </p>
           <p className="text-xs text-gray-500 mt-0.5">
-            {t("앱처럼 빠르게 접속할 수 있습니다", "Access quickly like a native app")}
+            {t("앱처럼 빠르게 접속할 수 있습니다", "Access quickly like a native app", "可像应用一样快速访问")}
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
@@ -72,13 +71,13 @@ export default function InstallBanner() {
             onClick={handleDismiss}
             className="px-3 py-1.5 text-xs text-gray-500 font-medium"
           >
-            {t("닫기", "Later")}
+            {t("닫기", "Later", "稍后")}
           </button>
           <button
             onClick={handleInstall}
             className="px-4 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-lg"
           >
-            {t("설치", "Install")}
+            {t("설치", "Install", "安装")}
           </button>
         </div>
       </div>

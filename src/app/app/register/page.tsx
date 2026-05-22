@@ -5,21 +5,22 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { useI18n } from "@/lib/i18n/context";
+import { useInlineT } from "@/lib/i18n/inline";
 import { useAuth } from "@/lib/supabase/auth-context";
 import { supabase } from "@/lib/supabase/client";
 import type { UserRole } from "@/lib/supabase/types";
 import { COUNTRIES } from "@/lib/countries";
 
-const ROLES: { value: UserRole; ko: string; en: string }[] = [
-  { value: "athlete", ko: "선수", en: "Athlete" },
-  { value: "coach", ko: "코치", en: "Coach" },
+const ROLES: { value: UserRole; ko: string; en: string; zh: string }[] = [
+  { value: "athlete", ko: "선수", en: "Athlete", zh: "选手" },
+  { value: "coach", ko: "코치", en: "Coach", zh: "教练" },
 ];
 
 const CATEGORIES = [
-  { value: "recurve_men", ko: "남자 리커브", en: "Recurve Men" },
-  { value: "recurve_women", ko: "여자 리커브", en: "Recurve Women" },
-  { value: "compound_men", ko: "남자 컴파운드", en: "Compound Men" },
-  { value: "compound_women", ko: "여자 컴파운드", en: "Compound Women" },
+  { value: "recurve_men", ko: "남자 리커브", en: "Recurve Men", zh: "反曲弓男子" },
+  { value: "recurve_women", ko: "여자 리커브", en: "Recurve Women", zh: "反曲弓女子" },
+  { value: "compound_men", ko: "남자 컴파운드", en: "Compound Men", zh: "复合弓男子" },
+  { value: "compound_women", ko: "여자 컴파운드", en: "Compound Women", zh: "复合弓女子" },
 ];
 
 export default function RegisterPage() {
@@ -40,17 +41,19 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const t = (ko: string, en: string) => (locale === "ko" ? ko : en);
+  const t = useInlineT();
+  const localized = <T extends { ko: string; en: string; zh: string }>(m: T) =>
+    locale === "ko" ? m.ko : locale === "zh" ? m.zh : m.en;
 
   const handleStep1 = (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     if (password.length < 6) {
-      setError(t("비밀번호는 6자 이상이어야 합니다.", "Password must be at least 6 characters."));
+      setError(t("비밀번호는 6자 이상이어야 합니다.", "Password must be at least 6 characters.", "密码至少需要 6 个字符。"));
       return;
     }
     if (password !== confirmPassword) {
-      setError(t("비밀번호가 일치하지 않습니다.", "Passwords do not match."));
+      setError(t("비밀번호가 일치하지 않습니다.", "Passwords do not match.", "密码不一致。"));
       return;
     }
     setStep(2);
@@ -92,9 +95,9 @@ export default function RegisterPage() {
       <div className="w-full max-w-sm">
         <div className="text-center mb-6">
           <Image src="/images/logo.png" alt="Logo" width={48} height={53} className="mx-auto mb-3" />
-          <h1 className="text-xl font-bold text-gray-900">{t("회원가입", "Sign Up")}</h1>
+          <h1 className="text-xl font-bold text-gray-900">{t("회원가입", "Sign Up", "注册")}</h1>
           <p className="text-sm text-gray-500 mt-1">
-            {t(`단계 ${step}/2`, `Step ${step}/2`)}
+            {t(`단계 ${step}/2`, `Step ${step}/2`, `第 ${step}/2 步`)}
           </p>
         </div>
 
@@ -114,7 +117,7 @@ export default function RegisterPage() {
           {step === 1 && (
             <form onSubmit={handleStep1} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t("이메일", "Email")}</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t("이메일", "Email", "邮箱")}</label>
                 <input
                   type="email" value={email} onChange={(e) => setEmail(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -122,15 +125,15 @@ export default function RegisterPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t("비밀번호", "Password")}</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t("비밀번호", "Password", "密码")}</label>
                 <input
                   type="password" value={password} onChange={(e) => setPassword(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder={t("6자 이상", "Min. 6 characters")} required
+                  placeholder={t("6자 이상", "Min. 6 characters", "至少 6 个字符")} required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t("비밀번호 확인", "Confirm Password")}</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t("비밀번호 확인", "Confirm Password", "确认密码")}</label>
                 <input
                   type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -138,7 +141,7 @@ export default function RegisterPage() {
                 />
               </div>
               <button type="submit" className="w-full py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors">
-                {t("다음", "Next")}
+                {t("다음", "Next", "下一步")}
               </button>
             </form>
           )}
@@ -146,7 +149,7 @@ export default function RegisterPage() {
           {step === 2 && (
             <form onSubmit={handleStep2} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t("역할", "Role")}</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t("역할", "Role", "身份")}</label>
                 <div className="grid grid-cols-2 gap-2">
                   {ROLES.map((r) => (
                     <button
@@ -158,23 +161,23 @@ export default function RegisterPage() {
                           : "bg-white text-gray-700 border-gray-200 hover:border-blue-300"
                       }`}
                     >
-                      {locale === "ko" ? r.ko : r.en}
+                      {localized(r)}
                     </button>
                   ))}
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t("이름", "Name")}</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t("이름", "Name", "姓名")}</label>
                 <input
                   type="text" value={fullName} onChange={(e) => setFullName(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder={t("홍길동", "John Doe")} required
+                  placeholder={t("홍길동", "John Doe", "张三")} required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t("영문 이름", "Name (English)")}</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t("영문 이름", "Name (English)", "英文姓名")}</label>
                 <input
                   type="text" value={fullNameEn} onChange={(e) => setFullNameEn(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -183,7 +186,7 @@ export default function RegisterPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t("국적", "Nationality")}</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t("국적", "Nationality", "国籍")}</label>
                 <select
                   value={nationality} onChange={(e) => setNationality(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
@@ -198,7 +201,7 @@ export default function RegisterPage() {
 
               {role === "athlete" && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("종목", "Event")}</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t("종목", "Event", "项目")}</label>
                   <div className="grid grid-cols-2 gap-2">
                     {CATEGORIES.map((c) => (
                       <button
@@ -210,7 +213,7 @@ export default function RegisterPage() {
                             : "bg-white text-gray-700 border-gray-200 hover:border-blue-300"
                         }`}
                       >
-                        {locale === "ko" ? c.ko : c.en}
+                        {localized(c)}
                       </button>
                     ))}
                   </div>
@@ -218,11 +221,11 @@ export default function RegisterPage() {
               )}
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t("소속", "Team/Club")}</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t("소속", "Team/Club", "所属团队")}</label>
                 <input
                   type="text" value={team} onChange={(e) => setTeam(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder={t("인천시양궁협회", "Incheon Archery Association")}
+                  placeholder={t("인천시양궁협회", "Incheon Archery Association", "仁川射箭协会")}
                 />
               </div>
 
@@ -230,12 +233,12 @@ export default function RegisterPage() {
                 <button type="button" onClick={() => setStep(1)}
                   className="flex-1 py-3 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition-colors"
                 >
-                  {t("이전", "Back")}
+                  {t("이전", "Back", "上一步")}
                 </button>
                 <button type="submit" disabled={loading}
                   className="flex-1 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50"
                 >
-                  {loading ? t("가입 중...", "Creating...") : t("가입하기", "Sign Up")}
+                  {loading ? t("가입 중...", "Creating...", "注册中...") : t("가입하기", "Sign Up", "注册")}
                 </button>
               </div>
             </form>
@@ -243,16 +246,16 @@ export default function RegisterPage() {
         </div>
 
         <p className="text-center text-sm text-gray-500 mt-4">
-          {t("이미 계정이 있으신가요?", "Already have an account?")}{" "}
+          {t("이미 계정이 있으신가요?", "Already have an account?", "已有账号?")}{" "}
           <Link href="/app/login" className="text-blue-600 font-medium hover:underline">
-            {t("로그인", "Sign In")}
+            {t("로그인", "Sign In", "登录")}
           </Link>
         </p>
 
         <p className="text-center text-sm text-gray-400 mt-3">
-          {t("심판/관리자이신가요?", "Are you a judge or staff?")}{" "}
+          {t("심판/관리자이신가요?", "Are you a judge or staff?", "您是裁判或工作人员吗?")}{" "}
           <Link href="/app/register/staff" className="text-purple-600 font-medium hover:underline">
-            {t("스태프 가입", "Staff Registration")}
+            {t("스태프 가입", "Staff Registration", "工作人员注册")}
           </Link>
         </p>
       </div>

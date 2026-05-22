@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n/context";
+import { useInlineT } from "@/lib/i18n/inline";
 import { useAuth } from "@/lib/supabase/auth-context";
 import { supabase } from "@/lib/supabase/client";
 import type { Announcement, AnnouncementPriority } from "@/lib/supabase/types";
@@ -28,7 +29,7 @@ export default function AdminAnnouncementsPage() {
   const [sendPush, setSendPush] = useState(false);
   const [pushResult, setPushResult] = useState<string>("");
 
-  const t = (ko: string, en: string) => (locale === "ko" ? ko : en);
+  const t = useInlineT();
 
   useEffect(() => {
     if (profile && profile.role !== "admin") router.push("/app");

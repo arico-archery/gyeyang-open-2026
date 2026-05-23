@@ -48,11 +48,16 @@ export default function Header() {
     {
       label: t("nav.groupResults"),
       items: [
-        // 2026 archive first — primary destination after the event.
-        { label: t("nav.archive2026"), href: "/archive/2026" },
         { label: t("nav.gallery"), href: "/gallery" },
         { label: t("nav.scoreTarget"), href: "/scoreboard" },
         { label: t("nav.archeryRecord"), href: "/record_table" },
+      ],
+    },
+    {
+      label: t("nav.groupArchive"),
+      items: [
+        // Newest first — current edition takes precedence.
+        { label: t("nav.archive2026"), href: "/archive/2026" },
         { label: t("nav.archive2025"), href: "/archive/2025" },
       ],
     },

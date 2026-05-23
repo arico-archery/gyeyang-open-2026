@@ -26,6 +26,7 @@ export const ja: typeof en = {
     groupAbout: "大会案内",
     groupParticipate: "参加案内",
     groupResults: "結果・メディア",
+    groupArchive: "アーカイブ",
     invitation: "招待状",
   },
 

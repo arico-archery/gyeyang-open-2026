@@ -4,44 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { useI18n } from "@/lib/i18n/context";
-
-/** Inline 30:20 PRC flag — avoids adding another binary asset to the repo. */
-function CnFlag({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 30 20"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
-      aria-hidden="true"
-    >
-      <rect width="30" height="20" fill="#DE2910" />
-      <g fill="#FFDE00">
-        {/* Large star */}
-        <polygon points="5,3 5.95,5.85 8.95,5.85 6.5,7.65 7.45,10.5 5,8.7 2.55,10.5 3.5,7.65 1.05,5.85 4.05,5.85" />
-        {/* Four small stars in arc */}
-        <polygon points="10,1.5 10.32,2.46 11.32,2.46 10.5,3.05 10.82,4 10,3.4 9.18,4 9.5,3.05 8.68,2.46 9.68,2.46" />
-        <polygon points="12,4 12.32,4.96 13.32,4.96 12.5,5.55 12.82,6.5 12,5.9 11.18,6.5 11.5,5.55 10.68,4.96 11.68,4.96" />
-        <polygon points="12,7 12.32,7.96 13.32,7.96 12.5,8.55 12.82,9.5 12,8.9 11.18,9.5 11.5,8.55 10.68,7.96 11.68,7.96" />
-        <polygon points="10,9.5 10.32,10.46 11.32,10.46 10.5,11.05 10.82,12 10,11.4 9.18,12 9.5,11.05 8.68,10.46 9.68,10.46" />
-      </g>
-    </svg>
-  );
-}
-
-/** Inline 30:20 Japanese flag — Hinomaru. */
-function JpFlag({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 30 20"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
-      aria-hidden="true"
-    >
-      <rect width="30" height="20" fill="#FFFFFF" />
-      <circle cx="15" cy="10" r="6" fill="#BC002D" />
-    </svg>
-  );
-}
+import LanguageSelector from "./LanguageSelector";
 
 interface NavItem {
   label: string;
@@ -55,9 +18,8 @@ interface NavGroup {
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [langOpen, setLangOpen] = useState(false);
   const [openGroup, setOpenGroup] = useState<string | null>(null);
-  const { locale, setLocale, t } = useI18n();
+  const { locale, t } = useI18n();
 
   // Three content groups + standalone Contact — each item is a dedicated route
   const GROUPS: NavGroup[] = [
@@ -171,63 +133,7 @@ export default function Header() {
           </nav>
 
           <div className="flex items-center gap-3">
-            <div className="relative">
-              <button
-                onClick={() => setLangOpen(!langOpen)}
-                className="w-8 h-8 rounded-full overflow-hidden border-2 border-slate-200 hover:border-slate-400 transition-colors flex items-center justify-center bg-slate-50"
-                aria-label="Select language"
-              >
-                {locale === "zh" ? (
-                  <CnFlag className="w-7 h-5 object-cover rounded-sm" />
-                ) : locale === "ja" ? (
-                  <JpFlag className="w-7 h-5 object-cover rounded-sm" />
-                ) : (
-                  <Image
-                    src={locale === "en" ? "/images/flag_us.png" : "/images/flag_kr.png"}
-                    alt={locale === "en" ? "English" : "한국어"}
-                    width={28}
-                    height={20}
-                    className="object-cover"
-                  />
-                )}
-              </button>
-
-              {langOpen && (
-                <>
-                  <div className="fixed inset-0 z-40" onClick={() => setLangOpen(false)} />
-                  <div className="absolute right-0 top-10 z-50 bg-[#1a1a1a] rounded-lg shadow-xl py-2 min-w-[160px]">
-                    <button
-                      onClick={() => { setLocale("en"); setLangOpen(false); }}
-                      className={`w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[#2a2a2a] transition-colors ${locale === "en" ? "bg-[#2a2a2a]" : ""}`}
-                    >
-                      <Image src="/images/flag_us.png" alt="US" width={28} height={20} className="shrink-0 rounded-sm" />
-                      <span className="text-white text-sm font-medium">English</span>
-                    </button>
-                    <button
-                      onClick={() => { setLocale("ko"); setLangOpen(false); }}
-                      className={`w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[#2a2a2a] transition-colors ${locale === "ko" ? "bg-[#2a2a2a]" : ""}`}
-                    >
-                      <Image src="/images/flag_kr.png" alt="KR" width={28} height={20} className="shrink-0 rounded-sm" />
-                      <span className="text-white text-sm font-medium">한국어</span>
-                    </button>
-                    <button
-                      onClick={() => { setLocale("zh"); setLangOpen(false); }}
-                      className={`w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[#2a2a2a] transition-colors ${locale === "zh" ? "bg-[#2a2a2a]" : ""}`}
-                    >
-                      <CnFlag className="w-7 h-5 shrink-0 rounded-sm" />
-                      <span className="text-white text-sm font-medium">简体中文</span>
-                    </button>
-                    <button
-                      onClick={() => { setLocale("ja"); setLangOpen(false); }}
-                      className={`w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[#2a2a2a] transition-colors ${locale === "ja" ? "bg-[#2a2a2a]" : ""}`}
-                    >
-                      <JpFlag className="w-7 h-5 shrink-0 rounded-sm" />
-                      <span className="text-white text-sm font-medium">日本語</span>
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
+            <LanguageSelector size="md" align="right" />
 
             <button
               className="lg:hidden p-2 text-slate-600 hover:text-slate-900 transition-colors"

@@ -28,6 +28,21 @@ function CnFlag({ className }: { className?: string }) {
   );
 }
 
+/** Inline 30:20 Japanese flag — Hinomaru. */
+function JpFlag({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 30 20"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      aria-hidden="true"
+    >
+      <rect width="30" height="20" fill="#FFFFFF" />
+      <circle cx="15" cy="10" r="6" fill="#BC002D" />
+    </svg>
+  );
+}
+
 interface NavItem {
   label: string;
   href: string;
@@ -163,8 +178,9 @@ export default function Header() {
                 aria-label="Select language"
               >
                 {locale === "zh" ? (
-                  /* Inline CN flag — no separate image file required */
                   <CnFlag className="w-7 h-5 object-cover rounded-sm" />
+                ) : locale === "ja" ? (
+                  <JpFlag className="w-7 h-5 object-cover rounded-sm" />
                 ) : (
                   <Image
                     src={locale === "en" ? "/images/flag_us.png" : "/images/flag_kr.png"}
@@ -200,6 +216,13 @@ export default function Header() {
                     >
                       <CnFlag className="w-7 h-5 shrink-0 rounded-sm" />
                       <span className="text-white text-sm font-medium">简体中文</span>
+                    </button>
+                    <button
+                      onClick={() => { setLocale("ja"); setLangOpen(false); }}
+                      className={`w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[#2a2a2a] transition-colors ${locale === "ja" ? "bg-[#2a2a2a]" : ""}`}
+                    >
+                      <JpFlag className="w-7 h-5 shrink-0 rounded-sm" />
+                      <span className="text-white text-sm font-medium">日本語</span>
                     </button>
                   </div>
                 </>

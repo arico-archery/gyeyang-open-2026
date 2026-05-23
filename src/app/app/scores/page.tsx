@@ -69,7 +69,7 @@ export default function ScoresPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <h1 className="text-xl font-bold text-gray-900">{t("실시간 점수", "Live Scores", "实时成绩")}</h1>
+          <h1 className="text-xl font-bold text-gray-900">{t("실시간 점수", "Live Scores", "实时成绩", "ライブスコア")}</h1>
         </div>
         <div className="flex items-center justify-center py-20">
           <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
@@ -96,7 +96,7 @@ export default function ScoresPage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <h1 className="text-xl font-bold text-gray-900">{t("실시간 점수", "Live Scores", "实时成绩")}</h1>
+        <h1 className="text-xl font-bold text-gray-900">{t("실시간 점수", "Live Scores", "实时成绩", "ライブスコア")}</h1>
       </div>
 
       {/* ianseo live link */}
@@ -107,7 +107,7 @@ export default function ScoresPage() {
         className="flex items-center gap-2 mb-4 px-4 py-2.5 bg-white rounded-xl border border-gray-200 hover:border-blue-300 transition-colors"
       >
         <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-        <span className="text-sm font-medium text-gray-700">{t("ianseo 라이브 결과 보기", "View Live Results on ianseo", "在 ianseo 查看实时成绩")}</span>
+        <span className="text-sm font-medium text-gray-700">{t("ianseo 라이브 결과 보기", "View Live Results on ianseo", "在 ianseo 查看实时成绩", "ianseo でライブ結果を見る")}</span>
       </a>
 
       {/* Tab: Qualification / Finals / Foreign */}
@@ -120,7 +120,7 @@ export default function ScoresPage() {
               tab === v ? "bg-blue-600 text-white" : "bg-white text-gray-600 border border-gray-200"
             }`}
           >
-            {v === "qualification" ? t("예선", "Qual.", "预赛") : v === "finals" ? t("본선", "Finals", "决赛") : t("외국인부", "Foreign", "外国组")}
+            {v === "qualification" ? t("예선", "Qual.", "预赛", "予選") : v === "finals" ? t("본선", "Finals", "决赛", "決勝") : t("외국인부", "Foreign", "外国组", "外国人組")}
           </button>
         ))}
       </div>
@@ -135,7 +135,7 @@ export default function ScoresPage() {
               gender === g ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-600"
             }`}
           >
-            {g === "men" ? t("남자부", "Men", "男子组") : t("여자부", "Women", "女子组")}
+            {g === "men" ? t("남자부", "Men", "男子组", "男子組") : t("여자부", "Women", "女子组", "女子組")}
           </button>
         ))}
       </div>
@@ -144,7 +144,7 @@ export default function ScoresPage() {
       {tab === "qualification" && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
-            <h2 className="text-sm font-bold text-gray-700">{t("예선 순위", "Qualification Ranking", "预赛排名")}</h2>
+            <h2 className="text-sm font-bold text-gray-700">{t("예선 순위", "Qualification Ranking", "预赛排名", "予選順位")}</h2>
           </div>
           {qualAthletes.length > 0 ? (
             <div className="divide-y divide-gray-50">
@@ -163,7 +163,7 @@ export default function ScoresPage() {
             </div>
           ) : (
             <div className="p-6 text-center text-sm text-gray-400">
-              {t("데이터가 없습니다", "No data available", "暂无数据")}
+              {t("데이터가 없습니다", "No data available", "暂无数据", "データがありません")}
             </div>
           )}
         </div>
@@ -174,7 +174,7 @@ export default function ScoresPage() {
           {/* Individual */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
-              <h2 className="text-sm font-bold text-gray-700">{t("개인전", "Individual", "个人赛")}</h2>
+              <h2 className="text-sm font-bold text-gray-700">{t("개인전", "Individual", "个人赛", "個人戦")}</h2>
             </div>
             {finalAthletes.length > 0 ? (
               <div className="divide-y divide-gray-50">
@@ -190,7 +190,7 @@ export default function ScoresPage() {
               </div>
             ) : (
               <div className="p-6 text-center text-sm text-gray-400">
-                {t("데이터가 없습니다", "No data available", "暂无数据")}
+                {t("데이터가 없습니다", "No data available", "暂无数据", "データがありません")}
               </div>
             )}
           </div>
@@ -198,7 +198,7 @@ export default function ScoresPage() {
           {/* Team */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
-              <h2 className="text-sm font-bold text-gray-700">{t("단체전", "Team", "团体赛")}</h2>
+              <h2 className="text-sm font-bold text-gray-700">{t("단체전", "Team", "团体赛", "団体戦")}</h2>
             </div>
             {teams.length > 0 ? (
               <div className="divide-y divide-gray-50">
@@ -211,7 +211,7 @@ export default function ScoresPage() {
               </div>
             ) : (
               <div className="p-6 text-center text-sm text-gray-400">
-                {t("데이터가 없습니다", "No data available", "暂无数据")}
+                {t("데이터가 없습니다", "No data available", "暂无数据", "データがありません")}
               </div>
             )}
           </div>
@@ -221,7 +221,7 @@ export default function ScoresPage() {
       {tab === "foreign" && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
-            <h2 className="text-sm font-bold text-gray-700">{t("외국인부 순위", "Foreign Division Ranking", "外国组排名")}</h2>
+            <h2 className="text-sm font-bold text-gray-700">{t("외국인부 순위", "Foreign Division Ranking", "外国组排名", "外国人組順位")}</h2>
           </div>
           {(gender === "men" ? data?.qualification.foreignMen : data?.qualification.foreignWomen)?.length ? (
             <div className="divide-y divide-gray-50">
@@ -240,7 +240,7 @@ export default function ScoresPage() {
             </div>
           ) : (
             <div className="p-6 text-center text-sm text-gray-400">
-              {t("데이터가 없습니다", "No data available", "暂无数据")}
+              {t("데이터가 없습니다", "No data available", "暂无数据", "データがありません")}
             </div>
           )}
         </div>
@@ -248,7 +248,7 @@ export default function ScoresPage() {
 
       {data?.timestamp && (
         <p className="text-center text-xs text-gray-400 mt-4">
-          {t("마지막 업데이트", "Last updated", "最后更新")}: {new Date(data.timestamp).toLocaleString(locale === "ko" ? "ko-KR" : locale === "zh" ? "zh-CN" : "en-US")}
+          {t("마지막 업데이트", "Last updated", "最后更新", "最終更新")}: {new Date(data.timestamp).toLocaleString(locale === "ko" ? "ko-KR" : locale === "zh" ? "zh-CN" : locale === "ja" ? "ja-JP" : "en-US")}
         </p>
       )}
     </div>

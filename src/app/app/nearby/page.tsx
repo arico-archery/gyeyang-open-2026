@@ -7,16 +7,16 @@ import { useInlineT } from "@/lib/i18n/inline";
 import { supabase } from "@/lib/supabase/client";
 import type { NearbyPlace, PlaceCategory } from "@/lib/supabase/types";
 
-const CATEGORY_CONFIG: { value: PlaceCategory | "all"; ko: string; en: string; zh: string; icon: string }[] = [
-  { value: "all", ko: "전체", en: "All", zh: "全部", icon: "📍" },
-  { value: "restaurant", ko: "음식점", en: "Restaurant", zh: "餐厅", icon: "🍽️" },
-  { value: "cafe", ko: "카페", en: "Cafe", zh: "咖啡馆", icon: "☕" },
-  { value: "convenience", ko: "편의점", en: "Convenience", zh: "便利店", icon: "🏪" },
-  { value: "hospital", ko: "병원", en: "Hospital", zh: "医院", icon: "🏥" },
-  { value: "pharmacy", ko: "약국", en: "Pharmacy", zh: "药房", icon: "💊" },
-  { value: "atm", ko: "ATM", en: "ATM", zh: "ATM", icon: "🏧" },
-  { value: "transport", ko: "교통", en: "Transport", zh: "交通", icon: "🚌" },
-  { value: "tourism", ko: "관광", en: "Tourism", zh: "观光", icon: "🏛️" },
+const CATEGORY_CONFIG: { value: PlaceCategory | "all"; ko: string; en: string; zh: string; ja: string; icon: string }[] = [
+  { value: "all", ko: "전체", en: "All", zh: "全部", ja: "すべて", icon: "📍" },
+  { value: "restaurant", ko: "음식점", en: "Restaurant", zh: "餐厅", ja: "レストラン", icon: "🍽️" },
+  { value: "cafe", ko: "카페", en: "Cafe", zh: "咖啡馆", ja: "カフェ", icon: "☕" },
+  { value: "convenience", ko: "편의점", en: "Convenience", zh: "便利店", ja: "コンビニ", icon: "🏪" },
+  { value: "hospital", ko: "병원", en: "Hospital", zh: "医院", ja: "病院", icon: "🏥" },
+  { value: "pharmacy", ko: "약국", en: "Pharmacy", zh: "药房", ja: "薬局", icon: "💊" },
+  { value: "atm", ko: "ATM", en: "ATM", zh: "ATM", ja: "ATM", icon: "🏧" },
+  { value: "transport", ko: "교통", en: "Transport", zh: "交通", ja: "交通", icon: "🚌" },
+  { value: "tourism", ko: "관광", en: "Tourism", zh: "观光", ja: "観光", icon: "🏛️" },
 ];
 
 const STATIC_PLACES: NearbyPlace[] = [
@@ -82,7 +82,7 @@ export default function NearbyPage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <h1 className="text-xl font-bold text-gray-900">{t("주변 정보", "Nearby", "周边信息")}</h1>
+        <h1 className="text-xl font-bold text-gray-900">{t("주변 정보", "Nearby", "周边信息", "周辺情報")}</h1>
       </div>
 
       {/* Map embed */}
@@ -109,7 +109,7 @@ export default function NearbyPage() {
             }`}
           >
             <span>{c.icon}</span>
-            {locale === "ko" ? c.ko : locale === "zh" ? c.zh : c.en}
+            {locale === "ko" ? c.ko : locale === "zh" ? c.zh : locale === "ja" ? c.ja : c.en}
           </button>
         ))}
       </div>
@@ -144,7 +144,7 @@ export default function NearbyPage() {
                 <div className="flex gap-1.5 mt-2">
                   {place.has_english_menu && (
                     <span className="px-2 py-0.5 bg-green-50 text-green-600 text-[10px] font-medium rounded-md">
-                      {t("영문메뉴", "EN Menu", "英文菜单")}
+                      {t("영문메뉴", "EN Menu", "英文菜单", "英語メニュー")}
                     </span>
                   )}
                   {place.has_halal && (
@@ -154,7 +154,7 @@ export default function NearbyPage() {
                   )}
                   {place.has_vegetarian && (
                     <span className="px-2 py-0.5 bg-lime-50 text-lime-600 text-[10px] font-medium rounded-md">
-                      {t("채식", "Vegan", "素食")}
+                      {t("채식", "Vegan", "素食", "ベジタリアン")}
                     </span>
                   )}
                 </div>
@@ -171,7 +171,7 @@ export default function NearbyPage() {
         ))}
         {filtered.length === 0 && (
           <div className="text-center py-10 text-sm text-gray-400">
-            {t("해당 카테고리에 등록된 장소가 없습니다", "No places in this category", "此分类下暂无场所")}
+            {t("해당 카테고리에 등록된 장소가 없습니다", "No places in this category", "此分类下暂无场所", "このカテゴリーに該当する場所はありません")}
           </div>
         )}
       </div>

@@ -5,7 +5,10 @@ import Image from "next/image";
 import { useI18n } from "@/lib/i18n/context";
 import PhotoGallery from "@/components/PhotoGallery";
 
-const YOUTUBE_ID = "1OV5pCmHZYg";
+const VIDEOS = [
+  { id: "fOtG6mryA8o", year: "2026" },
+  { id: "1OV5pCmHZYg", year: "2025" },
+];
 
 const POSTERS = [
   { src: "/images/poster_2026.jpg", year: "2026", alt: "2026 GYEYANG OPEN Poster" },
@@ -14,7 +17,14 @@ const POSTERS = [
 
 export default function GalleryPage() {
   const { t } = useI18n();
-  const [videoOpen, setVideoOpen] = useState(false);
+  // Track which video iframes have been activated (one click → switch from
+  // thumbnail to iframe). Using a Set keeps multiple videos independently
+  // playable side-by-side.
+  const [openVideos, setOpenVideos] = useState<Set<string>>(new Set());
+
+  function openVideo(id: string) {
+    setOpenVideos((prev) => new Set(prev).add(id));
+  }
 
   return (
     <div className="bg-white">
@@ -31,8 +41,22 @@ export default function GalleryPage() {
         </div>
       </header>
 
-      {/* Promotional video */}
+      {/* Tournament photos (SmugMug) — moved to top */}
       <section className="py-16 lg:py-24">
+        <div className="max-w-5xl mx-auto px-6 lg:px-8">
+          <div className="mb-8">
+            <h2 className="text-2xl lg:text-3xl font-bold text-slate-900 tracking-tight mb-2">
+              {t("gallery.photosSectionTitle")}
+            </h2>
+            <p className="text-slate-600">{t("gallery.photosDesc")}</p>
+          </div>
+
+          <PhotoGallery />
+        </div>
+      </section>
+
+      {/* Promotional videos — 2026 + 2025 side by side */}
+      <section className="bg-slate-50 py-16 lg:py-24">
         <div className="max-w-5xl mx-auto px-6 lg:px-8">
           <div className="mb-8">
             <h2 className="text-2xl lg:text-3xl font-bold text-slate-900 tracking-tight mb-2">
@@ -41,44 +65,56 @@ export default function GalleryPage() {
             <p className="text-slate-600">{t("gallery.promoSectionDesc")}</p>
           </div>
 
-          <div className="w-full aspect-video bg-slate-900 rounded-2xl overflow-hidden relative shadow-lg">
-            {videoOpen ? (
-              <iframe
-                className="absolute inset-0 w-full h-full"
-                src={`https://www.youtube.com/embed/${YOUTUBE_ID}?autoplay=1`}
-                title="2026 GYEYANG OPEN — Promotional Video"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            ) : (
-              <button
-                type="button"
-                onClick={() => setVideoOpen(true)}
-                className="absolute inset-0 w-full h-full group"
-                aria-label="Play promotional video"
-              >
-                <Image
-                  src={`https://i.ytimg.com/vi/${YOUTUBE_ID}/maxresdefault.jpg`}
-                  alt=""
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 1024px"
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center">
-                  <span className="w-20 h-20 rounded-full bg-red-600/95 flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
-                    <svg className="w-10 h-10 text-white ml-1" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  </span>
+          <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
+            {VIDEOS.map((v) => {
+              const isOpen = openVideos.has(v.id);
+              return (
+                <div key={v.id} className="group">
+                  <div className="w-full aspect-video bg-slate-900 rounded-2xl overflow-hidden relative shadow-lg">
+                    {isOpen ? (
+                      <iframe
+                        className="absolute inset-0 w-full h-full"
+                        src={`https://www.youtube.com/embed/${v.id}?autoplay=1`}
+                        title={`${v.year} GYEYANG OPEN — Promotional Video`}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => openVideo(v.id)}
+                        className="absolute inset-0 w-full h-full"
+                        aria-label={`Play ${v.year} promotional video`}
+                      >
+                        <Image
+                          src={`https://i.ytimg.com/vi/${v.id}/maxresdefault.jpg`}
+                          alt=""
+                          fill
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                          className="object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+                          <span className="w-16 h-16 lg:w-20 lg:h-20 rounded-full bg-red-600/95 flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
+                            <svg className="w-8 h-8 lg:w-10 lg:h-10 text-white ml-1" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M8 5v14l11-7z" />
+                            </svg>
+                          </span>
+                        </div>
+                      </button>
+                    )}
+                  </div>
+                  <p className="mt-4 text-center text-sm font-semibold text-slate-700 tracking-wider">
+                    {v.year} GYEYANG OPEN
+                  </p>
                 </div>
-              </button>
-            )}
+              );
+            })}
           </div>
         </div>
       </section>
 
       {/* Posters */}
-      <section className="bg-slate-50 py-16 lg:py-24">
+      <section className="py-16 lg:py-24">
         <div className="max-w-5xl mx-auto px-6 lg:px-8">
           <div className="mb-10">
             <h2 className="text-2xl lg:text-3xl font-bold text-slate-900 tracking-tight">
@@ -104,20 +140,6 @@ export default function GalleryPage() {
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Tournament photos (SmugMug) */}
-      <section className="py-16 lg:py-24">
-        <div className="max-w-5xl mx-auto px-6 lg:px-8">
-          <div className="mb-8">
-            <h2 className="text-2xl lg:text-3xl font-bold text-slate-900 tracking-tight mb-2">
-              {t("gallery.photosSectionTitle")}
-            </h2>
-            <p className="text-slate-600">{t("gallery.photosDesc")}</p>
-          </div>
-
-          <PhotoGallery />
         </div>
       </section>
     </div>

@@ -89,8 +89,8 @@ export default function ParticipantsPage() {
           </svg>
         </Link>
         <div>
-          <h1 className="text-xl font-bold text-gray-900">{t("참가자 명단", "Participants", "参赛选手名单")}</h1>
-          <p className="text-xs text-gray-500">{t("2026 GYEYANG OPEN · ianseo 기준", "2026 GYEYANG OPEN · from ianseo", "2026 GYEYANG OPEN · 来源 ianseo")}</p>
+          <h1 className="text-xl font-bold text-gray-900">{t("참가자 명단", "Participants", "参赛选手名单", "参加選手リスト")}</h1>
+          <p className="text-xs text-gray-500">{t("2026 GYEYANG OPEN · ianseo 기준", "2026 GYEYANG OPEN · from ianseo", "2026 GYEYANG OPEN · 来源 ianseo", "2026 GYEYANG OPEN · ianseo より")}</p>
         </div>
       </div>
 
@@ -98,14 +98,14 @@ export default function ParticipantsPage() {
       {loading && (
         <div className="flex flex-col items-center justify-center py-20">
           <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-3" />
-          <p className="text-sm text-gray-400">{t("명단을 불러오는 중...", "Loading participants...", "正在加载名单...")}</p>
+          <p className="text-sm text-gray-400">{t("명단을 불러오는 중...", "Loading participants...", "正在加载名单...", "リストを読み込み中...")}</p>
         </div>
       )}
 
       {/* Error */}
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-700">
-          {t("명단을 불러올 수 없습니다", "Could not load participants", "无法加载名单")}: {error}
+          {t("명단을 불러올 수 없습니다", "Could not load participants", "无法加载名单", "リストを読み込めません")}: {error}
         </div>
       )}
 
@@ -115,15 +115,15 @@ export default function ParticipantsPage() {
           <div className="grid grid-cols-3 gap-2 mb-4">
             <div className="bg-blue-50 rounded-xl p-3 text-center">
               <p className="text-2xl font-black text-blue-700">{data.total}</p>
-              <p className="text-[10px] text-blue-600 font-medium uppercase tracking-wider mt-0.5">{t("선수", "Athletes", "选手")}</p>
+              <p className="text-[10px] text-blue-600 font-medium uppercase tracking-wider mt-0.5">{t("선수", "Athletes", "选手", "選手")}</p>
             </div>
             <div className="bg-purple-50 rounded-xl p-3 text-center">
               <p className="text-2xl font-black text-purple-700">{countries.length}</p>
-              <p className="text-[10px] text-purple-600 font-medium uppercase tracking-wider mt-0.5">{t("소속", "Clubs", "所属")}</p>
+              <p className="text-[10px] text-purple-600 font-medium uppercase tracking-wider mt-0.5">{t("소속", "Clubs", "所属", "所属")}</p>
             </div>
             <div className="bg-emerald-50 rounded-xl p-3 text-center">
               <p className="text-2xl font-black text-emerald-700">{events.length}</p>
-              <p className="text-[10px] text-emerald-600 font-medium uppercase tracking-wider mt-0.5">{t("종목", "Events", "项目")}</p>
+              <p className="text-[10px] text-emerald-600 font-medium uppercase tracking-wider mt-0.5">{t("종목", "Events", "项目", "種目")}</p>
             </div>
           </div>
 
@@ -133,7 +133,7 @@ export default function ParticipantsPage() {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder={t("이름·소속·BIB·타겟으로 검색", "Search by name, club, BIB, or target", "按姓名 · 所属 · BIB · 靶位搜索")}
+              placeholder={t("이름·소속·BIB·타겟으로 검색", "Search by name, club, BIB, or target", "按姓名 · 所属 · BIB · 靶位搜索", "名前・所属・BIB・的位置で検索")}
               className="w-full bg-white border border-gray-200 rounded-xl pl-10 pr-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
             <svg className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -151,7 +151,7 @@ export default function ParticipantsPage() {
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
             >
-              {t("전체", "All", "全部")} · {data.total}
+              {t("전체", "All", "全部", "すべて")} · {data.total}
             </button>
             {events.map(([ev, count]) => (
               <button
@@ -178,7 +178,7 @@ export default function ParticipantsPage() {
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
             >
-              {t("전체 소속", "All clubs", "全部所属")}
+              {t("전체 소속", "All clubs", "全部所属", "すべての所属")}
             </button>
             {countries.slice(0, 30).map(([code, count]) => (
               <button
@@ -198,8 +198,8 @@ export default function ParticipantsPage() {
           {/* Result count */}
           <p className="text-[12px] text-gray-500 mb-2">
             {filtered.length === data.total
-              ? t(`전체 ${data.total}명`, `${data.total} total`, `共 ${data.total} 名`)
-              : t(`${filtered.length}명 표시 (전체 ${data.total}명 중)`, `Showing ${filtered.length} of ${data.total}`, `显示 ${filtered.length} / 共 ${data.total} 名`)}
+              ? t(`전체 ${data.total}명`, `${data.total} total`, `共 ${data.total} 名`, `合計 ${data.total} 名`)
+              : t(`${filtered.length}명 표시 (전체 ${data.total}명 중)`, `Showing ${filtered.length} of ${data.total}`, `显示 ${filtered.length} / 共 ${data.total} 名`, `${filtered.length} 名表示 (合計 ${data.total} 名中)`)}
           </p>
 
           {/* List */}
@@ -230,20 +230,20 @@ export default function ParticipantsPage() {
             ))}
             {filtered.length === 0 && (
               <p className="text-center text-sm text-gray-400 py-10">
-                {t("검색 결과가 없습니다", "No matching participants", "未找到匹配的参赛者")}
+                {t("검색 결과가 없습니다", "No matching participants", "未找到匹配的参赛者", "該当する参加者が見つかりません")}
               </p>
             )}
           </div>
 
           <p className="mt-6 text-center text-[11px] text-gray-400">
-            {t("출처: ianseo", "Source: ianseo", "来源: ianseo")} ·{" "}
+            {t("출처: ianseo", "Source: ianseo", "来源: ianseo", "出典: ianseo")} ·{" "}
             <a
               href="https://www.ianseo.net/Details.php?toId=28161"
               target="_blank"
               rel="noopener noreferrer"
               className="underline hover:text-blue-600"
             >
-              {t("원본 보기", "View original", "查看原始数据")}
+              {t("원본 보기", "View original", "查看原始数据", "原典を見る")}
             </a>
           </p>
         </>

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n/context";
 import { useInlineT } from "@/lib/i18n/inline";
+import LanguageSelector from "@/components/LanguageSelector";
 import { useAuth } from "@/lib/supabase/auth-context";
 import { supabase } from "@/lib/supabase/client";
 import { isSuperAdmin } from "@/lib/super-admin";
@@ -26,7 +27,7 @@ interface RecentPhoto {
 }
 
 export default function AppHome() {
-  const { locale, setLocale } = useI18n();
+  const { locale } = useI18n();
   const { user, profile } = useAuth();
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [dDay, setDDay] = useState("");
@@ -82,29 +83,7 @@ export default function AppHome() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            onClick={() =>
-              setLocale(
-                locale === "ko"
-                  ? "en"
-                  : locale === "en"
-                    ? "zh"
-                    : locale === "zh"
-                      ? "ja"
-                      : "ko"
-              )
-            }
-            className="px-2.5 py-1.5 bg-gray-100 rounded-lg text-xs font-semibold text-gray-600 hover:bg-gray-200 transition-colors"
-            aria-label="언어 전환"
-          >
-            {locale === "ko"
-              ? "EN"
-              : locale === "en"
-                ? "中"
-                : locale === "zh"
-                  ? "日"
-                  : "KO"}
-          </button>
+          <LanguageSelector size="sm" align="right" />
           {user && profile && (
             <Link href="/app/profile">
               <div className="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center text-sm font-bold text-blue-600">

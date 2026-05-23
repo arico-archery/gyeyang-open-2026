@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useI18n } from "@/lib/i18n/context";
 import { useInlineT } from "@/lib/i18n/inline";
 import { useAuth } from "@/lib/supabase/auth-context";
 import { isSuperAdmin } from "@/lib/super-admin";
@@ -15,9 +14,9 @@ const HIDE_ON: string[] = ["/app/login", "/app/register"];
  * Floating hamburger button + slide-in panel for the participant app.
  *
  * AppBottomNav covers the 5 most-used destinations; this hamburger exposes
- * everything else — full marketing-site nav (Schedule, Invitation, Gallery,
- * Archive, etc.) and the secondary app pages (Announcements, Inquiries,
- * Notifications, Profile, Sign out).
+ * the remaining participant-app pages (announcements, inquiries, profile,
+ * etc.) plus sign out. The marketing-site nav is intentionally NOT included
+ * here — the app stays focused on athlete-facing screens.
  *
  * Visible on every app route except auth screens. Positioned `fixed` so it
  * survives across page navigations without coupling to each page's header.
@@ -25,7 +24,6 @@ const HIDE_ON: string[] = ["/app/login", "/app/register"];
 export default function AppHamburgerMenu() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const { t } = useI18n();
   const ti = useInlineT();
   const { user, profile, signOut } = useAuth();
 
@@ -47,45 +45,6 @@ export default function AppHamburgerMenu() {
   if (HIDE_ON.some((p) => pathname.startsWith(p))) return null;
 
   const isAdmin = profile?.role === "admin" || isSuperAdmin(user?.email);
-
-  // Site-wide nav, mirrors the desktop Header groups so the language and
-  // grouping decisions live in one place mentally even if the markup is
-  // duplicated.
-  const SITE_GROUPS: { label: string; items: { label: string; href: string }[] }[] = [
-    {
-      label: t("nav.groupAbout"),
-      items: [
-        { label: t("nav.schedule"), href: "/schedule" },
-        { label: t("nav.invitation"), href: "/invitation" },
-        { label: t("nav.guideMap"), href: "/guide_map" },
-        { label: t("nav.practiceSchedule"), href: "/practice_schedule" },
-      ],
-    },
-    {
-      label: t("nav.groupParticipate"),
-      items: [
-        { label: t("nav.registration"), href: "/registration" },
-        { label: t("sectionNav.visa"), href: "/visa" },
-        { label: t("sectionNav.hotel"), href: "/hotel" },
-        { label: t("sectionNav.rentcar"), href: "/rent-car" },
-      ],
-    },
-    {
-      label: t("nav.groupResults"),
-      items: [
-        { label: t("nav.gallery"), href: "/gallery" },
-        { label: t("nav.scoreTarget"), href: "/scoreboard" },
-        { label: t("nav.archeryRecord"), href: "/record_table" },
-      ],
-    },
-    {
-      label: t("nav.groupArchive"),
-      items: [
-        { label: t("nav.archive2026"), href: "/archive/2026" },
-        { label: t("nav.archive2025"), href: "/archive/2025" },
-      ],
-    },
-  ];
 
   const APP_PAGES: { label: string; href: string }[] = [
     { label: ti("앱 홈", "App Home", "应用首页", "アプリホーム"), href: "/app" },
@@ -169,58 +128,24 @@ export default function AppHamburgerMenu() {
 
             {/* Sections */}
             <div className="flex-1 overflow-y-auto">
-              {/* Site nav groups */}
-              {SITE_GROUPS.map((g) => (
-                <div key={g.label} className="px-5 py-3 border-b border-gray-50">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-gray-400 mb-2">
-                    {g.label}
-                  </p>
-                  <ul className="space-y-1">
-                    {g.items.map((it) => (
-                      <li key={it.href}>
-                        <Link
-                          href={it.href}
-                          className="block px-2 py-2 text-sm text-gray-800 hover:bg-gray-50 rounded-md"
-                        >
-                          {it.label}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-
-              {/* Contact (standalone) */}
-              <div className="px-5 py-3 border-b border-gray-50">
-                <Link
-                  href="/contact"
-                  className="block px-2 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50 rounded-md"
-                >
-                  {t("nav.contact")}
-                </Link>
-              </div>
-
-              {/* App-internal pages */}
-              <div className="px-5 py-3 border-b border-gray-50">
-                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-600 mb-2">
-                  {ti("참가자 앱", "Athlete App", "选手 APP", "選手アプリ")}
-                </p>
+              {/* Participant app pages */}
+              <div className="px-5 py-3">
                 <ul className="space-y-1">
                   {APP_PAGES.map((it) => (
                     <li key={it.href}>
                       <Link
                         href={it.href}
-                        className="block px-2 py-2 text-sm text-gray-800 hover:bg-gray-50 rounded-md"
+                        className="block px-2 py-3 text-sm text-gray-800 hover:bg-gray-50 rounded-md"
                       >
                         {it.label}
                       </Link>
                     </li>
                   ))}
                   {isAdmin && (
-                    <li>
+                    <li className="pt-2 mt-2 border-t border-gray-100">
                       <Link
                         href="/app/admin"
-                        className="block px-2 py-2 text-sm font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-md"
+                        className="block px-2 py-3 text-sm font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-md"
                       >
                         ⚙️{" "}
                         {ti(
@@ -237,7 +162,7 @@ export default function AppHamburgerMenu() {
 
               {/* Sign out (if signed in) */}
               {user && (
-                <div className="px-5 py-4">
+                <div className="px-5 py-4 border-t border-gray-100">
                   <button
                     type="button"
                     onClick={async () => {

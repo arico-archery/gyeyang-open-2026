@@ -14,6 +14,7 @@ export const en = {
     groupAbout: "About",
     groupParticipate: "Participate",
     groupResults: "Results & Media",
+    groupArchive: "Archive",
     invitation: "Invitation",
   },
   sectionNav: {

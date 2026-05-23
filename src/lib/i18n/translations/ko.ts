@@ -14,6 +14,7 @@ export const ko = {
     groupAbout: "대회 안내",
     groupParticipate: "참가 안내",
     groupResults: "결과 & 미디어",
+    groupArchive: "아카이브",
     invitation: "초대장",
   },
   sectionNav: {

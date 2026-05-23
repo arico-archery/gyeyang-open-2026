@@ -25,6 +25,7 @@ export const zh: typeof en = {
     groupAbout: "赛事介绍",
     groupParticipate: "参赛指引",
     groupResults: "成绩与媒体",
+    groupArchive: "档案",
     invitation: "邀请函",
   },
 

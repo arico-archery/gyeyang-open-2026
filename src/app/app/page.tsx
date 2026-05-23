@@ -10,6 +10,7 @@ import { useAuth } from "@/lib/supabase/auth-context";
 import { supabase } from "@/lib/supabase/client";
 import { isSuperAdmin } from "@/lib/super-admin";
 import { getDDay } from "@/lib/event";
+import { AppMenuButton } from "./components/AppHamburgerMenu";
 
 interface Announcement {
   id: string;
@@ -91,6 +92,7 @@ export default function AppHome() {
               </div>
             </Link>
           )}
+          <AppMenuButton />
         </div>
       </div>
 

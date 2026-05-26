@@ -61,9 +61,15 @@ export default function Header() {
         { label: t("nav.archive2025"), href: "/archive/2025" },
       ],
     },
+    {
+      label: t("nav.groupContact"),
+      items: [
+        { label: t("nav.contactTournament"), href: "/contact" },
+        { label: t("nav.contactStaff"), href: "/contact/staff" },
+      ],
+    },
   ];
 
-  const contactLabel = t("nav.contact");
   const appLabel = locale === "ko" ? "참가자 앱" : "Athlete App";
 
   return (
@@ -120,14 +126,6 @@ export default function Header() {
               </div>
             ))}
 
-            {/* Standalone Contact */}
-            <Link
-              href="/contact"
-              className="text-[15px] font-medium text-slate-700 hover:text-blue-600 transition-colors py-2"
-            >
-              {contactLabel}
-            </Link>
-
             {/* CTA — Athlete app */}
             <Link
               href="/app"
@@ -179,17 +177,6 @@ export default function Header() {
                   </div>
                 </div>
               ))}
-              <div>
-                <div className="flex flex-col">
-                  <Link
-                    href="/contact"
-                    className="px-4 py-2.5 text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600 rounded-lg transition-colors"
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    {contactLabel}
-                  </Link>
-                </div>
-              </div>
               <Link
                 href="/app"
                 className="mx-4 mt-2 py-3 bg-blue-600 text-white text-base font-semibold rounded-lg text-center hover:bg-blue-700 transition-colors"

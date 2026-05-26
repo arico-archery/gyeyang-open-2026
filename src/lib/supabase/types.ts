@@ -3,6 +3,7 @@ export type RegistrationStatus = "submitted" | "reviewing" | "approved" | "confi
 export type ScheduleType = "practice" | "qualification" | "elimination" | "ceremony" | "other";
 export type AnnouncementPriority = "normal" | "important" | "urgent";
 export type InquiryStatus = "pending" | "replied" | "closed";
+export type ContactMessageStatus = "pending" | "replied" | "closed" | "spam";
 export type PlaceCategory = "restaurant" | "cafe" | "convenience" | "hospital" | "pharmacy" | "atm" | "transport" | "tourism";
 
 export interface Profile {
@@ -78,6 +79,27 @@ export interface Inquiry {
   created_at: string;
 }
 
+/**
+ * Public homepage /contact form submission. Anyone (anon or authenticated) may
+ * INSERT; only admins may SELECT/UPDATE/DELETE (see RLS policies).
+ */
+export interface ContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  attachment_path: string | null;
+  attachment_filename: string | null;
+  attachment_size_bytes: number | null;
+  status: ContactMessageStatus;
+  reply: string | null;
+  replied_at: string | null;
+  created_at: string;
+  user_agent: string | null;
+  ip_hash: string | null;
+}
+
 export interface NearbyPlace {
   id: string;
   name: string;
@@ -108,6 +130,7 @@ export interface Database {
       target_assignments: { Row: TargetAssignment; Insert: Partial<TargetAssignment> & { schedule_id: string; athlete_id: string; target_number: number }; Update: Partial<TargetAssignment> };
       announcements: { Row: Announcement; Insert: Partial<Announcement> & { title: string; content: string; author_id: string }; Update: Partial<Announcement> };
       inquiries: { Row: Inquiry; Insert: Partial<Inquiry> & { user_id: string; category: string; subject: string; message: string }; Update: Partial<Inquiry> };
+      contact_messages: { Row: ContactMessage; Insert: Partial<ContactMessage> & { name: string; email: string; subject: string; message: string }; Update: Partial<ContactMessage> };
       nearby_places: { Row: NearbyPlace; Insert: Partial<NearbyPlace> & { name: string; category: PlaceCategory }; Update: Partial<NearbyPlace> };
     };
   };

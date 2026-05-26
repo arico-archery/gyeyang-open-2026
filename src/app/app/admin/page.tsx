@@ -12,13 +12,14 @@ interface Stats {
   pendingRegistrations: number;
   totalAnnouncements: number;
   pendingInquiries: number;
+  pendingContactMessages: number;
   todayAttendance: number;
   totalAthletes: number;
 }
 
 export default function AdminPage() {
   const { user, profile, loading } = useAuth();
-  const [stats, setStats] = useState<Stats>({ totalRegistrations: 0, pendingRegistrations: 0, totalAnnouncements: 0, pendingInquiries: 0, todayAttendance: 0, totalAthletes: 0 });
+  const [stats, setStats] = useState<Stats>({ totalRegistrations: 0, pendingRegistrations: 0, totalAnnouncements: 0, pendingInquiries: 0, pendingContactMessages: 0, todayAttendance: 0, totalAthletes: 0 });
   const [refreshState, setRefreshState] = useState<"idle" | "loading" | "ok" | "error">("idle");
 
   const t = useInlineT();
@@ -46,11 +47,12 @@ export default function AdminPage() {
   useEffect(() => {
     async function fetchStats() {
       const today = new Date().toISOString().split("T")[0];
-      const [regAll, regPending, annCount, inqPending, attToday, athletes] = await Promise.all([
+      const [regAll, regPending, annCount, inqPending, contactPending, attToday, athletes] = await Promise.all([
         supabase.from("registrations").select("id", { count: "exact", head: true }),
         supabase.from("registrations").select("id", { count: "exact", head: true }).eq("status", "submitted"),
         supabase.from("announcements").select("id", { count: "exact", head: true }),
         supabase.from("inquiries").select("id", { count: "exact", head: true }).eq("status", "pending"),
+        supabase.from("contact_messages").select("id", { count: "exact", head: true }).eq("status", "pending"),
         supabase.from("attendance").select("id", { count: "exact", head: true }).eq("check_date", today),
         supabase.from("profiles").select("id", { count: "exact", head: true }).eq("role", "athlete"),
       ]);
@@ -59,6 +61,7 @@ export default function AdminPage() {
         pendingRegistrations: regPending.count ?? 0,
         totalAnnouncements: annCount.count ?? 0,
         pendingInquiries: inqPending.count ?? 0,
+        pendingContactMessages: contactPending.count ?? 0,
         todayAttendance: attToday.count ?? 0,
         totalAthletes: athletes.count ?? 0,
       });
@@ -94,7 +97,8 @@ export default function AdminPage() {
     { href: "/app/admin/registrations", icon: "\ud83d\udccb", label: t("\ucc38\uac00\uc2e0\uccad \uad00\ub9ac", "Registrations"), count: stats.pendingRegistrations, badge: true },
     { href: "/app/admin/attendance", icon: "\u2705", label: t("\ucd9c\uc11d \uad00\ub9ac", "Attendance"), count: stats.todayAttendance, badge: false },
     { href: "/app/admin/targets", icon: "\ud83c\udfaf", label: t("\ud0c0\uac9f \ubc30\uc815", "Target Assignment"), count: null },
-    { href: "/app/admin/inquiries", icon: "\ud83d\udcac", label: t("\ubb38\uc758 \ub2f5\ubcc0", "Inquiries"), count: stats.pendingInquiries, badge: true },
+    { href: "/app/admin/inquiries", icon: "\ud83d\udcac", label: t("\uc571 \ubb38\uc758 \ub2f5\ubcc0", "App Inquiries"), count: stats.pendingInquiries, badge: true },
+    { href: "/app/admin/contact-messages", icon: "\u2709\ufe0f", label: t("\ub300\ud68c \ubb38\uc758 (\ud648\ud398\uc774\uc9c0)", "Contact Messages"), count: stats.pendingContactMessages, badge: true },
     ...(superAdmin ? [{ href: "/app/admin/users", icon: "\ud83d\udd11", label: t("\uc0ac\uc6a9\uc790 \uad8c\ud55c \uad00\ub9ac", "User Roles"), count: null }] : []),
   ];
 

@@ -123,9 +123,16 @@ export default function ContactForm() {
         attachmentSize = file.size;
       }
 
-      // 2) Insert message row
+      // 2) Insert message row. We generate the UUID client-side because RLS
+      //    on contact_messages.SELECT is admin-only, so anonymous submitters
+      //    can't read the row back after INSERT — but we need the ID to
+      //    invoke the notify-contact Edge Function below.
+      const messageId =
+        globalThis.crypto?.randomUUID?.() ??
+        `${Date.now()}-${Math.random().toString(36).slice(2)}`;
       const ua = typeof navigator !== "undefined" ? navigator.userAgent.slice(0, 500) : null;
       const { error: insertErr } = await supabase.from("contact_messages").insert({
+        id: messageId,
         name: name.trim(),
         email: email.trim(),
         subject: subject.trim(),
@@ -145,6 +152,17 @@ export default function ContactForm() {
             "送信に失敗しました。後ほど再度お試しください。"
           ) + ` (${insertErr.message})`
         );
+      }
+
+      // 3) Trigger email notification (best-effort — never block the user
+      //    on email delivery; the row is already in the DB).
+      try {
+        await supabase.functions.invoke("notify-contact", {
+          body: { messageId },
+        });
+      } catch (notifyErr) {
+        // Log but do not surface — admin can still see the message in the DB.
+        console.warn("notify-contact invoke failed:", notifyErr);
       }
 
       // Reset form on success

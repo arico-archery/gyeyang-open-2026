@@ -18,7 +18,7 @@
 // Required Edge Function secrets:
 //   - RESEND_API_KEY        (https://resend.com/api-keys)
 //   - NOTIFY_TO             (e.g. "sms@arico.co.jp", default below)
-//   - NOTIFY_FROM           (e.g. "GYEYANG OPEN <onboarding@resend.dev>", default below)
+//   - NOTIFY_FROM           (e.g. "GYEYANG OPEN <noreply@gyeyangopen.com>", default below)
 //   - SUPABASE_URL          (auto-injected)
 //   - SUPABASE_SERVICE_ROLE_KEY (auto-injected)
 
@@ -27,9 +27,11 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") ?? "";
 const NOTIFY_TO = Deno.env.get("NOTIFY_TO") ?? "sms@arico.co.jp";
-// Until gyeyangopen.com is verified in Resend, use the shared onboarding sender.
+// gyeyangopen.com is verified in Resend (ap-northeast-1, Tokyo) as of 2026-05-27.
+// We can now send from our own domain — this improves deliverability and lets
+// us deliver to any external address, not just the Resend account owner.
 const NOTIFY_FROM =
-  Deno.env.get("NOTIFY_FROM") ?? "GYEYANG OPEN <onboarding@resend.dev>";
+  Deno.env.get("NOTIFY_FROM") ?? "GYEYANG OPEN <noreply@gyeyangopen.com>";
 
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL") ?? "",
